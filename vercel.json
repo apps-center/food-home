@@ -1,0 +1,11 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "routes": [
+    { "src": "/", "dest": "/index.html" },
+    { "src": "/home", "dest": "/home.html" },
+    { "src": "/eat", "dest": "/eat.html" },
+    { "src": "/courses", "dest": "/courses.html" },
+    { "src": "/(.*)", "dest": "/$1" }
+  ]
+}
