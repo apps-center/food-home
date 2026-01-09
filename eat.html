@@ -594,6 +594,21 @@
         
         // Dans closePlanningModal():
         unlockBodyScroll();
+
+        // Dans openRecipeModal(), au lieu de lockBodyScroll() direct :
+        window.parent.postMessage({ type: 'LOCK_SCROLL' }, '*');
+        
+        // Dans closeRecipeModal() :
+        window.parent.postMessage({ type: 'UNLOCK_SCROLL' }, '*');
+        
+        // Même pour planningModal
+        // Dans generateWeeklyPlanning(), après planningModal.classList.add("active") :
+        window.parent.postMessage({ type: 'LOCK_SCROLL' }, '*');
+        
+        // Dans closePlanningModal() :
+        window.parent.postMessage({ type: 'UNLOCK_SCROLL' }, '*');
+        
+        // Vire les lockBodyScroll() et unlockBodyScroll() directs dans eat.html, car on délègue au parent
     </script>
   </body>
 </html>
