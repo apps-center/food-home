@@ -1,6 +1,6 @@
 /* ============================================
    FOOD HOME - APP RECETTES
-   Style identique Ã  courses.css
+   Style identique à courses.css
    ============================================ */
 
 body {
@@ -228,7 +228,7 @@ h1 {
 }
 
 /* ============================================
-   RÃ‰SULTATS - GRILLE
+   RÉSULTATS - GRILLE
    ============================================ */
 #results {
   display: grid;
@@ -457,7 +457,7 @@ h1 {
 }
 
 .ingredients-list li::before {
-  content: "âœ“";
+  content: "✓";
   position: absolute;
   left: 0;
   color: #0ea5e9;
@@ -499,7 +499,7 @@ h1 {
 }
 
 .empty::before {
-  content: "ðŸ˜”";
+  content: "😔";
   display: block;
   font-size: 64px;
   margin-bottom: 20px;
