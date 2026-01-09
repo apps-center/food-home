@@ -358,8 +358,10 @@ h1 {
   z-index: 1000;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  overflow: hidden;  // Block any overflow
+  padding: 20px 0;  // Vire les sides padding pour full width on mobile
+  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;  // Block chain overscroll
 }
 
 .modal.active {
@@ -381,11 +383,26 @@ h1 {
     0 10px 30px rgba(0, 0, 0, 0.15);
   padding: 36px;
   animation: scaleIn 0.3s ease-out;
-  -webkit-overflow-scrolling: touch;  // Smooth iOS scroll
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
 }
 
 .modal-content.large {
   max-width: 900px;
+}
+
+/* Media query pour mobile - force full height si content long */
+@media (max-width: 768px) {
+  .modal {
+    padding: 0;
+    align-items: flex-end;  // Align bottom for better touch access
+  }
+  
+  .modal-content {
+    max-height: 100vh;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    padding: 24px;
+  }
 }
 
 .modal-header {
