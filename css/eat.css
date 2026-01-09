@@ -359,6 +359,7 @@ h1 {
   align-items: center;
   justify-content: center;
   padding: 20px;
+  overflow: hidden;  // Block any overflow
 }
 
 .modal.active {
@@ -380,7 +381,7 @@ h1 {
     0 10px 30px rgba(0, 0, 0, 0.15);
   padding: 36px;
   animation: scaleIn 0.3s ease-out;
-  -webkit-overflow-scrolling: touch;
+  -webkit-overflow-scrolling: touch;  // Smooth iOS scroll
 }
 
 .modal-content.large {
