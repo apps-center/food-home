@@ -549,6 +549,29 @@
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
       }
+      // Lock body scroll quand modal ouverte
+      function lockBodyScroll() {
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';  // Pour iOS
+        document.body.style.width = '100%';     // Pour éviter shift de layout
+      }
+      
+      // Unlock body scroll
+      function unlockBodyScroll() {
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
+      }
+      
+      // Dans openRecipeModal(), après modal.classList.add("active");
+      lockBodyScroll();
+      
+      // Dans closeRecipeModal(), après modal.classList.remove("active");
+      unlockBodyScroll();
+      
+      // Pareil pour planningModal si besoin
+      // Dans generateWeeklyPlanning() ou où tu ouvres planningModal, ajoute lockBodyScroll();
+      // Dans closePlanningModal(), ajoute unlockBodyScroll();
     </script>
   </body>
 </html>
