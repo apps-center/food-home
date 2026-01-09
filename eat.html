@@ -550,47 +550,50 @@
         setTimeout(() => toast.remove(), 3000);
       }
       
-     // Lock body scroll pour mobile
-      function lockBodyScroll() {
-        const scrollPosition = window.pageYOffset;
-        document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';
-        document.body.style.top = `-${scrollPosition}px`;
-        document.body.style.width = '100%';
+     // Lock body scroll pour mobile/iOS
+        let scrollPosition = 0;
+        function lockBodyScroll() {
+          scrollPosition = window.pageYOffset;
+          document.body.style.overflow = 'hidden';
+          document.body.style.position = 'fixed';
+          document.body.style.top = `-${scrollPosition}px`;
+          document.body.style.width = '100%';
+          document.body.style.overscrollBehavior = 'none';  // Block overscroll
+          
+          // Prevent touchmove sur body
+          document.addEventListener('touchmove', preventDefault, { passive: false });
+        }
         
-        // Prevent touchmove sur body pour iOS momentum
-        document.body.addEventListener('touchmove', preventTouchMove, { passive: false });
-      }
-      
-      // Unlock body scroll
-      function unlockBodyScroll() {
-        const scrollPosition = Math.abs(parseInt(document.body.style.top || '0', 10));
-        document.body.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.top = '';
-        document.body.style.width = '';
-        window.scrollTo(0, scrollPosition);
+        // Unlock body scroll
+        function unlockBodyScroll() {
+          document.body.style.overflow = '';
+          document.body.style.position = '';
+          document.body.style.top = '';
+          document.body.style.width = '';
+          document.body.style.overscrollBehavior = '';
+          window.scrollTo(0, scrollPosition);
+          
+          // Remove listener
+          document.removeEventListener('touchmove', preventDefault);
+        }
         
-        // Remove listener
-        document.body.removeEventListener('touchmove', preventTouchMove);
-      }
-      
-      // Prevent touchmove helper
-      function preventTouchMove(e) {
-        e.preventDefault();
-      }
-      
-      // Dans openRecipeModal() et où tu ouvres planningModal :
-      lockBodyScroll();
-      
-      // Dans closeRecipeModal() et closePlanningModal() :
-      unlockBodyScroll();
-      
-      // Ajoute aussi pour planningModal si pas déjà
-      btnGenerateWeek.addEventListener("click", () => {
-        generateWeeklyPlanning();
-        lockBodyScroll();  // Si planningModal s'ouvre ici
-      });
+        // Helper preventDefault
+        function preventDefault(e) {
+          e.preventDefault();
+        }
+        
+        // Dans openRecipeModal(), après modal.classList.add("active");
+        lockBodyScroll();
+        
+        // Dans closeRecipeModal(), après modal.classList.remove("active");
+        unlockBodyScroll();
+        
+        // Même pour planningModal
+        // Dans la fonction qui ouvre planningModal (genre generateWeeklyPlanning()):
+        lockBodyScroll();
+        
+        // Dans closePlanningModal():
+        unlockBodyScroll();
     </script>
   </body>
 </html>
