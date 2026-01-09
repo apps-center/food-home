@@ -3,46 +3,16 @@
   "trailingSlash": false,
   "headers": [
     {
-      "source": "/",
-      "headers": [
-        { "key": "Content-Type", "value": "text/html; charset=utf-8" }
-      ]
-    },
-    {
-      "source": "/index",
-      "headers": [
-        { "key": "Content-Type", "value": "text/html; charset=utf-8" }
-      ]
-    },
-    {
-      "source": "/home",
-      "headers": [
-        { "key": "Content-Type", "value": "text/html; charset=utf-8" }
-      ]
-    },
-    {
-      "source": "/eat",
-      "headers": [
-        { "key": "Content-Type", "value": "text/html; charset=utf-8" }
-      ]
-    },
-    {
-      "source": "/courses",
-      "headers": [
-        { "key": "Content-Type", "value": "text/html; charset=utf-8" }
-      ]
+      "source": "/(eat|courses|home|index)?",
+      "headers": [{ "key": "Content-Type", "value": "text/html; charset=utf-8" }]
     },
     {
       "source": "/recipes.json",
-      "headers": [
-        { "key": "Content-Type", "value": "application/json; charset=utf-8" }
-      ]
+      "headers": [{ "key": "Content-Type", "value": "application/json; charset=utf-8" }]
     },
     {
       "source": "/css/(.*)",
-      "headers": [
-        { "key": "Content-Type", "value": "text/css; charset=utf-8" }
-      ]
+      "headers": [{ "key": "Content-Type", "value": "text/css; charset=utf-8" }]
     }
   ]
 }
