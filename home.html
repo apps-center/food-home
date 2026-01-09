@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FOOD HOME - Application</title>
+    <link rel="stylesheet" href="/static/css/common.css">
+    <link rel="stylesheet" href="/static/css/home.css">
+  </head>
+  <body>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+      <div class="navbar-brand">
+        <span>🏠</span>
+        <span>FOOD HOME</span>
+      </div>
+      <div class="navbar-controls">
+        <button class="toggle-btn" id="toggleBtn">
+          <span id="toggleIcon">🔄</span>
+          <span id="toggleText">Basculer</span>
+        </button>
+        <a href="javascript:void(0)" class="logout-btn" onclick="logout()">🚪 Déconnexion</a>
+      </div>
+    </div>
+
+    <!-- App Container -->
+    <div class="app-container">
+      <div class="app-flipper" id="appFlipper">
+        <!-- Front Face: Eat App (Meal Planner) - PAR DÉFAUT -->
+        <div class="app-face front">
+          <iframe
+            src="/eat"
+            id="eatFrame"
+            title="Planificateur de repas"
+          ></iframe>
+        </div>
+
+        <!-- Back Face: Courses App (Shopping List) -->
+        <div class="app-face back">
+          <iframe
+            src="/courses"
+            id="coursesFrame"
+            title="Liste de courses"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+
+        <script>
+      // 🔒 Vérifier la session avant d'afficher l'app
+      (function checkSession() {
+        const isLoggedIn = localStorage.getItem('food_home_logged_in');
+        const loginTime = parseInt(localStorage.getItem('food_home_login_time') || '0');
+        const now = Date.now();
+        
+        // Si pas connecté ou session expirée (24h)
+        if (isLoggedIn !== 'true' || now - loginTime > 24 * 60 * 60 * 1000) {
+          window.location.href = 'index.html';
+          return;
+        }
+      })();
+      
+
+      // Get elements
+      const toggleBtn = document.getElementById("toggleBtn");
+      const appFlipper = document.getElementById("appFlipper");
+      const toggleText = document.getElementById("toggleText");
+      const toggleIcon = document.getElementById("toggleIcon");
+      const coursesFrame = document.getElementById("coursesFrame");
+      const eatFrame = document.getElementById("eatFrame");
+
+      // Track current app (from server-side session)
+      let currentApp = "{{ active_app }}";
+
+      // Set initial state based on session
+      if (currentApp === "courses") {
+        appFlipper.classList.add("flipped");
+        updateToggleButton("courses");
+      } else {
+        updateToggleButton("eat");
+      }
+
+      // 🎯 COMMUNICATION INTER-IFRAMES via postMessage
+      // Écouter les messages des iframes enfants
+      window.addEventListener('message', (event) => {
+        // Vérifier l'origine pour la sécurité (optionnel en local)
+        // if (event.origin !== window.location.origin) return;
+
+        const { type, data } = event.data;
+
+        switch (type) {
+          case 'SHOPPING_LIST_UPDATED':
+            // Eat a ajouté des items → notifier Courses de rafraîchir
+            console.log('📥 Shopping list updated, notifying courses iframe...');
+            try {
+              coursesFrame.contentWindow.postMessage({
+                type: 'REFRESH_DATA'
+              }, '*');
+            } catch (e) {
+              console.error('Error sending message to courses iframe:', e);
+            }
+            break;
+
+          case 'REQUEST_REFRESH':
+            // Courses demande un rafraîchissement
+            console.log('🔄 Courses iframe requested refresh');
+            try {
+              coursesFrame.contentWindow.postMessage({
+                type: 'REFRESH_DATA'
+              }, '*');
+            } catch (e) {
+              console.error('Error refreshing courses iframe:', e);
+            }
+            break;
+        }
+      });
+
+      // Toggle between apps
+      toggleBtn.addEventListener("click", async () => {
+        // Disable button during change
+        toggleBtn.disabled = true;
+
+        // Toggle display
+        appFlipper.classList.toggle("flipped");
+
+        // Determine new app
+        const newApp = appFlipper.classList.contains("flipped")
+          ? "courses"
+          : "eat";
+
+        // Update server session
+        try {
+          const response = await fetch("/api/toggle_app", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (response.ok) {
+            currentApp = newApp;
+            updateToggleButton(newApp);
+            
+            // 🎯 NOUVEAU : Au lieu de reload, envoyer un message postMessage
+            if (newApp === "courses") {
+              // Attendre que l'iframe soit visible
+              setTimeout(() => {
+                try {
+                  coursesFrame.contentWindow.postMessage({
+                    type: 'REFRESH_DATA'
+                  }, '*');
+                  console.log('✅ Refresh message sent to courses iframe');
+                } catch (e) {
+                  console.error('Error sending refresh message:', e);
+                }
+              }, 100);
+            }
+          }
+        } catch (error) {
+          console.error("Error toggling app:", error);
+        }
+
+        // Re-enable button
+        setTimeout(() => {
+          toggleBtn.disabled = false;
+        }, 300);
+      });
+
+      // Update toggle button appearance
+      function updateToggleButton(app) {
+        if (app === "eat") {
+          toggleText.textContent = "Vers Courses";
+          toggleIcon.textContent = "🛒";
+        } else {
+          toggleText.textContent = "Vers Repas";
+          toggleIcon.textContent = "🍽️";
+        }
+      }
+
+      // Keyboard shortcut: Ctrl/Cmd + Space to toggle
+      document.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey || e.metaKey) && e.code === "Space") {
+          e.preventDefault();
+          toggleBtn.click();
+        }
+      });
+
+      // Log au chargement
+      window.addEventListener('load', () => {
+        console.log('✅ FOOD HOME loaded - postMessage communication ready');
+      });
+
+      // Fonction de déconnexion
+      function logout() {
+        localStorage.removeItem('food_home_logged_in');
+        localStorage.removeItem('food_home_login_time');
+        window.location.href = 'index.html';
+      }
+
+    </script>
+  </body>
+</html>
