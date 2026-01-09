@@ -549,29 +549,48 @@
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
       }
-      // Lock body scroll quand modal ouverte
+      
+     // Lock body scroll pour mobile
       function lockBodyScroll() {
+        const scrollPosition = window.pageYOffset;
         document.body.style.overflow = 'hidden';
-        document.body.style.position = 'fixed';  // Pour iOS
-        document.body.style.width = '100%';     // Pour éviter shift de layout
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollPosition}px`;
+        document.body.style.width = '100%';
+        
+        // Prevent touchmove sur body pour iOS momentum
+        document.body.addEventListener('touchmove', preventTouchMove, { passive: false });
       }
       
       // Unlock body scroll
       function unlockBodyScroll() {
+        const scrollPosition = Math.abs(parseInt(document.body.style.top || '0', 10));
         document.body.style.overflow = '';
         document.body.style.position = '';
+        document.body.style.top = '';
         document.body.style.width = '';
+        window.scrollTo(0, scrollPosition);
+        
+        // Remove listener
+        document.body.removeEventListener('touchmove', preventTouchMove);
       }
       
-      // Dans openRecipeModal(), après modal.classList.add("active");
+      // Prevent touchmove helper
+      function preventTouchMove(e) {
+        e.preventDefault();
+      }
+      
+      // Dans openRecipeModal() et où tu ouvres planningModal :
       lockBodyScroll();
       
-      // Dans closeRecipeModal(), après modal.classList.remove("active");
+      // Dans closeRecipeModal() et closePlanningModal() :
       unlockBodyScroll();
       
-      // Pareil pour planningModal si besoin
-      // Dans generateWeeklyPlanning() ou où tu ouvres planningModal, ajoute lockBodyScroll();
-      // Dans closePlanningModal(), ajoute unlockBodyScroll();
+      // Ajoute aussi pour planningModal si pas déjà
+      btnGenerateWeek.addEventListener("click", () => {
+        generateWeeklyPlanning();
+        lockBodyScroll();  // Si planningModal s'ouvre ici
+      });
     </script>
   </body>
 </html>
