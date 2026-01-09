@@ -2,7 +2,6 @@
    FOOD HOME - APP RECETTES
    Style identique à courses.css
    ============================================ */
-
 body {
   margin: 0;
   background: linear-gradient(
@@ -70,7 +69,7 @@ h1 {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: var(--radius-2xl);
-  box-shadow: 
+  box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.08),
     0 8px 16px rgba(0, 0, 0, 0.04),
     inset 0 1px 0 rgba(255, 255, 255, 0.5);
@@ -110,7 +109,7 @@ h1 {
   backdrop-filter: blur(8px);
   color: var(--text-primary);
   transition: all var(--transition-base);
-  box-shadow: 
+  box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.04),
     inset 0 1px 2px rgba(255, 255, 255, 0.5);
 }
@@ -120,7 +119,7 @@ h1 {
   outline: none;
   border-color: #3b82f6;
   background: white;
-  box-shadow: 
+  box-shadow:
     0 0 0 4px rgba(59, 130, 246, 0.1),
     0 4px 12px rgba(59, 130, 246, 0.15);
   transform: translateY(-1px);
@@ -145,7 +144,7 @@ h1 {
 .btn-primary {
   background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
   color: white;
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(59, 130, 246, 0.25),
     0 2px 6px rgba(14, 165, 233, 0.15);
   position: relative;
@@ -167,7 +166,7 @@ h1 {
 
 .btn-primary:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 6px 20px rgba(59, 130, 246, 0.35),
     0 4px 10px rgba(14, 165, 233, 0.25);
 }
@@ -195,7 +194,7 @@ h1 {
 .btn-accent {
   background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
   color: white;
-  box-shadow: 
+  box-shadow:
     0 4px 12px rgba(139, 92, 246, 0.25),
     0 2px 6px rgba(99, 102, 241, 0.15);
   position: relative;
@@ -217,7 +216,7 @@ h1 {
 
 .btn-accent:hover {
   transform: translateY(-2px);
-  box-shadow: 
+  box-shadow:
     0 6px 20px rgba(139, 92, 246, 0.35),
     0 4px 10px rgba(99, 102, 241, 0.25);
 }
@@ -251,7 +250,7 @@ h1 {
   background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
   border-color: rgba(59, 130, 246, 0.2);
   transform: translateY(-6px);
-  box-shadow: 
+  box-shadow:
     0 12px 32px rgba(59, 130, 246, 0.15),
     0 6px 16px rgba(0, 0, 0, 0.08);
 }
@@ -353,7 +352,7 @@ h1 {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 100vh;
   background: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(4px);
   z-index: 1000;
@@ -376,11 +375,12 @@ h1 {
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 
+  box-shadow:
     0 25px 60px rgba(0, 0, 0, 0.2),
     0 10px 30px rgba(0, 0, 0, 0.15);
   padding: 36px;
   animation: scaleIn 0.3s ease-out;
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-content.large {
