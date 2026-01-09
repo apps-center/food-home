@@ -208,22 +208,25 @@
       // ============================================
       // CHARGEMENT DES RECETTES
       // ============================================
-      async function loadRecipes() {
-        try {
-          const response = await fetch("/api/recipes");
-          const data = await response.json();
-
-          if (data.success) {
-            allRecipes = data.recipes;
-            console.log(`âœ… ${allRecipes.length} recettes chargÃ©es`);
+      function loadRecipes() {
+        resultsDiv.innerHTML = '<div class="loading">Chargement des recettes...</div>';
+        fetch('/recipes.json')  // <-- Ajoute le slash ici !
+          .then(response => {
+            console.log('Fetch status:', response.status);  // Pour debug
+            if (!response.ok) {
+              throw new Error('Fetch failed with status ' + response.status);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('Recipes loaded:', data.length);  // Debug: devrait log 150 ou ce que t'as
+            allRecipes = data;
             filterAndRender();
-          } else {
-            showError("Erreur de chargement des recettes");
-          }
-        } catch (error) {
-          console.error("Erreur:", error);
-          showError("Impossible de charger les recettes");
-        }
+          })
+          .catch(error => {
+            console.error('Erreur chargement recettes:', error);
+            showError('Erreur de chargement des recettes. Veuillez réessayer.');
+          });
       }
 
       // ============================================
