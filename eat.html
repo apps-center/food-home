@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Quel plat ce soir ?</title>
+    <!-- ðŸŽ¨ CSS EXTERNES -->
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/eat.css">
+    <style>
+      /* Toast notification */
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 16px 24px;
+        border-radius: var(--radius-xl);
+        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: var(--font-weight-semibold);
+        animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-out 2.7s forwards;
+      }
+
+      .toast.error {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+      }
+
+      @keyframes slideInRight {
+        from { transform: translateX(400px); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+      }
+
+      @keyframes fadeOut {
+        to { opacity: 0; transform: translateX(400px); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="header">
+        <div class="logo">ðŸ½ï¸</div>
+        <h1>FOOD HOME â€” Recettes</h1>
+        <p class="subtitle">DÃ©couvrez vos recettes favorites</p>
+      </div>
+
+      <!-- Filtres -->
+      <section class="card">
+        <div class="filters-grid">
+          <div class="filter-group">
+            <label for="search">Rechercher</label>
+            <input type="text" id="search" placeholder="Nom du plat..." />
+          </div>
+
+          <div class="filter-group">
+            <label for="type">Type</label>
+            <select id="type">
+              <option value="">Tous types</option>
+              <option value="entree">ðŸ¥— EntrÃ©e</option>
+              <option value="plat">ðŸ› Plat</option>
+              <option value="dessert">ðŸ° Dessert</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="saison">Saison</label>
+            <select id="saison">
+              <option value="">Toutes</option>
+              <option value="printemps">Printemps</option>
+              <option value="ete">Ã‰tÃ©</option>
+              <option value="automne">Automne</option>
+              <option value="hiver">Hiver</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="regime">RÃ©gime</label>
+            <select id="regime">
+              <option value="">Tous</option>
+              <option value="rapide">Rapide</option>
+              <option value="facile">Facile</option>
+              <option value="equilibre">Ã‰quilibrÃ©</option>
+              <option value="vegetarien">VÃ©gÃ©tarien</option>
+              <option value="viande">Viande</option>
+              <option value="poisson">Poisson</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="proteine">ProtÃ©ine</label>
+            <select id="proteine">
+              <option value="">Toutes</option>
+              <option value="volaille">Volaille</option>
+              <option value="viande">Viande</option>
+              <option value="poisson">Poisson</option>
+              <option value="porc">Porc</option>
+              <option value="vegetarien">VÃ©gÃ©tarien</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap">
+          <button class="btn btn-accent" id="btn-generate-week">
+            ðŸ“… GÃ©nÃ©rer planning famille (5 jours)
+          </button>
+          <button class="btn btn-primary" id="btn-random">
+            ðŸŽ² Plat au hasard
+          </button>
+          <button class="btn btn-secondary" id="btn-reset">
+            ðŸ”„ RÃ©initialiser
+          </button>
+        </div>
+      </section>
+
+      <!-- RÃ©sultats -->
+      <div id="results">
+        <div class="loading">Chargement des recettes...</div>
+      </div>
+    </div>
+
+    <!-- Modal dÃ©tail recette -->
+    <div class="modal" id="recipeModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="modal-title"></h2>
+          <button class="btn-close" id="btn-close-modal">Ã—</button>
+        </div>
+
+        <div id="modal-tags" class="tags"></div>
+        <div id="modal-meta" class="recipe-meta"></div>
+
+        <div class="ingredients-list">
+          <h4>ðŸ›’ IngrÃ©dients</h4>
+          <ul id="modal-ingredients"></ul>
+        </div>
+
+        <div class="instructions-list">
+          <h4>ðŸ‘¨â€ðŸ³ PrÃ©paration</h4>
+          <p id="modal-instructions"></p>
+        </div>
+
+        <button class="btn btn-primary" id="btn-add-shopping" style="width: 100%; margin-top: 20px">
+          ðŸ›’ Ajouter Ã  la liste de courses
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal planning semaine -->
+    <div class="modal" id="planningModal">
+      <div class="modal-content large">
+        <div class="modal-header">
+          <h2>ðŸ“… Planning de la semaine</h2>
+          <button class="btn-close" id="btn-close-planning">Ã—</button>
+        </div>
+
+        <div class="alert-info">
+          ðŸ‘¨â€ðŸ‘©â€ðŸ‘§â€ðŸ‘¦ Planning pour une famille de 4 (2 adultes + 2 enfants) - Lundi au Vendredi
+        </div>
+
+        <div class="week-grid" id="weekGrid"></div>
+
+        <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap">
+          <button class="btn btn-primary" id="btn-export-planning">
+            ðŸ›’ Exporter tous les ingrÃ©dients
+          </button>
+          <button class="btn btn-secondary" id="btn-regenerate">
+            ðŸ”„ RÃ©gÃ©nÃ©rer le planning
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ============================================
+      // VARIABLES GLOBALES
+      // ============================================
+      let allRecipes = [];
+      let currentRecipe = null;
+      let weeklyPlanning = {};
+
+      const DAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+      const MEALS = ["dejeuner", "diner"];
+
+      // Elements DOM
+      const searchInput = document.getElementById("search");
+      const typeSelect = document.getElementById("type");
+      const saisonSelect = document.getElementById("saison");
+      const regimeSelect = document.getElementById("regime");
+      const proteineSelect = document.getElementById("proteine");
+      const btnRandom = document.getElementById("btn-random");
+      const btnReset = document.getElementById("btn-reset");
+      const btnGenerateWeek = document.getElementById("btn-generate-week");
+      const resultsDiv = document.getElementById("results");
+      const modal = document.getElementById("recipeModal");
+      const planningModal = document.getElementById("planningModal");
+      const btnCloseModal = document.getElementById("btn-close-modal");
+      const btnClosePlanning = document.getElementById("btn-close-planning");
+      const btnAddToShopping = document.getElementById("btn-add-shopping");
+      const btnExportPlanning = document.getElementById("btn-export-planning");
+      const btnRegenerate = document.getElementById("btn-regenerate");
+      const weekGrid = document.getElementById("weekGrid");
+
+      // ============================================
+      // CHARGEMENT DES RECETTES
+      // ============================================
+      async function loadRecipes() {
+        try {
+          const response = await fetch("/api/recipes");
+          const data = await response.json();
+
+          if (data.success) {
+            allRecipes = data.recipes;
+            console.log(`âœ… ${allRecipes.length} recettes chargÃ©es`);
+            filterAndRender();
+          } else {
+            showError("Erreur de chargement des recettes");
+          }
+        } catch (error) {
+          console.error("Erreur:", error);
+          showError("Impossible de charger les recettes");
+        }
+      }
+
+      // ============================================
+      // FILTRAGE
+      // ============================================
+      function filterRecipes() {
+        const searchTerm = searchInput.value.toLowerCase().trim();
+        const type = typeSelect.value;
+        const saison = saisonSelect.value;
+        const regime = regimeSelect.value;
+        const proteine = proteineSelect.value;
+
+        return allRecipes.filter((recipe) => {
+          // Recherche par nom
+          if (searchTerm && !recipe.nom.toLowerCase().includes(searchTerm)) {
+            return false;
+          }
+
+          // Filtre type
+          if (type && recipe.type_repas !== type) {
+            return false;
+          }
+
+          // Filtre saison
+          if (saison) {
+            const saisons = recipe.saisons.split("|");
+            if (!saisons.includes(saison) && !saisons.includes("toute")) {
+              return false;
+            }
+          }
+
+          // Filtre rÃ©gime
+          if (regime) {
+            const diets = recipe.diets.split("|");
+            if (!diets.includes(regime)) {
+              return false;
+            }
+          }
+
+          // Filtre protÃ©ine
+          if (proteine && recipe.proteine !== proteine) {
+            return false;
+          }
+
+          return true;
+        });
+      }
+
+      function filterAndRender() {
+        const filtered = filterRecipes();
+        renderRecipes(filtered);
+      }
+
+      // ============================================
+      // RENDU DES RECETTES
+      // ============================================
+      function renderRecipes(recipes) {
+        resultsDiv.innerHTML = "";
+
+        if (recipes.length === 0) {
+          resultsDiv.innerHTML =
+            '<div class="empty">ðŸ˜” Aucune recette trouvÃ©e avec ces filtres</div>';
+          return;
+        }
+
+        recipes.forEach((recipe) => {
+          const card = createRecipeCard(recipe);
+          resultsDiv.appendChild(card);
+        });
+      }
+
+      function createRecipeCard(recipe) {
+        const card = document.createElement("article");
+        card.className = "recipe-card";
+        card.onclick = () => openRecipeModal(recipe);
+
+        const saisons = recipe.saisons.split("|").filter((s) => s);
+        const diets = recipe.diets.split("|").filter((d) => d);
+
+        const typeIcon = getTypeIcon(recipe.type_repas);
+
+        card.innerHTML = `
+          <h3>${typeIcon} ${recipe.nom}</h3>
+          <div class="tags">
+            ${saisons.map((s) => `<span class="tag">${s}</span>`).join("")}
+            ${diets
+              .slice(0, 2)
+              .map((d) => `<span class="tag">${d}</span>`)
+              .join("")}
+          </div>
+          <div class="recipe-meta">
+            <span>â±ï¸ ${recipe.temps} min</span>
+            <span>ðŸ¥© ${recipe.proteine}</span>
+            ${recipe.kidsFriendly === "Oui" ? "<span>ðŸ‘¶ Kids</span>" : ""}
+          </div>
+        `;
+
+        return card;
+      }
+
+      function getTypeIcon(type) {
+        const icons = {
+          entree: "ðŸ¥—",
+          plat: "ðŸ›",
+          dessert: "ðŸ°",
+        };
+        return icons[type] || "ðŸ½ï¸";
+      }
+
+      // ============================================
+      // GÃ‰NÃ‰RATEUR DE PLANNING INTELLIGENT
+      // ============================================
+      function generateWeeklyPlanning() {
+        // RÃ©initialiser
+        weeklyPlanning = {};
+
+        // Filtrer les recettes adaptÃ©es aux enfants et plats uniquement
+        const kidsRecipes = allRecipes.filter(
+          (r) => r.kidsFriendly === "Oui" && r.type_repas === "plat"
+        );
+
+        if (kidsRecipes.length < 10) {
+          showToast("Pas assez de recettes adaptÃ©es aux enfants disponibles");
+          return;
+        }
+
+        // SÃ©parer par catÃ©gories
+        const quickRecipes = kidsRecipes.filter(
+          (r) => parseInt(r.temps) <= 30 || r.diets.includes("rapide")
+        );
+        const standardRecipes = kidsRecipes.filter(
+          (r) => parseInt(r.temps) > 30 && parseInt(r.temps) <= 60
+        );
+
+        // Tracker des protÃ©ines utilisÃ©es pour varier
+        const usedProteins = {};
+        const selectedRecipes = [];
+
+        // Fonction pour sÃ©lectionner une recette avec variÃ©tÃ©
+        function selectRecipe(pool, preferQuick = false) {
+          const available = pool.filter(
+            (r) =>
+              !selectedRecipes.includes(r.id) &&
+              (!usedProteins[r.proteine] || usedProteins[r.proteine] < 2)
+          );
+
+          if (available.length === 0)
+            return pool[Math.floor(Math.random() * pool.length)];
+
+          const recipe =
+            available[Math.floor(Math.random() * available.length)];
+          selectedRecipes.push(recipe.id);
+          usedProteins[recipe.proteine] =
+            (usedProteins[recipe.proteine] || 0) + 1;
+          return recipe;
+        }
+
+        // GÃ©nÃ©rer 10 repas (5 jours Ã— 2 repas)
+        DAYS.forEach((day, dayIndex) => {
+          weeklyPlanning[day] = {};
+
+          // DÃ©jeuner : privilÃ©gier les plats rapides
+          weeklyPlanning[day]["dejeuner"] = selectRecipe(
+            quickRecipes.length > 0 ? quickRecipes : kidsRecipes,
+            true
+          );
+
+          // DÃ®ner : mixer rapides et standards
+          const dinnerPool =
+            dayIndex < 3 ? quickRecipes : [...quickRecipes, ...standardRecipes];
+          weeklyPlanning[day]["diner"] = selectRecipe(
+            dinnerPool.length > 0 ? dinnerPool : kidsRecipes
+          );
+        });
+
+        // Afficher le planning
+        renderWeeklyPlanning();
+        planningModal.classList.add("active");
+      }
+
+      function renderWeeklyPlanning() {
+        weekGrid.innerHTML = "";
+
+        DAYS.forEach((day) => {
+          const dayCard = document.createElement("div");
+          dayCard.className = "day-card";
+
+          const dejeunerRecipe = weeklyPlanning[day]?.["dejeuner"];
+          const dinerRecipe = weeklyPlanning[day]?.["diner"];
+
+          dayCard.innerHTML = `
+            <div class="day-name">${day}</div>
+            
+            <div class="meal-slot">
+              <div class="meal-label">â˜€ï¸ DÃ©jeuner</div>
+              <div class="meal-content">
+                ${dejeunerRecipe ? dejeunerRecipe.nom : "Aucune recette"}
+              </div>
+            </div>
+
+            <div class="meal-slot">
+              <div class="meal-label">ðŸŒ™ DÃ®ner</div>
+              <div class="meal-content">
+                ${dinerRecipe ? dinerRecipe.nom : "Aucune recette"}
+              </div>
+            </div>
+          `;
+
+          weekGrid.appendChild(dayCard);
+        });
+      }
+
+      async function exportPlanningToShoppingList() {
+        const allIngredients = new Set();
+
+        DAYS.forEach((day) => {
+          ["dejeuner", "diner"].forEach((meal) => {
+            const recipe = weeklyPlanning[day]?.[meal];
+            if (recipe) {
+              recipe.ingredients.split("|").forEach((ing) => {
+                if (ing.trim()) allIngredients.add(ing.trim());
+              });
+            }
+          });
+        });
+
+        if (allIngredients.size === 0) {
+          showToast("Aucun ingrÃ©dient Ã  exporter");
+          return;
+        }
+
+        try {
+          const response = await fetch("/api/add_to_shopping_list", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ items: Array.from(allIngredients) }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            showToast(
+              `âœ… ${data.added_count} ingrÃ©dient(s) ajoutÃ©(s) Ã  la liste de courses pour toute la semaine !`
+            );
+          } else {
+            showToast("âŒ Erreur lors de l'export");
+          }
+        } catch (error) {
+          console.error("Erreur:", error);
+          showToast("âŒ Erreur lors de l'export");
+        }
+      }
+
+      // ============================================
+      // MODAL RECETTE
+      // ============================================
+      function openRecipeModal(recipe) {
+        currentRecipe = recipe;
+
+        document.getElementById("modal-title").textContent = recipe.nom;
+
+        // Tags
+        const saisons = recipe.saisons.split("|").filter((s) => s);
+        const diets = recipe.diets.split("|").filter((d) => d);
+        document.getElementById("modal-tags").innerHTML = `
+          ${saisons.map((s) => `<span class="tag">${s}</span>`).join("")}
+          ${diets.map((d) => `<span class="tag">${d}</span>`).join("")}
+        `;
+
+        // Meta
+        const typeIcon = getTypeIcon(recipe.type_repas);
+        document.getElementById("modal-meta").innerHTML = `
+          <span>${typeIcon} ${recipe.type_repas || "Plat"}</span>
+          <span>â±ï¸ ${recipe.temps} min</span>
+          <span>ðŸ¥© ${recipe.proteine}</span>
+          ${
+            recipe.kidsFriendly === "Oui"
+              ? "<span>ðŸ‘¶ AdaptÃ© enfants</span>"
+              : ""
+          }
+        `;
+
+        // IngrÃ©dients
+        const ingredients = recipe.ingredients
+          .split("|")
+          .filter((i) => i.trim());
+        document.getElementById("modal-ingredients").innerHTML = ingredients
+          .map((ing) => `<li>${ing}</li>`)
+          .join("");
+
+        // Instructions
+        document.getElementById("modal-instructions").textContent =
+          recipe.instructions;
+
+        modal.classList.add("active");
+      }
+
+      function closeRecipeModal() {
+        modal.classList.remove("active");
+        currentRecipe = null;
+      }
+
+      function closePlanningModal() {
+        planningModal.classList.remove("active");
+      }
+
+      // ============================================
+      // AJOUT Ã€ LA LISTE DE COURSES
+      // ============================================
+      async function addToShoppingList() {
+        if (!currentRecipe) return;
+
+        const ingredients = currentRecipe.ingredients
+          .split("|")
+          .filter((i) => i.trim());
+
+        try {
+          const response = await fetch("/api/add_to_shopping_list", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ items: ingredients }),
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            showToast(`âœ… ${data.added_count} ingrÃ©dient(s) ajoutÃ©(s) !`);
+          } else {
+            showToast("âŒ Erreur lors de l'ajout");
+          }
+        } catch (error) {
+          console.error("Erreur:", error);
+          showToast("âŒ Erreur lors de l'ajout");
+        }
+      }
+
+      // ============================================
+      // PLAT AU HASARD
+      // ============================================
+      function showRandomRecipe() {
+        if (allRecipes.length === 0) return;
+
+        const randomIndex = Math.floor(Math.random() * allRecipes.length);
+        openRecipeModal(allRecipes[randomIndex]);
+      }
+
+      // ============================================
+      // RESET FILTRES
+      // ============================================
+      function resetFilters() {
+        searchInput.value = "";
+        typeSelect.value = "";
+        saisonSelect.value = "";
+        regimeSelect.value = "";
+        proteineSelect.value = "";
+        filterAndRender();
+      }
+
+      // ============================================
+      // ERROR
+      // ============================================
+      function showError(message) {
+        resultsDiv.innerHTML = `<div class="empty">âŒ ${message}</div>`;
+      }
+
+      // ============================================
+      // EVENT LISTENERS
+      // ============================================
+      searchInput.addEventListener("input", filterAndRender);
+      typeSelect.addEventListener("change", filterAndRender);
+      saisonSelect.addEventListener("change", filterAndRender);
+      regimeSelect.addEventListener("change", filterAndRender);
+      proteineSelect.addEventListener("change", filterAndRender);
+      btnRandom.addEventListener("click", showRandomRecipe);
+      btnReset.addEventListener("click", resetFilters);
+      btnGenerateWeek.addEventListener("click", generateWeeklyPlanning);
+      btnRegenerate.addEventListener("click", generateWeeklyPlanning);
+      btnExportPlanning.addEventListener("click", exportPlanningToShoppingList);
+      btnCloseModal.addEventListener("click", closeRecipeModal);
+      btnClosePlanning.addEventListener("click", closePlanningModal);
+      btnAddToShopping.addEventListener("click", addToShoppingList);
+
+      // Fermer modal en cliquant Ã  l'extÃ©rieur
+      modal.addEventListener("click", (e) => {
+        if (e.target === modal) closeRecipeModal();
+      });
+
+      planningModal.addEventListener("click", (e) => {
+        if (e.target === planningModal) closePlanningModal();
+      });
+
+      // Fermer modal avec Escape
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          if (modal.classList.contains("active")) closeRecipeModal();
+          if (planningModal.classList.contains("active")) closePlanningModal();
+        }
+      });
+
+      // ============================================
+      // ============================================
+      // INIT
+      // ============================================
+      loadRecipes();
+      // ============================================
+      // TOAST NOTIFICATION (remplace alert)
+      // ============================================
+      function showToast(message, type = "success") {
+        const oldToast = document.querySelector(".toast");
+        if (oldToast) oldToast.remove();
+
+        const toast = document.createElement("div");
+        toast.className = `toast ${type === "error" ? "error" : ""}`;
+        
+        const icon = type === "error" ? "âŒ" : "âœ…";
+        toast.innerHTML = `<span style="font-size: 24px;">${icon}</span><span>${message}</span>`;
+        
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+
+    </script>
+  </body>
+</html>
