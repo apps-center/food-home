@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>FOOD HOME — Listes de courses</title>
-    <link rel="stylesheet" href="css/common.css" />
-    <link rel="stylesheet" href="css/courses.css" />
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/courses.css" />
     <style>
       /* 🎨 COULEURS NUTRITIONNELLES - Styles dynamiques */
       .category-btn[data-color="blue"] {
@@ -15,7 +15,6 @@
       .category-btn[data-color="blue"]:hover {
         background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
       }
-
       .category-btn[data-color="orange"] {
         background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
         border: 2px solid rgba(249, 115, 22, 0.3);
@@ -23,7 +22,6 @@
       .category-btn[data-color="orange"]:hover {
         background: linear-gradient(135deg, #fdba74 0%, #fb923c 100%);
       }
-
       .category-btn[data-color="green"] {
         background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
         border: 2px solid rgba(16, 185, 129, 0.3);
@@ -31,7 +29,6 @@
       .category-btn[data-color="green"]:hover {
         background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
       }
-
       .category-btn[data-color="yellow"] {
         background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
         border: 2px solid rgba(245, 158, 11, 0.3);
@@ -39,7 +36,6 @@
       .category-btn[data-color="yellow"]:hover {
         background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
       }
-
       .category-btn[data-color="pink"] {
         background: linear-gradient(135deg, #fecdd3 0%, #fda4af 100%);
         border: 2px solid rgba(244, 63, 94, 0.3);
@@ -47,7 +43,6 @@
       .category-btn[data-color="pink"]:hover {
         background: linear-gradient(135deg, #fda4af 0%, #fb7185 100%);
       }
-
       .category-btn[data-color="gray"] {
         background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
         border: 2px solid rgba(107, 114, 128, 0.2);
@@ -55,7 +50,6 @@
       .category-btn[data-color="gray"]:hover {
         background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
       }
-
       /* Indicateur nutritionnel */
       .nutrition-indicator {
         font-size: 10px;
@@ -63,7 +57,6 @@
         margin-top: 4px;
         font-weight: var(--font-weight-medium);
       }
-
       /* Toggle vues */
       .view-toggle {
         display: flex;
@@ -71,7 +64,6 @@
         margin-bottom: 24px;
         justify-content: center;
       }
-
       .toggle-btn {
         padding: 12px 28px;
         background: rgba(255, 255, 255, 0.9);
@@ -82,13 +74,11 @@
         font-weight: var(--font-weight-semibold);
         font-size: 15px;
       }
-
       .toggle-btn.active {
         background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
         color: white;
         border-color: transparent;
       }
-
       /* Grille de catégories */
       .categories-grid {
         display: grid;
@@ -96,7 +86,6 @@
         gap: 16px;
         margin-bottom: 24px;
       }
-
       .category-btn {
         border-radius: var(--radius-xl);
         padding: 24px 16px;
@@ -105,24 +94,20 @@
         text-align: center;
         position: relative;
       }
-
       .category-btn:hover {
         transform: translateY(-4px);
         box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
       }
-
       .category-btn .icon {
         font-size: 40px;
         display: block;
         margin-bottom: 8px;
       }
-
       .category-btn .name {
         font-weight: var(--font-weight-bold);
         font-size: 14px;
         color: var(--text-primary);
       }
-
       .category-btn .badge {
         position: absolute;
         top: 12px;
@@ -134,7 +119,6 @@
         font-size: 12px;
         font-weight: var(--font-weight-bold);
       }
-
       /* Drawer (tiroir latéral) */
       .drawer-backdrop {
         position: fixed;
@@ -147,12 +131,10 @@
         z-index: 999;
         display: none;
       }
-
       .drawer-backdrop.active {
         display: block;
         animation: fadeIn 0.2s ease-out;
       }
-
       .drawer {
         position: fixed;
         top: 0;
@@ -168,11 +150,9 @@
         transform: translateX(100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
-
       .drawer.active {
         transform: translateX(0);
       }
-
       .drawer-header {
         padding: 24px;
         border-bottom: 2px solid rgba(59, 130, 246, 0.1);
@@ -182,7 +162,6 @@
         background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
         flex-shrink: 0; /* Empêcher le header de se comprimer */
       }
-
       .drawer-header h2 {
         margin: 0;
         font-size: 24px;
@@ -190,7 +169,6 @@
         align-items: center;
         gap: 12px;
       }
-
       .drawer-close {
         background: rgba(239, 68, 68, 0.1);
         border: none;
@@ -202,12 +180,10 @@
         color: #dc2626;
         transition: all var(--transition-fast);
       }
-
       .drawer-close:hover {
         background: rgba(239, 68, 68, 0.2);
         transform: rotate(90deg);
       }
-
       .drawer-body {
         flex: 1;
         overflow-y: auto;
@@ -216,7 +192,6 @@
         -webkit-overflow-scrolling: touch; /* Smooth scroll sur iOS */
         min-height: 0; /* Important pour flex */
       }
-
       .drawer-footer {
         padding: 20px 24px;
         border-top: 2px solid rgba(59, 130, 246, 0.1);
@@ -225,12 +200,10 @@
         background: rgba(240, 249, 255, 0.5);
         flex-shrink: 0; /* Empêcher le footer de se comprimer */
       }
-
       /* Items avec checkbox */
       .item-group {
         margin-bottom: 24px;
       }
-
       .item-group-title {
         font-size: 15px;
         font-weight: var(--font-weight-bold);
@@ -239,7 +212,6 @@
         padding-left: 8px;
         border-left: 3px solid #0ea5e9;
       }
-
       .checkbox-item {
         display: flex;
         align-items: center;
@@ -250,41 +222,33 @@
         margin-bottom: 8px;
         transition: all var(--transition-fast);
       }
-
       .checkbox-item:hover {
         background: rgba(224, 242, 254, 0.8);
         transform: translateX(4px);
       }
-
       .checkbox-item input[type="checkbox"] {
         width: 20px;
         height: 20px;
         cursor: pointer;
       }
-
       .checkbox-item label {
         flex: 1;
         cursor: pointer;
         font-size: 15px;
       }
-
       .checkbox-item.checked {
         opacity: 0.5;
       }
-
       .checkbox-item.checked label {
         text-decoration: line-through;
       }
-
       /* Vue liste courses */
       .shopping-view {
         display: none;
       }
-
       .shopping-view.active {
         display: block;
       }
-
       .shopping-category {
         background: rgba(255, 255, 255, 0.95);
         border: 1px solid rgba(59, 130, 246, 0.1);
@@ -292,7 +256,6 @@
         padding: 20px;
         margin-bottom: 16px;
       }
-
       .shopping-category-header {
         display: flex;
         align-items: center;
@@ -304,7 +267,6 @@
         padding-bottom: 12px;
         border-bottom: 2px solid rgba(14, 165, 233, 0.2);
       }
-
       .shopping-item {
         display: flex;
         align-items: center;
@@ -314,26 +276,21 @@
         border-radius: var(--radius-md);
         margin-bottom: 8px;
       }
-
       .shopping-item input[type="checkbox"] {
         width: 22px;
         height: 22px;
       }
-
       .shopping-item.checked {
         opacity: 0.5;
       }
-
       .shopping-item.checked label {
         text-decoration: line-through;
       }
-
       .empty-state {
         text-align: center;
         padding: 60px 20px;
         color: var(--text-muted);
       }
-
       .empty-state::before {
         content: "🛒";
         display: block;
@@ -341,17 +298,14 @@
         margin-bottom: 16px;
         opacity: 0.6;
       }
-
       .categories-view,
       .shopping-view {
         display: none;
       }
-
       .categories-view.active,
       .shopping-view.active {
         display: block;
       }
-
       /* Info nutritionnelle */
       .nutrition-info {
         background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
@@ -365,56 +319,45 @@
         align-items: center;
         gap: 12px;
       }
-
       .nutrition-info-icon {
         font-size: 28px;
       }
-
       @media (max-width: 768px) {
         .drawer {
           width: 100%;
           max-width: 100%;
         }
-
         .categories-grid {
           grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
           gap: 12px;
         }
-
         .category-btn {
           padding: 20px 12px;
         }
-
         .category-btn .icon {
           font-size: 32px;
         }
-
         /* 🔧 FIX MOBILE : Assurer que le drawer prend toute la hauteur */
         .drawer {
           height: 100vh;
           height: 100dvh; /* Dynamic viewport height pour iOS */
         }
-
         .drawer-header {
           padding: 16px 20px;
         }
-
         .drawer-header h2 {
           font-size: 20px;
         }
-
         .drawer-body {
           padding: 20px;
           /* Calculer la hauteur disponible */
           max-height: calc(100vh - 160px); /* 100vh - header - footer */
           max-height: calc(100dvh - 160px); /* Pour iOS */
         }
-
         .drawer-footer {
           padding: 16px 20px;
         }
       }
-
       /* 🎨 Toast notification moderne */
       .toast {
         position: fixed;
@@ -432,21 +375,17 @@
         font-weight: var(--font-weight-semibold);
         animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-out 2.7s forwards;
       }
-
       .toast.error {
         background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
       }
-
       @keyframes slideInRight {
         from { transform: translateX(400px); opacity: 0; }
         to { transform: translateX(0); opacity: 1; }
       }
-
       @keyframes fadeOut {
         to { opacity: 0; transform: translateX(400px); }
       }
-
       /* 🎨 Modal de confirmation moderne */
       .confirm-modal {
         position: fixed;
@@ -462,12 +401,10 @@
         justify-content: center;
         padding: 20px;
       }
-
       .confirm-modal.active {
         display: flex;
         animation: fadeIn 0.2s ease-out;
       }
-
       .confirm-content {
         background: white;
         border-radius: var(--radius-2xl);
@@ -477,26 +414,22 @@
         box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
         animation: scaleIn 0.3s ease-out;
       }
-
       .confirm-title {
         font-size: 20px;
         font-weight: var(--font-weight-bold);
         margin-bottom: 12px;
         color: var(--text-primary);
       }
-
       .confirm-message {
         font-size: 15px;
         color: var(--text-secondary);
         margin-bottom: 24px;
         line-height: 1.5;
       }
-
       .confirm-buttons {
         display: flex;
         gap: 12px;
       }
-
       .confirm-btn {
         flex: 1;
         padding: 12px 24px;
@@ -507,29 +440,24 @@
         cursor: pointer;
         transition: all var(--transition-base);
       }
-
       .confirm-btn-primary {
         background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         color: white;
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
       }
-
       .confirm-btn-primary:hover {
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
       }
-
       .confirm-btn-secondary {
         background: rgba(255, 255, 255, 0.9);
         border: 2px solid rgba(0, 0, 0, 0.1);
         color: var(--text-primary);
       }
-
       .confirm-btn-secondary:hover {
         background: white;
         border-color: rgba(0, 0, 0, 0.2);
       }
-
     </style>
   </head>
   <body>
@@ -539,7 +467,6 @@
         <h1>FOOD HOME — Listes de courses</h1>
         <p class="subtitle">Sélectionne tes catégories et coche tes produits</p>
       </div>
-
       <div class="card">
         <!-- Toggle vues -->
         <div class="view-toggle">
@@ -550,17 +477,14 @@
             📋 Liste courses
           </button>
         </div>
-
         <!-- VUE CATÉGORIES -->
         <div id="categoriesView" class="categories-view active">
           <div class="categories-grid" id="categoriesGrid"></div>
         </div>
-
         <!-- VUE LISTE COURSES -->
         <div id="shoppingView" class="shopping-view">
           <div id="shoppingList"></div>
         </div>
-
         <!-- Actions -->
         <div class="actions">
           <button class="btn btn-primary" onclick="exportList()">
@@ -572,10 +496,8 @@
         </div>
       </div>
     </div>
-
     <!-- Backdrop -->
     <div id="backdrop" class="drawer-backdrop" onclick="closeDrawer()"></div>
-
     <!-- Drawer dynamique -->
     <div id="drawer" class="drawer">
       <div class="drawer-header">
@@ -592,39 +514,35 @@
         </button>
       </div>
     </div>
-
     <script>
       // 🎨 TOAST MODERNE
       function showToast(message, type = 'success') {
         const oldToast = document.querySelector('.toast');
         if (oldToast) oldToast.remove();
-
         const toast = document.createElement('div');
         toast.className = `toast ${type === 'error' ? 'error' : ''}`;
-        
+       
         const icon = type === 'error' ? '❌' : '✅';
         toast.innerHTML = `<span style="font-size: 24px;">${icon}</span><span>${message}</span>`;
-        
+       
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
       }
-
       // 🎨 CONFIRMATION MODERNE
       let confirmCallback = null;
-      
+     
       function showConfirm(title, message, onConfirm) {
         const modal = document.getElementById('confirmModal');
         const titleEl = document.getElementById('confirmTitle');
         const messageEl = document.getElementById('confirmMessage');
         const confirmBtn = document.getElementById('confirmBtn');
-
         titleEl.textContent = title;
         messageEl.textContent = message;
-        
+       
         confirmCallback = onConfirm;
-        
+       
         modal.classList.add('active');
-        
+       
         confirmBtn.onclick = () => {
           modal.classList.remove('active');
           if (confirmCallback) {
@@ -633,12 +551,10 @@
           }
         };
       }
-
       function cancelConfirm() {
         document.getElementById('confirmModal').classList.remove('active');
         confirmCallback = null;
       }
-
       // Fermer la modal en cliquant à l'extérieur
       window.addEventListener('click', (e) => {
         const modal = document.getElementById('confirmModal');
@@ -646,18 +562,15 @@
           cancelConfirm();
         }
       });
-
-
       // 🎨 COULEURS PYRAMIDE ALIMENTAIRE
       const NUTRITION_COLORS = {
-        blue: 'blue',    // Base - Hydratation
+        blue: 'blue', // Base - Hydratation
         orange: 'orange', // Céréales & Féculents
-        green: 'green',   // Fruits & Légumes
+        green: 'green', // Fruits & Légumes
         yellow: 'yellow', // Protéines & Laitiers
-        pink: 'pink',     // À limiter
-        gray: 'gray'      // Hors pyramide
+        pink: 'pink', // À limiter
+        gray: 'gray' // Hors pyramide
       };
-
       // Définition des catégories avec couleurs nutritionnelles
       const CATEGORIES = {
         // PYRAMIDE ALIMENTAIRE
@@ -739,7 +652,6 @@
           nutritionLevel: '🟥 À limiter',
           items: ["Gâteaux", "Bonbons", "Chocolats", "Nutella", "Confiture", "Miel", "Sirop d'érable", "Biscuits", "Glaces", "Compote"],
         },
-
         // AUTRES CATÉGORIES
         condiments: {
           icon: "🧂",
@@ -780,6 +692,7 @@
             "Jambon Herta",
             "Cordons bleus",
             "Nuggets",
+            "Cordons bleus",
             "Crèmes desserts",
             "Corn flakes",
             "Biscottes",
@@ -880,11 +793,9 @@
           items: [],
         },
       };
-
       // État
       let selections = {};
       let currentCategory = null;
-
       // Init
       function init() {
         Object.keys(CATEGORIES).forEach((key) => {
@@ -898,24 +809,21 @@
             });
           }
         });
-
         renderCategories();
         loadFromLocalStorage();
       }
-
       // Render grille catégories avec couleurs
       function renderCategories() {
         const grid = document.getElementById("categoriesGrid");
         const sorted = Object.entries(CATEGORIES).sort(
           (a, b) => a[1].order - b[1].order
         );
-
         grid.innerHTML = sorted
           .map(([key, cat]) => {
             const count = Object.values(selections[key]).filter((v) => v).length;
             const colorAttr = cat.color ? `data-color="${cat.color}"` : '';
             const nutritionLabel = cat.nutritionLevel || '';
-            
+           
             return `
               <div class="category-btn" ${colorAttr} onclick="openDrawer('${key}')">
                 ${count > 0 ? `<div class="badge">${count}</div>` : ""}
@@ -927,23 +835,19 @@
           })
           .join("");
       }
-
       // Ouvrir drawer
       function openDrawer(categoryKey) {
         currentCategory = categoryKey;
         const cat = CATEGORIES[categoryKey];
-
         document.getElementById("drawerTitle").innerHTML = `${cat.icon} ${cat.name}`;
-
         let html = "";
-
         if (cat.items) {
           html = cat.items
             .map(
               (item) => `
                 <div class="checkbox-item ${selections[categoryKey][item] ? "checked" : ""}">
-                  <input type="checkbox" 
-                         id="item-${item}" 
+                  <input type="checkbox"
+                         id="item-${item}"
                          ${selections[categoryKey][item] ? "checked" : ""}
                          onchange="toggleItem('${categoryKey}', '${item}')">
                   <label for="item-${item}">${item}</label>
@@ -961,8 +865,8 @@
                     .map(
                       (item) => `
                       <div class="checkbox-item ${selections[categoryKey][item] ? "checked" : ""}">
-                        <input type="checkbox" 
-                               id="item-${item}" 
+                        <input type="checkbox"
+                               id="item-${item}"
                                ${selections[categoryKey][item] ? "checked" : ""}
                                onchange="toggleItem('${categoryKey}', '${item}')">
                         <label for="item-${item}">${item}</label>
@@ -975,31 +879,26 @@
             )
             .join("");
         }
-
         document.getElementById("drawerBody").innerHTML = html;
         document.getElementById("drawer").classList.add("active");
         document.getElementById("backdrop").classList.add("active");
       }
-
       function closeDrawer() {
         document.getElementById("drawer").classList.remove("active");
         document.getElementById("backdrop").classList.remove("active");
         renderCategories();
       }
-
       function toggleItem(category, item) {
         selections[category][item] = !selections[category][item];
         const checkbox = document.getElementById(`item-${item}`);
         const parent = checkbox.closest(".checkbox-item");
         parent.classList.toggle("checked");
       }
-
       function saveDrawer() {
         saveToLocalStorage();
         closeDrawer();
         showToast('✅ Sauvegardé !');
       }
-
       function clearDrawer() {
         showConfirm(
           '🗑️ Vider la catégorie',
@@ -1013,10 +912,8 @@
           }
         );
       }
-
       function switchView(view) {
         document.querySelectorAll(".toggle-btn").forEach((btn) => btn.classList.remove("active"));
-
         if (view === "categories") {
           document.querySelector(".toggle-btn:first-child").classList.add("active");
           document.getElementById("categoriesView").classList.add("active");
@@ -1028,26 +925,21 @@
           renderShoppingList();
         }
       }
-
       function renderShoppingList() {
         const container = document.getElementById("shoppingList");
         const hasItems = Object.values(selections).some((cat) =>
           Object.values(cat).some((v) => v)
         );
-
         if (!hasItems) {
           container.innerHTML =
             '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
           return;
         }
-
         let html = "";
-
         Object.entries(CATEGORIES)
           .sort((a, b) => a[1].order - b[1].order)
           .forEach(([key, cat]) => {
             const selected = Object.entries(selections[key]).filter(([_, checked]) => checked);
-
             if (selected.length > 0) {
               html += `
                 <div class="shopping-category">
@@ -1059,7 +951,7 @@
                     .map(
                       ([item, _]) => `
                       <div class="shopping-item">
-                        <input type="checkbox" 
+                        <input type="checkbox"
                                id="shop-${key}-${item}"
                                onchange="toggleShopItem('${key}', '${item}')">
                         <label for="shop-${key}-${item}">${item}</label>
@@ -1071,24 +963,19 @@
               `;
             }
           });
-
         container.innerHTML = html;
       }
-
       function toggleShopItem(category, item) {
         const checkbox = document.getElementById(`shop-${category}-${item}`);
         const parent = checkbox.closest(".shopping-item");
         parent.classList.toggle("checked");
       }
-
       function exportList() {
         let text = "📋 LISTE DE COURSES\n\n";
-
         Object.entries(CATEGORIES)
           .sort((a, b) => a[1].order - b[1].order)
           .forEach(([key, cat]) => {
             const selected = Object.entries(selections[key]).filter(([_, checked]) => checked);
-
             if (selected.length > 0) {
               text += `\n${cat.icon} ${cat.name.toUpperCase()}\n`;
               selected.forEach(([item, _]) => {
@@ -1096,11 +983,9 @@
               });
             }
           });
-
         navigator.clipboard.writeText(text);
         showToast("✅ Liste copiée dans le presse-papier !");
       }
-
       function clearAll() {
         showConfirm(
           '🗑️ Tout effacer',
@@ -1111,20 +996,18 @@
                 selections[cat][item] = false;
               });
             });
-
             renderCategories();
-            
+           
             // Rafraîchir immédiatement l'affichage
             if (document.getElementById("shoppingView").classList.contains("active")) {
               renderShoppingList();
             }
-            
+           
             saveToLocalStorage();
             showToast('Liste de courses effacée');
           }
         );
       }
-
       function loadFromLocalStorage() {
         try {
           // Charger les sélections
@@ -1134,12 +1017,12 @@
             Object.assign(selections, loaded);
             console.log('📥 Sélections chargées depuis localStorage');
           }
-          
+         
           // Charger les items de la liste (depuis eat.html)
           const shoppingList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
           if (shoppingList.length > 0) {
             console.log(`📥 ${shoppingList.length} items depuis eat.html`);
-            
+           
             shoppingList.forEach((item) => {
               if (!CATEGORIES.autres.items.includes(item)) {
                 CATEGORIES.autres.items.push(item);
@@ -1147,19 +1030,17 @@
               }
             });
           }
-
           renderCategories();
         } catch (error) {
           console.error("Erreur chargement localStorage:", error);
           renderCategories();
         }
       }
-
       function saveToLocalStorage() {
         try {
           // Sauvegarder les sélections
           localStorage.setItem('food_home_selections', JSON.stringify(selections));
-          
+         
           // Sauvegarder aussi la liste complète
           const allItems = [];
           Object.entries(selections).forEach(([cat, items]) => {
@@ -1167,34 +1048,31 @@
               if (checked) allItems.push(item);
             });
           });
-          
+         
           localStorage.setItem('food_home_shopping_list', JSON.stringify(allItems));
           console.log('💾 Sauvegardé dans localStorage');
         } catch (error) {
           console.error("Erreur sauvegarde:", error);
         }
       }
-
       // 🎯 ÉCOUTER LES MESSAGES postMessage POUR RAFRAÎCHIR SANS RELOAD
       window.addEventListener('message', (event) => {
         const { type } = event.data || {};
-        
+       
         if (type === 'REFRESH_DATA' || type === 'SHOPPING_LIST_UPDATED') {
           console.log('🔄 Received refresh message, reloading...');
-          
+         
           // Rafraîchir depuis localStorage
           loadFromLocalStorage();
-          
+         
           // Si on est sur la vue shopping, rafraîchir aussi
           if (document.getElementById("shoppingView").classList.contains("active")) {
             renderShoppingList();
           }
         }
       });
-
       window.addEventListener("DOMContentLoaded", init);
     </script>
-
     <!-- 🎨 Modal de confirmation moderne -->
     <div id="confirmModal" class="confirm-modal">
       <div class="confirm-content">
@@ -1210,6 +1088,5 @@
         </div>
       </div>
     </div>
-
   </body>
 </html>
