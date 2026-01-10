@@ -516,335 +516,363 @@
     </div>
     <script>
       // 🎨 TOAST MODERNE
-      function showToast(message, type = 'success') {
-        const oldToast = document.querySelector('.toast');
-        if (oldToast) oldToast.remove();
-        const toast = document.createElement('div');
-        toast.className = `toast ${type === 'error' ? 'error' : ''}`;
-       
-        const icon = type === 'error' ? '❌' : '✅';
-        toast.innerHTML = `<span style="font-size: 24px;">${icon}</span><span>${message}</span>`;
-       
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-      }
-      // 🎨 CONFIRMATION MODERNE
-      let confirmCallback = null;
-     
-      function showConfirm(title, message, onConfirm) {
-        const modal = document.getElementById('confirmModal');
-        const titleEl = document.getElementById('confirmTitle');
-        const messageEl = document.getElementById('confirmMessage');
-        const confirmBtn = document.getElementById('confirmBtn');
-        titleEl.textContent = title;
-        messageEl.textContent = message;
-       
-        confirmCallback = onConfirm;
-       
-        modal.classList.add('active');
-       
-        confirmBtn.onclick = () => {
-          modal.classList.remove('active');
-          if (confirmCallback) {
-            confirmCallback();
-            confirmCallback = null;
-          }
-        };
-      }
-      function cancelConfirm() {
-        document.getElementById('confirmModal').classList.remove('active');
-        confirmCallback = null;
-      }
-      // Fermer la modal en cliquant à l'extérieur
-      window.addEventListener('click', (e) => {
-        const modal = document.getElementById('confirmModal');
-        if (e.target === modal) {
-          cancelConfirm();
-        }
+function showToast(message, type = 'success') {
+  const oldToast = document.querySelector('.toast');
+  if (oldToast) oldToast.remove();
+  const toast = document.createElement('div');
+  toast.className = `toast ${type === 'error' ? 'error' : ''}`;
+  
+  const icon = type === 'error' ? '❌' : '✅';
+  toast.innerHTML = `<span style="font-size: 24px;">${icon}</span><span>${message}</span>`;
+  
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// 🎨 CONFIRMATION MODERNE
+let confirmCallback = null;
+
+function showConfirm(title, message, onConfirm) {
+  const modal = document.getElementById('confirmModal');
+  const titleEl = document.getElementById('confirmTitle');
+  const messageEl = document.getElementById('confirmMessage');
+  const confirmBtn = document.getElementById('confirmBtn');
+  titleEl.textContent = title;
+  messageEl.textContent = message;
+
+  confirmCallback = onConfirm;
+
+  modal.classList.add('active');
+
+  confirmBtn.onclick = () => {
+    modal.classList.remove('active');
+    if (confirmCallback) {
+      confirmCallback();
+      confirmCallback = null;
+    }
+  };
+}
+
+function cancelConfirm() {
+  document.getElementById('confirmModal').classList.remove('active');
+  confirmCallback = null;
+}
+
+// Fermer la modal en cliquant à l'extérieur
+window.addEventListener('click', (e) => {
+  const modal = document.getElementById('confirmModal');
+  if (e.target === modal) {
+    cancelConfirm();
+  }
+});
+
+// 🎨 COULEURS PYRAMIDE ALIMENTAIRE
+const NUTRITION_COLORS = {
+  blue: 'blue', // Base - Hydratation
+  orange: 'orange', // Céréales & Féculents
+  green: 'green', // Fruits & Légumes
+  yellow: 'yellow', // Protéines & Laitiers
+  pink: 'pink', // À limiter
+  gray: 'gray' // Hors pyramide
+};
+
+// Définition des catégories avec couleurs nutritionnelles
+const CATEGORIES = {
+  // PYRAMIDE ALIMENTAIRE
+  boissons: {
+    icon: "💧",
+    name: "Boissons",
+    order: 1,
+    color: 'blue',
+    nutritionLevel: '🟦 Base - À volonté',
+    items: ["Eau", "Sanpellegrino", "Jus", "Lait", "Thé", "Café", "Tisanes", "Sirop", "Coca / Soda"],
+  },
+  cereales: {
+    icon: "🌾",
+    name: "Céréales & Féculents",
+    order: 2,
+    color: 'orange',
+    nutritionLevel: '🟧 1 portion/repas',
+    items: ["Pâtes", "Semoule", "Riz", "Blé", "Pain", "Quinoa", "Boulgour", "Couscous", "Lentilles corail", "Haricots secs", "Pois chiches"],
+  },
+  fruits: {
+    icon: "🍎",
+    name: "Fruits & Légumes",
+    order: 3,
+    priority: true,
+    color: 'green',
+    nutritionLevel: '🟩 5 portions/jour',
+    groups: {
+      Fruits: ["Pommes", "Bananes", "Noix", "Abricots", "Oranges", "Poires", "Raisins", "Fraises", "Kiwis", "Fruits secs"],
+      Légumes: ["Tomates", "Betteraves", "Salade", "Carottes", "Courgettes", "Brocolis", "Choux", "Poivrons", "Concombres", "Oignons", "Ail"],
+    },
+  },
+  laitiers: {
+    icon: "🥛",
+    name: "Produits laitiers",
+    order: 4,
+    color: 'yellow',
+    nutritionLevel: '🟨 1 produit/repas',
+    items: [
+      "Fromages",
+      "Yaourts",
+      "Fromage blanc",
+      "Fromage râpé",
+      "Skyr",
+      "Lait",
+      "Beurre",
+      "Crème liquide",
+      "Crème fraîche",
+      "Mascarpone",
+      "Philadelphia",
+      "Parmesan",
+      "Emmental",
+    ],
+  },
+  proteines: {
+    icon: "🍖",
+    name: "Protéines",
+    order: 5,
+    color: 'yellow',
+    nutritionLevel: '🟨 2 portions/jour',
+    groups: {
+      Viandes: ["Bœuf", "Porc", "Veau", "Poulet", "Agneau", "Canard", "Steak haché"],
+      Poissons: ["Cabillaud", "Thon", "Truite", "Saumon", "Sardines", "Maquereau", "Crevettes", "Moules"],
+      Autres: ["Œufs", "Tofu"],
+    },
+  },
+  graisses: {
+    icon: "🧈",
+    name: "Matières grasses",
+    order: 6,
+    color: 'pink',
+    nutritionLevel: '🟥 À limiter',
+    items: ["Huile olive", "Huile colza", "Beurre", "Margarine", "Huile tournesol", "Huile noix", "Huile coco"],
+  },
+  sucres: {
+    icon: "🍬",
+    name: "Sucreries",
+    order: 7,
+    color: 'pink',
+    nutritionLevel: '🟥 À limiter',
+    items: ["Gâteaux", "Bonbons", "Chocolats", "Nutella", "Confiture", "Miel", "Sirop d'érable", "Biscuits", "Glaces", "Compote"],
+  },
+  // AUTRES CATÉGORIES
+  condiments: {
+    icon: "🧂",
+    name: "Condiments",
+    order: 8,
+    color: 'gray',
+    items: [
+      "Sel",
+      "Poivre",
+      "Épices",
+      "Ketchup",
+      "Moutarde",
+      "Mayonnaise",
+      "Cornichons",
+      "Vinaigre",
+      "Sauce soja",
+      "Basilic séché",
+      "Thym",
+      "Curry",
+      "Paprika",
+      "Cannelle",
+      "Bouillon cube",
+    ],
+  },
+  transformes: {
+    icon: "🍕",
+    name: "Produits transformés",
+    order: 9,
+    color: 'pink',
+    nutritionLevel: '🟥 À limiter',
+    items: [
+      "Pain Harris",
+      "Farritas",
+      "Pizzas",
+      "Lardons",
+      "Crème fraîche",
+      "Saucisses Herta",
+      "Jambon Herta",
+      "Cordons bleus",
+      "Nuggets",
+      "Cordons bleus",
+      "Crèmes desserts",
+      "Corn flakes",
+      "Biscottes",
+      "Surgelés légumes",
+      "Raviolis",
+      "Gnocchis",
+      "Quiches",
+      "Tartes salées",
+      "Soupes",
+      "Poissons panés",
+      "Steaks végétaux",
+    ],
+  },
+  apero: {
+    icon: "🍸",
+    name: "Apéro",
+    order: 10,
+    color: 'pink',
+    nutritionLevel: '🟥 Occasionnel',
+    groups: {
+      Alcools: ["Gin", "Aperol", "Tonic", "Get 27", "Bailey", "Vin rouge", "Vin blanc", "Bière", "Whisky", "Rhum"],
+      Grignotage: ["Cacahuètes", "Chips", "Saucisson", "Olives", "Crackers", "Fruits secs", "Tapenades", "Houmous"],
+    },
+  },
+  hygiene: {
+    icon: "🧴",
+    name: "Hygiène",
+    order: 11,
+    color: 'gray',
+    items: [
+      "Savon",
+      "Shampoing",
+      "Cotons-tiges",
+      "Coton démaquillant",
+      "Dentifrice",
+      "Déodorant",
+      "Gel douche",
+      "Brosse à dents",
+      "Rasoirs",
+      "Mousse à raser",
+      "Crème hydratante",
+      "Protection solaire",
+      "Mouchoirs",
+    ],
+  },
+  menage: {
+    icon: "🧹",
+    name: "Produits ménagers",
+    order: 12,
+    color: 'gray',
+    items: [
+      "Liquide vaisselle",
+      "Lessives",
+      "Adoucissant",
+      "Litière",
+      "Calgon",
+      "Powerball",
+      "Sac poubelle",
+      "Aluminium",
+      "Papier cuisson",
+      "Cellophane",
+      "Éponges",
+      "Serpillière",
+      "Javel",
+      "Dégraissant",
+      "Produit vitre",
+      "Produit sol",
+      "Anti-calcaire",
+      "Essuie-tout",
+    ],
+  },
+  wc: {
+    icon: "🚽",
+    name: "WC",
+    order: 13,
+    color: 'gray',
+    items: ["Papier toilette", "Canard WC", "Désodorisant", "Lingettes WC", "Blocs WC"],
+  },
+  salon: {
+    icon: "🕯️",
+    name: "Salon",
+    order: 14,
+    color: 'gray',
+    items: ["Bougies", "Allume-feu", "Allumettes", "Parfums d'ambiance"],
+  },
+  electromenager: {
+    icon: "💡",
+    name: "Électroménager",
+    order: 15,
+    color: 'gray',
+    items: ["Ampoules", "Piles", "Piles rechargeables", "Câbles USB", "Adaptateurs", "Chargeurs"],
+  },
+  autres: {
+    icon: "📦",
+    name: "Autres",
+    order: 16,
+    color: 'gray',
+    items: [],
+  },
+};
+
+// État
+let selections = {};
+let currentCategory = null;
+
+// Init – Initialise les sélections pour chaque catégorie
+function init() {
+  Object.keys(CATEGORIES).forEach((key) => {
+    selections[key] = {};
+    const cat = CATEGORIES[key];
+    if (cat.items) {
+      cat.items.forEach((item) => (selections[key][item] = false));
+    } else if (cat.groups) {
+      Object.values(cat.groups).forEach((items) => {
+        items.forEach((item) => (selections[key][item] = false));
       });
-      // 🎨 COULEURS PYRAMIDE ALIMENTAIRE
-      const NUTRITION_COLORS = {
-        blue: 'blue', // Base - Hydratation
-        orange: 'orange', // Céréales & Féculents
-        green: 'green', // Fruits & Légumes
-        yellow: 'yellow', // Protéines & Laitiers
-        pink: 'pink', // À limiter
-        gray: 'gray' // Hors pyramide
-      };
-      // Définition des catégories avec couleurs nutritionnelles
-      const CATEGORIES = {
-        // PYRAMIDE ALIMENTAIRE
-        boissons: {
-          icon: "💧",
-          name: "Boissons",
-          order: 1,
-          color: 'blue',
-          nutritionLevel: '🟦 Base - À volonté',
-          items: ["Eau", "Sanpellegrino", "Jus", "Lait", "Thé", "Café", "Tisanes", "Sirop", "Coca / Soda"],
-        },
-        cereales: {
-          icon: "🌾",
-          name: "Céréales & Féculents",
-          order: 2,
-          color: 'orange',
-          nutritionLevel: '🟧 1 portion/repas',
-          items: ["Pâtes", "Semoule", "Riz", "Blé", "Pain", "Quinoa", "Boulgour", "Couscous", "Lentilles corail", "Haricots secs", "Pois chiches"],
-        },
-        fruits: {
-          icon: "🍎",
-          name: "Fruits & Légumes",
-          order: 3,
-          priority: true,
-          color: 'green',
-          nutritionLevel: '🟩 5 portions/jour',
-          groups: {
-            Fruits: ["Pommes", "Bananes", "Noix", "Abricots", "Oranges", "Poires", "Raisins", "Fraises", "Kiwis", "Fruits secs"],
-            Légumes: ["Tomates", "Betteraves", "Salade", "Carottes", "Courgettes", "Brocolis", "Choux", "Poivrons", "Concombres", "Oignons", "Ail"],
-          },
-        },
-        laitiers: {
-          icon: "🥛",
-          name: "Produits laitiers",
-          order: 4,
-          color: 'yellow',
-          nutritionLevel: '🟨 1 produit/repas',
-          items: [
-            "Fromages",
-            "Yaourts",
-            "Fromage blanc",
-            "Fromage râpé",
-            "Skyr",
-            "Lait",
-            "Beurre",
-            "Crème liquide",
-            "Crème fraîche",
-            "Mascarpone",
-            "Philadelphia",
-            "Parmesan",
-            "Emmental",
-          ],
-        },
-        proteines: {
-          icon: "🍖",
-          name: "Protéines",
-          order: 5,
-          color: 'yellow',
-          nutritionLevel: '🟨 2 portions/jour',
-          groups: {
-            Viandes: ["Bœuf", "Porc", "Veau", "Poulet", "Agneau", "Canard", "Steak haché"],
-            Poissons: ["Cabillaud", "Thon", "Truite", "Saumon", "Sardines", "Maquereau", "Crevettes", "Moules"],
-            Autres: ["Œufs", "Tofu"],
-          },
-        },
-        graisses: {
-          icon: "🧈",
-          name: "Matières grasses",
-          order: 6,
-          color: 'pink',
-          nutritionLevel: '🟥 À limiter',
-          items: ["Huile olive", "Huile colza", "Beurre", "Margarine", "Huile tournesol", "Huile noix", "Huile coco"],
-        },
-        sucres: {
-          icon: "🍬",
-          name: "Sucreries",
-          order: 7,
-          color: 'pink',
-          nutritionLevel: '🟥 À limiter',
-          items: ["Gâteaux", "Bonbons", "Chocolats", "Nutella", "Confiture", "Miel", "Sirop d'érable", "Biscuits", "Glaces", "Compote"],
-        },
-        // AUTRES CATÉGORIES
-        condiments: {
-          icon: "🧂",
-          name: "Condiments",
-          order: 8,
-          color: 'gray',
-          items: [
-            "Sel",
-            "Poivre",
-            "Épices",
-            "Ketchup",
-            "Moutarde",
-            "Mayonnaise",
-            "Cornichons",
-            "Vinaigre",
-            "Sauce soja",
-            "Basilic séché",
-            "Thym",
-            "Curry",
-            "Paprika",
-            "Cannelle",
-            "Bouillon cube",
-          ],
-        },
-        transformes: {
-          icon: "🍕",
-          name: "Produits transformés",
-          order: 9,
-          color: 'pink',
-          nutritionLevel: '🟥 À limiter',
-          items: [
-            "Pain Harris",
-            "Farritas",
-            "Pizzas",
-            "Lardons",
-            "Crème fraîche",
-            "Saucisses Herta",
-            "Jambon Herta",
-            "Cordons bleus",
-            "Nuggets",
-            "Cordons bleus",
-            "Crèmes desserts",
-            "Corn flakes",
-            "Biscottes",
-            "Surgelés légumes",
-            "Raviolis",
-            "Gnocchis",
-            "Quiches",
-            "Tartes salées",
-            "Soupes",
-            "Poissons panés",
-            "Steaks végétaux",
-          ],
-        },
-        apero: {
-          icon: "🍸",
-          name: "Apéro",
-          order: 10,
-          color: 'pink',
-          nutritionLevel: '🟥 Occasionnel',
-          groups: {
-            Alcools: ["Gin", "Aperol", "Tonic", "Get 27", "Bailey", "Vin rouge", "Vin blanc", "Bière", "Whisky", "Rhum"],
-            Grignotage: ["Cacahuètes", "Chips", "Saucisson", "Olives", "Crackers", "Fruits secs", "Tapenades", "Houmous"],
-          },
-        },
-        hygiene: {
-          icon: "🧴",
-          name: "Hygiène",
-          order: 11,
-          color: 'gray',
-          items: [
-            "Savon",
-            "Shampoing",
-            "Cotons-tiges",
-            "Coton démaquillant",
-            "Dentifrice",
-            "Déodorant",
-            "Gel douche",
-            "Brosse à dents",
-            "Rasoirs",
-            "Mousse à raser",
-            "Crème hydratante",
-            "Protection solaire",
-            "Mouchoirs",
-          ],
-        },
-        menage: {
-          icon: "🧹",
-          name: "Produits ménagers",
-          order: 12,
-          color: 'gray',
-          items: [
-            "Liquide vaisselle",
-            "Lessives",
-            "Adoucissant",
-            "Litière",
-            "Calgon",
-            "Powerball",
-            "Sac poubelle",
-            "Aluminium",
-            "Papier cuisson",
-            "Cellophane",
-            "Éponges",
-            "Serpillière",
-            "Javel",
-            "Dégraissant",
-            "Produit vitre",
-            "Produit sol",
-            "Anti-calcaire",
-            "Essuie-tout",
-          ],
-        },
-        wc: {
-          icon: "🚽",
-          name: "WC",
-          order: 13,
-          color: 'gray',
-          items: ["Papier toilette", "Canard WC", "Désodorisant", "Lingettes WC", "Blocs WC"],
-        },
-        salon: {
-          icon: "🕯️",
-          name: "Salon",
-          order: 14,
-          color: 'gray',
-          items: ["Bougies", "Allume-feu", "Allumettes", "Parfums d'ambiance"],
-        },
-        electromenager: {
-          icon: "💡",
-          name: "Électroménager",
-          order: 15,
-          color: 'gray',
-          items: ["Ampoules", "Piles", "Piles rechargeables", "Câbles USB", "Adaptateurs", "Chargeurs"],
-        },
-        autres: {
-          icon: "📦",
-          name: "Autres",
-          order: 16,
-          color: 'gray',
-          items: [],
-        },
-      };
-      // État
-      let selections = {};
-      let currentCategory = null;
-      // Init
-      function init() {
-        Object.keys(CATEGORIES).forEach((key) => {
-          selections[key] = {};
-          const cat = CATEGORIES[key];
-          if (cat.items) {
-            cat.items.forEach((item) => (selections[key][item] = false));
-          } else if (cat.groups) {
-            Object.values(cat.groups).forEach((items) => {
-              items.forEach((item) => (selections[key][item] = false));
-            });
-          }
-        });
-        renderCategories();
-        loadFromLocalStorage();
-      }
-      // Render grille catégories avec couleurs
-      function renderCategories() {
-        const grid = document.getElementById("categoriesGrid");
-        const sorted = Object.entries(CATEGORIES).sort(
-          (a, b) => a[1].order - b[1].order
-        );
-        grid.innerHTML = sorted
-          .map(([key, cat]) => {
-            const count = Object.values(selections[key]).filter((v) => v).length;
-            const colorAttr = cat.color ? `data-color="${cat.color}"` : '';
-            const nutritionLabel = cat.nutritionLevel || '';
-           
-            return `
-              <div class="category-btn" ${colorAttr} onclick="openDrawer('${key}')">
-                ${count > 0 ? `<div class="badge">${count}</div>` : ""}
-                <span class="icon">${cat.icon}</span>
-                <span class="name">${cat.name}</span>
-                ${nutritionLabel ? `<div class="nutrition-indicator">${nutritionLabel}</div>` : ''}
-              </div>
-            `;
-          })
-          .join("");
-      }
-      // Ouvrir drawer
-      function openDrawer(categoryKey) {
-        currentCategory = categoryKey;
-        const cat = CATEGORIES[categoryKey];
-        document.getElementById("drawerTitle").innerHTML = `${cat.icon} ${cat.name}`;
-        let html = "";
-        if (cat.items) {
-          html = cat.items
-            .map(
-              (item) => `
+    }
+  });
+  renderCategories();
+  loadFromLocalStorage();
+}
+
+// Render grille catégories avec couleurs
+function renderCategories() {
+  const grid = document.getElementById("categoriesGrid");
+  const sorted = Object.entries(CATEGORIES).sort(
+    (a, b) => a[1].order - b[1].order
+  );
+  grid.innerHTML = sorted
+    .map(([key, cat]) => {
+      const count = Object.values(selections[key]).filter((v) => v).length;
+      const colorAttr = cat.color ? `data-color="${cat.color}"` : '';
+      const nutritionLabel = cat.nutritionLevel || '';
+      
+      return `
+        <div class="category-btn" ${colorAttr} onclick="openDrawer('${key}')">
+          ${count > 0 ? `<div class="badge">${count}</div>` : ""}
+          <span class="icon">${cat.icon}</span>
+          <span class="name">${cat.name}</span>
+          ${nutritionLabel ? `<div class="nutrition-indicator">${nutritionLabel}</div>` : ''}
+        </div>
+      `;
+    })
+    .join("");
+}
+
+// Ouvrir drawer avec les items/groupes
+function openDrawer(categoryKey) {
+  currentCategory = categoryKey;
+  const cat = CATEGORIES[categoryKey];
+  document.getElementById("drawerTitle").innerHTML = `${cat.icon} ${cat.name}`;
+  let html = "";
+  if (cat.items) {
+    html = cat.items
+      .map(
+        (item) => `
+          <div class="checkbox-item ${selections[categoryKey][item] ? "checked" : ""}">
+            <input type="checkbox"
+                   id="item-${item}"
+                   ${selections[categoryKey][item] ? "checked" : ""}
+                   onchange="toggleItem('${categoryKey}', '${item}')">
+            <label for="item-${item}">${item}</label>
+          </div>
+        `
+      )
+      .join("");
+  } else if (cat.groups) {
+    html = Object.entries(cat.groups)
+      .map(
+        ([groupName, items]) => `
+          <div class="item-group">
+            <div class="item-group-title">${groupName}</div>
+            ${items
+              .map(
+                (item) => `
                 <div class="checkbox-item ${selections[categoryKey][item] ? "checked" : ""}">
                   <input type="checkbox"
                          id="item-${item}"
@@ -853,225 +881,229 @@
                   <label for="item-${item}">${item}</label>
                 </div>
               `
-            )
-            .join("");
-        } else if (cat.groups) {
-          html = Object.entries(cat.groups)
-            .map(
-              ([groupName, items]) => `
-                <div class="item-group">
-                  <div class="item-group-title">${groupName}</div>
-                  ${items
-                    .map(
-                      (item) => `
-                      <div class="checkbox-item ${selections[categoryKey][item] ? "checked" : ""}">
-                        <input type="checkbox"
-                               id="item-${item}"
-                               ${selections[categoryKey][item] ? "checked" : ""}
-                               onchange="toggleItem('${categoryKey}', '${item}')">
-                        <label for="item-${item}">${item}</label>
-                      </div>
-                    `
-                    )
-                    .join("")}
+              )
+              .join("")}
+          </div>
+        `
+      )
+      .join("");
+  }
+  document.getElementById("drawerBody").innerHTML = html;
+  document.getElementById("drawer").classList.add("active");
+  document.getElementById("backdrop").classList.add("active");
+}
+
+function closeDrawer() {
+  document.getElementById("drawer").classList.remove("active");
+  document.getElementById("backdrop").classList.remove("active");
+  renderCategories();
+}
+
+function toggleItem(category, item) {
+  selections[category][item] = !selections[category][item];
+  const checkbox = document.getElementById(`item-${item}`);
+  const parent = checkbox.closest(".checkbox-item");
+  parent.classList.toggle("checked");
+}
+
+function saveDrawer() {
+  saveToLocalStorage();
+  closeDrawer();
+  showToast('✅ Sauvegardé !');
+}
+
+function clearDrawer() {
+  showConfirm(
+    '🗑️ Vider la catégorie',
+    'Voulez-vous vraiment vider cette catégorie ?',
+    () => {
+      Object.keys(selections[currentCategory]).forEach((item) => {
+        selections[currentCategory][item] = false;
+      });
+      openDrawer(currentCategory);
+      showToast('Catégorie vidée');
+    }
+  );
+}
+
+function switchView(view) {
+  document.querySelectorAll(".toggle-btn").forEach((btn) => btn.classList.remove("active"));
+  if (view === "categories") {
+    document.querySelector(".toggle-btn:first-child").classList.add("active");
+    document.getElementById("categoriesView").classList.add("active");
+    document.getElementById("shoppingView").classList.remove("active");
+  } else {
+    document.querySelector(".toggle-btn:last-child").classList.add("active");
+    document.getElementById("categoriesView").classList.remove("active");
+    document.getElementById("shoppingView").classList.add("active");
+    renderShoppingList();
+  }
+}
+
+function renderShoppingList() {
+  const container = document.getElementById("shoppingList");
+  const hasItems = Object.values(selections).some((cat) =>
+    Object.values(cat).some((v) => v)
+  );
+  if (!hasItems) {
+    container.innerHTML =
+      '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
+    return;
+  }
+  let html = "";
+  Object.entries(CATEGORIES)
+    .sort((a, b) => a[1].order - b[1].order)
+    .forEach(([key, cat]) => {
+      const selected = Object.entries(selections[key]).filter(([_, checked]) => checked);
+      if (selected.length > 0) {
+        html += `
+          <div class="shopping-category">
+            <div class="shopping-category-header">
+              <span>${cat.icon}</span>
+              <span>${cat.name}</span>
+            </div>
+            ${selected
+              .map(
+                ([item, _]) => `
+                <div class="shopping-item">
+                  <input type="checkbox"
+                         id="shop-${key}-${item}"
+                         onchange="toggleShopItem('${key}', '${item}')">
+                  <label for="shop-${key}-${item}">${item}</label>
                 </div>
               `
-            )
-            .join("");
-        }
-        document.getElementById("drawerBody").innerHTML = html;
-        document.getElementById("drawer").classList.add("active");
-        document.getElementById("backdrop").classList.add("active");
+              )
+              .join("")}
+          </div>
+        `;
       }
-      function closeDrawer() {
-        document.getElementById("drawer").classList.remove("active");
-        document.getElementById("backdrop").classList.remove("active");
-        renderCategories();
+    });
+  container.innerHTML = html;
+}
+
+function toggleShopItem(category, item) {
+  const checkbox = document.getElementById(`shop-${category}-${item}`);
+  const parent = checkbox.closest(".shopping-item");
+  parent.classList.toggle("checked");
+}
+
+function exportList() {
+  let text = "📋 LISTE DE COURSES\n\n";
+  Object.entries(CATEGORIES)
+    .sort((a, b) => a[1].order - b[1].order)
+    .forEach(([key, cat]) => {
+      const selected = Object.entries(selections[key]).filter(([_, checked]) => checked);
+      if (selected.length > 0) {
+        text += `\n${cat.icon} ${cat.name.toUpperCase()}\n`;
+        selected.forEach(([item, _]) => {
+          text += `☐ ${item}\n`;
+        });
       }
-      function toggleItem(category, item) {
-        selections[category][item] = !selections[category][item];
-        const checkbox = document.getElementById(`item-${item}`);
-        const parent = checkbox.closest(".checkbox-item");
-        parent.classList.toggle("checked");
+    });
+  navigator.clipboard.writeText(text);
+  showToast("✅ Liste copiée dans le presse-papier !");
+}
+
+function clearAll() {
+  showConfirm(
+    '🗑️ Tout effacer',
+    'Voulez-vous vraiment effacer toute la liste de courses ?',
+    () => {
+      Object.keys(selections).forEach((cat) => {
+        Object.keys(selections[cat]).forEach((item) => {
+          selections[cat][item] = false;
+        });
+      });
+      renderCategories();
+      
+      // Rafraîchir immédiatement l'affichage
+      if (document.getElementById("shoppingView").classList.contains("active")) {
+        renderShoppingList();
       }
-      function saveDrawer() {
-        saveToLocalStorage();
-        closeDrawer();
-        showToast('✅ Sauvegardé !');
-      }
-      function clearDrawer() {
-        showConfirm(
-          '🗑️ Vider la catégorie',
-          'Voulez-vous vraiment vider cette catégorie ?',
-          () => {
-            Object.keys(selections[currentCategory]).forEach((item) => {
-              selections[currentCategory][item] = false;
-            });
-            openDrawer(currentCategory);
-            showToast('Catégorie vidée');
-          }
-        );
-      }
-      function switchView(view) {
-        document.querySelectorAll(".toggle-btn").forEach((btn) => btn.classList.remove("active"));
-        if (view === "categories") {
-          document.querySelector(".toggle-btn:first-child").classList.add("active");
-          document.getElementById("categoriesView").classList.add("active");
-          document.getElementById("shoppingView").classList.remove("active");
-        } else {
-          document.querySelector(".toggle-btn:last-child").classList.add("active");
-          document.getElementById("categoriesView").classList.remove("active");
-          document.getElementById("shoppingView").classList.add("active");
-          renderShoppingList();
-        }
-      }
-      function renderShoppingList() {
-        const container = document.getElementById("shoppingList");
-        const hasItems = Object.values(selections).some((cat) =>
-          Object.values(cat).some((v) => v)
-        );
-        if (!hasItems) {
-          container.innerHTML =
-            '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
-          return;
-        }
-        let html = "";
-        Object.entries(CATEGORIES)
-          .sort((a, b) => a[1].order - b[1].order)
-          .forEach(([key, cat]) => {
-            const selected = Object.entries(selections[key]).filter(([_, checked]) => checked);
-            if (selected.length > 0) {
-              html += `
-                <div class="shopping-category">
-                  <div class="shopping-category-header">
-                    <span>${cat.icon}</span>
-                    <span>${cat.name}</span>
-                  </div>
-                  ${selected
-                    .map(
-                      ([item, _]) => `
-                      <div class="shopping-item">
-                        <input type="checkbox"
-                               id="shop-${key}-${item}"
-                               onchange="toggleShopItem('${key}', '${item}')">
-                        <label for="shop-${key}-${item}">${item}</label>
-                      </div>
-                    `
-                    )
-                    .join("")}
-                </div>
-              `;
-            }
-          });
-        container.innerHTML = html;
-      }
-      function toggleShopItem(category, item) {
-        const checkbox = document.getElementById(`shop-${category}-${item}`);
-        const parent = checkbox.closest(".shopping-item");
-        parent.classList.toggle("checked");
-      }
-      function exportList() {
-        let text = "📋 LISTE DE COURSES\n\n";
-        Object.entries(CATEGORIES)
-          .sort((a, b) => a[1].order - b[1].order)
-          .forEach(([key, cat]) => {
-            const selected = Object.entries(selections[key]).filter(([_, checked]) => checked);
-            if (selected.length > 0) {
-              text += `\n${cat.icon} ${cat.name.toUpperCase()}\n`;
-              selected.forEach(([item, _]) => {
-                text += `☐ ${item}\n`;
-              });
-            }
-          });
-        navigator.clipboard.writeText(text);
-        showToast("✅ Liste copiée dans le presse-papier !");
-      }
-      function clearAll() {
-        showConfirm(
-          '🗑️ Tout effacer',
-          'Voulez-vous vraiment effacer toute la liste de courses ?',
-          () => {
-            Object.keys(selections).forEach((cat) => {
-              Object.keys(selections[cat]).forEach((item) => {
-                selections[cat][item] = false;
-              });
-            });
-            renderCategories();
-           
-            // Rafraîchir immédiatement l'affichage
-            if (document.getElementById("shoppingView").classList.contains("active")) {
-              renderShoppingList();
-            }
-           
-            saveToLocalStorage();
-            showToast('Liste de courses effacée');
-          }
-        );
-      }
-      function loadFromLocalStorage() {
-        try {
-          // Charger les sélections
-          const savedSelections = localStorage.getItem('food_home_selections');
-          if (savedSelections) {
-            const loaded = JSON.parse(savedSelections);
-            Object.assign(selections, loaded);
-            console.log('📥 Sélections chargées depuis localStorage');
-          }
-         
-          // Charger les items de la liste (depuis eat.html)
-          const shoppingList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
-          if (shoppingList.length > 0) {
-            console.log(`📥 ${shoppingList.length} items depuis eat.html`);
-           
-            shoppingList.forEach((item) => {
-              if (!CATEGORIES.autres.items.includes(item)) {
-                CATEGORIES.autres.items.push(item);
-                selections.autres[item] = true;
-              }
-            });
-          }
-          renderCategories();
-        } catch (error) {
-          console.error("Erreur chargement localStorage:", error);
-          renderCategories();
-        }
-      }
-      function saveToLocalStorage() {
-        try {
-          // Sauvegarder les sélections
-          localStorage.setItem('food_home_selections', JSON.stringify(selections));
-         
-          // Sauvegarder aussi la liste complète
-          const allItems = [];
-          Object.entries(selections).forEach(([cat, items]) => {
-            Object.entries(items).forEach(([item, checked]) => {
-              if (checked) allItems.push(item);
-            });
-          });
-         
-          localStorage.setItem('food_home_shopping_list', JSON.stringify(allItems));
-          console.log('💾 Sauvegardé dans localStorage');
-        } catch (error) {
-          console.error("Erreur sauvegarde:", error);
-        }
-      }
-      // 🎯 ÉCOUTER LES MESSAGES postMessage POUR RAFRAÎCHIR SANS RELOAD
-      window.addEventListener('message', (event) => {
-        const { type } = event.data || {};
-       
-        if (type === 'REFRESH_DATA' || type === 'SHOPPING_LIST_UPDATED') {
-          console.log('🔄 Received refresh message, reloading...');
-         
-          // Rafraîchir depuis localStorage
-          loadFromLocalStorage();
-         
-          // Si on est sur la vue shopping, rafraîchir aussi
-          if (document.getElementById("shoppingView").classList.contains("active")) {
-            renderShoppingList();
-          }
+      
+      saveToLocalStorage();
+      showToast('Liste de courses effacée');
+    }
+  );
+}
+
+function loadFromLocalStorage() {
+  try {
+    // Charger les sélections
+    const savedSelections = localStorage.getItem('food_home_selections');
+    if (savedSelections) {
+      const loaded = JSON.parse(savedSelections);
+      Object.assign(selections, loaded);
+      console.log('📥 Sélections chargées depuis localStorage');
+    }
+    
+    // Charger les items de la liste (depuis eat.html) et les ajouter à "autres" si pas déjà là
+    const shoppingList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
+    if (shoppingList.length > 0) {
+      console.log(`📥 ${shoppingList.length} items depuis eat.html`);
+      
+      shoppingList.forEach((item) => {
+        if (!CATEGORIES.autres.items.includes(item)) {
+          CATEGORIES.autres.items.push(item);
+          selections.autres[item] = true;
         }
       });
-      window.addEventListener("DOMContentLoaded", init);
+    }
+    renderCategories();
+  } catch (error) {
+    console.error("Erreur chargement localStorage:", error);
+    renderCategories();
+  }
+}
+
+function saveToLocalStorage() {
+  try {
+    // Sauvegarder les sélections
+    localStorage.setItem('food_home_selections', JSON.stringify(selections));
+    
+    // Sauvegarder aussi la liste complète des items cochés
+    const allItems = [];
+    Object.entries(selections).forEach(([cat, items]) => {
+      Object.entries(items).forEach(([item, checked]) => {
+        if (checked) allItems.push(item);
+      });
+    });
+    
+    localStorage.setItem('food_home_shopping_list', JSON.stringify(allItems));
+    console.log('💾 Sauvegardé dans localStorage');
+  } catch (error) {
+    console.error("Erreur sauvegarde:", error);
+  }
+}
+
+// 🎯 ÉCOUTER LES MESSAGES postMessage POUR RAFRAÎCHIR SANS RELOAD
+window.addEventListener("message", (event) => {
+  if (event.origin !== window.location.origin) return; // Vérif sécu pour éviter messages externes
+  
+  const { type } = event.data || {};
+
+  if (type === "REFRESH_DATA" || type === "SHOPPING_LIST_UPDATED") {
+    console.log("🔄 Received refresh message, reloading...");
+    
+    // Rafraîchir depuis localStorage
+    loadFromLocalStorage();
+    
+    // Si on est sur la vue shopping, rafraîchir aussi
+    if (document.getElementById("shoppingView").classList.contains("active")) {
+      renderShoppingList();
+    }
+  }
+});
+
+// Check périodique pour synchro auto (fix bug timing)
+setInterval(() => {
+  loadFromLocalStorage();
+  if (document.getElementById("shoppingView").classList.contains("active")) {
+    renderShoppingList();
+  }
+}, 2000); // Vérifie et rafraîchit toutes les 2 secondes
+
+window.addEventListener("DOMContentLoaded", init);
     </script>
     <!-- 🎨 Modal de confirmation moderne -->
     <div id="confirmModal" class="confirm-modal">
