@@ -1055,8 +1055,10 @@ function loadFromLocalStorage() {
           added = true;
         }
       });
-      if (added) {  // Log seulement si items ajoutés
+      if (added) {  // Log et save seulement si items ajoutés
         console.log(`📥 ${shoppingList.length} items depuis eat.html (nouveaux ajoutés)`);
+        saveToLocalStorage();  // Sauvegarde immédiat pour persister les ajouts
+        localStorage.setItem('food_home_shopping_list', JSON.stringify([]));  // Clear la liste temp pour éviter re-ajout
       }
     }
     renderCategories();  // Render seulement après changements
