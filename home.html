@@ -47,111 +47,114 @@
     </div>
     <script>
       // 🔒 Vérifier la session avant d'afficher l'app
-      (function checkSession() {
-        const isLoggedIn = localStorage.getItem("food_home_logged_in");
-        const loginTime = parseInt(localStorage.getItem("food_home_login_time") || "0");
-        const now = Date.now();
-        // Si pas connecté ou session expirée (24h)
-        if (isLoggedIn !== "true" || now - loginTime > 24 * 60 * 60 * 1000) {
-          window.location.href = "index.html";
-          return;
-        }
-      })();
-      
-      // Get elements
-      const toggleBtn = document.getElementById("toggleBtn");
-      const appFlipper = document.getElementById("appFlipper");
-      const toggleText = document.getElementById("toggleText");
-      const toggleIcon = document.getElementById("toggleIcon");
-      const coursesFrame = document.getElementById("coursesFrame");
-      const eatFrame = document.getElementById("eatFrame");
-      
-      // 🎯 COMMUNICATION INTER-IFRAMES via postMessage
-      // Écouter les messages des iframes enfants
-      window.addEventListener("message", (event) => {
-        const { type, data } = event.data;
-        switch (type) {
-          case "SHOPPING_LIST_UPDATED":
-            // Eat a ajouté des items → notifier Courses de rafraîchir
-            console.log("📥 Shopping list updated, notifying courses iframe...");
-            try {
-              coursesFrame.contentWindow.postMessage({ type: "REFRESH_DATA" }, "*");
-            } catch (e) {
-              console.error("Error sending message to courses iframe:", e);
-            }
-            break;
-          case "REQUEST_REFRESH":
-            // Courses demande un rafraîchissement
-            console.log("🔄 Courses iframe requested refresh");
-            try {
-              coursesFrame.contentWindow.postMessage({ type: "REFRESH_DATA" }, "*");
-            } catch (e) {
-              console.error("Error refreshing courses iframe:", e);
-            }
-            break;
-        }
-      });
-      
-      // Toggle between apps
-      toggleBtn.addEventListener("click", () => {
-        toggleBtn.disabled = true;
-        appFlipper.classList.toggle("flipped");
-        const newApp = appFlipper.classList.contains("flipped") ? "courses" : "eat";
-        localStorage.setItem('active_app', newApp); // Stocke en local
-        updateToggleButton(newApp);
-        
-        // Refresh l'iframe si besoin
-        if (newApp === "courses") {
-          setTimeout(() => {
-            try {
-              coursesFrame.contentWindow.postMessage({ type: 'REFRESH_DATA' }, '*');
-              console.log("✅ Refresh message sent to courses iframe");
-            } catch (e) {
-              console.error("Error sending refresh message:", e);
-            }
-          }, 500);
-        }
-        setTimeout(() => { toggleBtn.disabled = false; }, 300);
-      });
-      
-      // Update toggle button appearance
-      function updateToggleButton(app) {
-        if (app === "eat") {
-          toggleText.textContent = "Vers Courses";
-          toggleIcon.textContent = "🛒";
-        } else {
-          toggleText.textContent = "Vers Repas";
-          toggleIcon.textContent = "🍽️";
-        }
+(function checkSession() {
+  const isLoggedIn = localStorage.getItem("food_home_logged_in");
+  const loginTime = parseInt(localStorage.getItem("food_home_login_time") || "0");
+  const now = Date.now();
+  // Si pas connecté ou session expirée (24h)
+  if (isLoggedIn !== "true" || now - loginTime > 24 * 60 * 60 * 1000) {
+    window.location.href = "index.html";
+    return;
+  }
+})();
+
+// Get elements
+const toggleBtn = document.getElementById("toggleBtn");
+const appFlipper = document.getElementById("appFlipper");
+const toggleText = document.getElementById("toggleText");
+const toggleIcon = document.getElementById("toggleIcon");
+const coursesFrame = document.getElementById("coursesFrame");
+const eatFrame = document.getElementById("eatFrame");
+
+// 🎯 COMMUNICATION INTER-IFRAMES via postMessage
+// Écouter les messages des iframes enfants
+window.addEventListener("message", (event) => {
+  // Vérifier l'origine pour la sécurité (optionnel en local)
+  if (event.origin !== window.location.origin) return;
+
+  const { type, data } = event.data;
+  switch (type) {
+    case "SHOPPING_LIST_UPDATED":
+      // Eat a ajouté des items → notifier Courses de rafraîchir
+      console.log("📥 Shopping list updated, notifying courses iframe...");
+      try {
+        coursesFrame.contentWindow.postMessage({ type: "REFRESH_DATA" }, "*");
+      } catch (e) {
+        console.error("Error sending message to courses iframe:", e);
       }
-      
-      // Keyboard shortcut: Ctrl/Cmd + Space to toggle
-      document.addEventListener("keydown", (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.code === "Space") {
-          e.preventDefault();
-          toggleBtn.click();
-        }
-      });
-      
-      // Log au chargement et set initial state from localStorage
-      window.addEventListener("load", () => {
-        const currentApp = localStorage.getItem('active_app') || "eat";
-        if (currentApp === "courses") {
-          appFlipper.classList.add("flipped");
-          updateToggleButton("courses");
-        } else {
-          updateToggleButton("eat");
-        }
-        console.log("✅ FOOD HOME loaded - postMessage communication ready");
-      });
-      
-      // Fonction de déconnexion
-      function logout() {
-        localStorage.removeItem("food_home_logged_in");
-        localStorage.removeItem("food_home_login_time");
-        localStorage.removeItem("active_app");
-        window.location.href = "index.html";
+      break;
+    case "REQUEST_REFRESH":
+      // Courses demande un rafraîchissement
+      console.log("🔄 Courses iframe requested refresh");
+      try {
+        coursesFrame.contentWindow.postMessage({ type: "REFRESH_DATA" }, "*");
+      } catch (e) {
+        console.error("Error refreshing courses iframe:", e);
       }
+      break;
+  }
+});
+
+// Toggle between apps
+toggleBtn.addEventListener("click", () => {
+  toggleBtn.disabled = true;
+  appFlipper.classList.toggle("flipped");
+  const newApp = appFlipper.classList.contains("flipped") ? "courses" : "eat";
+  localStorage.setItem('active_app', newApp); // Stocke en local
+  updateToggleButton(newApp);
+ 
+  // Refresh l'iframe si besoin
+  if (newApp === "courses") {
+    setTimeout(() => {
+      try {
+        coursesFrame.src = coursesFrame.src; // Force un reload complet de l'iframe pour rafraîchir les données
+        console.log("✅ Iframe courses rechargée pour refresh");
+      } catch (e) {
+        console.error("Error reloading courses iframe:", e);
+      }
+    }, 100); // Délai court, mais suffisant pour le switch
+  }
+  setTimeout(() => { toggleBtn.disabled = false; }, 300);
+});
+
+// Update toggle button appearance
+function updateToggleButton(app) {
+  if (app === "eat") {
+    toggleText.textContent = "Vers Courses";
+    toggleIcon.textContent = "🛒";
+  } else {
+    toggleText.textContent = "Vers Repas";
+    toggleIcon.textContent = "🍽️";
+  }
+}
+
+// Keyboard shortcut: Ctrl/Cmd + Space to toggle
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.code === "Space") {
+    e.preventDefault();
+    toggleBtn.click();
+  }
+});
+
+// Log au chargement et set initial state from localStorage
+window.addEventListener("load", () => {
+  const currentApp = localStorage.getItem('active_app') || "eat";
+  if (currentApp === "courses") {
+    appFlipper.classList.add("flipped");
+    updateToggleButton("courses");
+  } else {
+    updateToggleButton("eat");
+  }
+  console.log("✅ FOOD HOME loaded - postMessage communication ready");
+});
+
+// Fonction de déconnexion
+function logout() {
+  localStorage.removeItem("food_home_logged_in");
+  localStorage.removeItem("food_home_login_time");
+  localStorage.removeItem("active_app");
+  window.location.href = "index.html";
+}
     </script>
   </body>
 </html>
