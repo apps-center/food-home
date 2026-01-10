@@ -1035,39 +1035,50 @@ function loadFromLocalStorage() {
       const loaded = JSON.parse(savedSelections);
       const currentHash = JSON.stringify(selections);
       const newHash = JSON.stringify(loaded);
-      if (currentHash !== newHash) {  // Recharge seulement si changé
+      if (currentHash !== newHash) { // Recharge seulement si changé
         Object.assign(selections, loaded);
         console.log('📥 Sélections chargées depuis localStorage (changement détecté)');
       } else {
         // Pas de log si rien changé
-        return;  // Sort tôt si identique
+        return; // Sort tôt si identique
       }
     }
-    
+   
     // Charger les items de la liste (depuis eat.html)
     const shoppingList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
     if (shoppingList.length > 0) {
       let added = false;
       shoppingList.forEach((item) => {
-        if (!CATEGORIES.autres.items.includes(item)) {
+        let exists = false;
+        // Check dans TOUTES les catégories pour éviter doublons
+        Object.keys(CATEGORIES).forEach(catKey => {
+          const cat = CATEGORIES[catKey];
+          if (cat.items && cat.items.includes(item)) exists = true;
+          if (cat.groups) {
+            Object.values(cat.groups).forEach(group => {
+              if (group.includes(item)) exists = true;
+            });
+          }
+        });
+        if (!exists && !CATEGORIES.autres.items.includes(item)) {
           CATEGORIES.autres.items.push(item);
           selections.autres[item] = true;
           added = true;
         }
       });
-      if (added) {  // Log et save seulement si items ajoutés
+      if (added) { // Log et save seulement si items ajoutés
         console.log(`📥 ${shoppingList.length} items depuis eat.html (nouveaux ajoutés)`);
-        saveToLocalStorage();  // Sauvegarde immédiat pour persister les ajouts
-        localStorage.setItem('food_home_shopping_list', JSON.stringify([]));  // Clear la liste temp pour éviter re-ajout
+        saveToLocalStorage(); // Sauvegarde immédiat pour persister les ajouts
+        localStorage.setItem('food_home_shopping_list', JSON.stringify([])); // Clear la liste temp pour éviter re-ajout
       }
     }
-    renderCategories();  // Render seulement après changements
+    renderCategories(); // Render seulement après changements
   } catch (error) {
     console.error("Erreur chargement localStorage:", error);
     renderCategories();
   }
 }
-
+      
 function saveToLocalStorage() {
   try {
     // Sauvegarder les sélections
@@ -1109,11 +1120,17 @@ window.addEventListener("message", (event) => {
 
 // Check périodique pour synchro auto (fix bug timing)
 setInterval(() => {
+  const oldSelections = JSON.stringify(selections);
+  const oldCategories = JSON.stringify(CATEGORIES);
   loadFromLocalStorage();
-  if (document.getElementById("shoppingView").classList.contains("active")) {
-    renderShoppingList();
+  if (JSON.stringify(selections) !== oldSelections || JSON.stringify(CATEGORIES) !== oldCategories) {
+    if (document.getElementById("shoppingView").classList.contains("active")) {
+      renderShoppingList();
+    } else {
+      renderCategories();
+    }
   }
-}, 5000); // Vérifie et rafraîchit toutes les 5 secondes
+}, 5000); // Garde 5s, mais optimise
 
 window.addEventListener("DOMContentLoaded", init);
     </script>
