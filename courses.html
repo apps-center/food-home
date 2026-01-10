@@ -1033,23 +1033,33 @@ function loadFromLocalStorage() {
     const savedSelections = localStorage.getItem('food_home_selections');
     if (savedSelections) {
       const loaded = JSON.parse(savedSelections);
-      Object.assign(selections, loaded);
-      console.log('📥 Sélections chargées depuis localStorage');
+      const currentHash = JSON.stringify(selections);
+      const newHash = JSON.stringify(loaded);
+      if (currentHash !== newHash) {  // Recharge seulement si changé
+        Object.assign(selections, loaded);
+        console.log('📥 Sélections chargées depuis localStorage (changement détecté)');
+      } else {
+        // Pas de log si rien changé
+        return;  // Sort tôt si identique
+      }
     }
     
-    // Charger les items de la liste (depuis eat.html) et les ajouter à "autres" si pas déjà là
+    // Charger les items de la liste (depuis eat.html)
     const shoppingList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
     if (shoppingList.length > 0) {
-      console.log(`📥 ${shoppingList.length} items depuis eat.html`);
-      
+      let added = false;
       shoppingList.forEach((item) => {
         if (!CATEGORIES.autres.items.includes(item)) {
           CATEGORIES.autres.items.push(item);
           selections.autres[item] = true;
+          added = true;
         }
       });
+      if (added) {  // Log seulement si items ajoutés
+        console.log(`📥 ${shoppingList.length} items depuis eat.html (nouveaux ajoutés)`);
+      }
     }
-    renderCategories();
+    renderCategories();  // Render seulement après changements
   } catch (error) {
     console.error("Erreur chargement localStorage:", error);
     renderCategories();
@@ -1101,7 +1111,7 @@ setInterval(() => {
   if (document.getElementById("shoppingView").classList.contains("active")) {
     renderShoppingList();
   }
-}, 2000); // Vérifie et rafraîchit toutes les 2 secondes
+}, 5000); // Vérifie et rafraîchit toutes les 5 secondes
 
 window.addEventListener("DOMContentLoaded", init);
     </script>
