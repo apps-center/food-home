@@ -630,6 +630,34 @@
       .drawer-body {
         -webkit-overflow-scrolling: touch;
       }
+
+      /* Indicateur scroll shopping list */
+      .scroll-indicator-shopping {
+        text-align: center;
+        padding: 40px 20px 20px;
+        color: var(--text-muted);
+        font-size: 12px;
+        opacity: 0.6;
+        margin-top: 30px;
+      }
+      
+      .scroll-indicator-shopping span {
+        display: block;
+        font-size: 28px;
+        margin-bottom: 6px;
+        animation: bounceShopping 2s ease-in-out infinite;
+      }
+      
+      @keyframes bounceShopping {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+      
+      .scroll-indicator-shopping p {
+        margin: 0;
+        font-style: italic;
+      }
+      
     </style>
   </head>
   <body>
@@ -1369,6 +1397,13 @@
         );
 
         if (!hasItems) {
+          // Ajouter l'indicateur de scroll en bas
+          html += `
+            <div class="scroll-indicator-shopping">
+              <span>⋯</span>
+              <p>Faites défiler pour voir les boutons d'action</p>
+            </div>
+          `;
           container.innerHTML =
             '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
           return;
