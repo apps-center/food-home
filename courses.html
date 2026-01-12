@@ -599,6 +599,37 @@
         background: white;
         border-color: rgba(0, 0, 0, 0.2);
       }
+
+      /* Indicateur scroll drawer */
+      .scroll-indicator-drawer {
+        text-align: center;
+        padding: 30px 20px 20px;
+        color: var(--text-muted);
+        font-size: 12px;
+        opacity: 0.6;
+        margin-top: 20px;
+      }
+      
+      .scroll-indicator-drawer span {
+        display: block;
+        font-size: 28px;
+        margin-bottom: 6px;
+        animation: bounceDrawer 2s ease-in-out infinite;
+      }
+      
+      @keyframes bounceDrawer {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+      
+      .scroll-indicator-drawer p {
+        margin: 0;
+        font-style: italic;
+      }
+      
+      .drawer-body {
+        -webkit-overflow-scrolling: touch;
+      }
     </style>
   </head>
   <body>
@@ -1227,7 +1258,12 @@
             )
             .join("");
         }
-        document.getElementById("drawerBody").innerHTML = html;
+        document.getElementById("drawerBody").innerHTML = html + `
+          <div class="scroll-indicator-drawer">
+            <span>⋯</span>
+            <p>Faites défiler pour voir tous les produits</p>
+          </div>
+        `;
         document.getElementById("drawer").classList.add("active");
         document.getElementById("backdrop").classList.add("active");
       }
