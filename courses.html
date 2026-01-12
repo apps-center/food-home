@@ -699,7 +699,7 @@
           </button>
         </div>
         
-        <!-- ✅ Indicateur scroll pour shopping -->
+        <!-- ✅ Indicateur scroll pour shopping (SOUS les boutons) -->
         <div id="scrollHintShopping" style="display: none; text-align: center; padding: 40px 20px; color: #9ca3af; font-size: 28px; opacity: 0.6;">
           ⋯<br>
           <small style="display: block; font-size: 12px; margin-top: 8px; font-style: italic;">Faites défiler vers le haut</small>
@@ -716,6 +716,13 @@
         <button class="drawer-close" onclick="closeDrawer()">&larr;</button>
       </div>
       <div class="drawer-body" id="drawerBody"></div>
+      
+      <!-- ✅ Indicateur scroll drawer (AVANT le footer, APRÈS le body) -->
+      <div class="drawer-scroll-hint" style="text-align: center; padding: 20px; color: #9ca3af; font-size: 24px; opacity: 0.5; background: rgba(240, 249, 255, 0.5); flex-shrink: 0;">
+        ⋯<br>
+        <small style="display: block; font-size: 11px; margin-top: 6px; font-style: italic;">Faites défiler vers le bas</small>
+      </div>
+      
       <div class="drawer-footer">
         <button class="btn btn-primary" onclick="saveDrawer()" style="flex: 1">
           💾 Sauvegarder
@@ -1294,12 +1301,7 @@
             )
             .join("");
         }
-        document.getElementById("drawerBody").innerHTML = html + `
-          <div class="scroll-indicator-drawer">
-            <span>⋯</span>
-            <p>Faites défiler pour voir tous les produits</p>
-          </div>
-        `;
+        document.getElementById("drawerBody").innerHTML = html;
         document.getElementById("drawer").classList.add("active");
         document.getElementById("backdrop").classList.add("active");
       }
