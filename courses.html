@@ -79,6 +79,19 @@
         color: white;
         border-color: transparent;
       }
+
+      /* Bouton accent (Stock de base) */
+      .btn-accent {
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+      }
+
+      .btn-accent:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
+      }
+
       /* Grille de catégories */
       .categories-grid {
         display: grid;
@@ -350,10 +363,15 @@
         border-radius: var(--radius-md);
         font-size: 13px;
         transition: all var(--transition-fast);
+        position: relative;
       }
       
       .supermarket-item:hover {
         background: rgba(224, 242, 254, 0.6);
+      }
+      
+      .supermarket-item:hover .item-delete-btn {
+        opacity: 1;
       }
       
       .supermarket-item input[type="checkbox"] {
@@ -368,6 +386,29 @@
         cursor: pointer;
         font-size: 13px;
         line-height: 1.2;
+      }
+      
+      .item-delete-btn {
+        width: 22px;
+        height: 22px;
+        border-radius: var(--radius-full);
+        border: none;
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        font-size: 18px;
+        font-weight: bold;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all var(--transition-fast);
+        opacity: 0;
+        flex-shrink: 0;
+      }
+      
+      .item-delete-btn:hover {
+        background: rgba(239, 68, 68, 0.2);
+        transform: scale(1.1);
       }
       
       .supermarket-item.checked {
@@ -559,26 +600,22 @@
             📦 Catégories
           </button>
           <button class="toggle-btn" onclick="switchView('shopping')">
-            📋 Liste courses
-          </button>
-          <button class="toggle-btn" onclick="switchView('supermarket')">
-            🛒 Mode Supermarché
+            🛒 Liste courses
           </button>
         </div>
         <!-- VUE CATÉGORIES -->
         <div id="categoriesView" class="categories-view active">
           <div class="categories-grid" id="categoriesGrid"></div>
         </div>
-        <!-- VUE LISTE COURSES -->
+        <!-- VUE LISTE COURSES (format supermarché) -->
         <div id="shoppingView" class="shopping-view">
           <div id="shoppingList"></div>
         </div>
-        <!-- VUE MODE SUPERMARCHÉ -->
-        <div id="supermarketView" class="supermarket-view">
-          <div id="supermarketList"></div>
-        </div>
         <!-- Actions -->
         <div class="actions">
+          <button class="btn btn-accent" onclick="openStockDrawer()">
+            📦 Stock de base
+          </button>
           <button class="btn btn-primary" onclick="exportList()">
             📤 Exporter
           </button>
@@ -897,12 +934,39 @@ const CATEGORIES = {
   },
 };
 
+// === STOCK DE BASE ===
+// Liste des produits qu'on a généralement en stock
+const STOCK_BASE_ITEMS = [
+  "Sel", "Poivre", "Huile olive", "Huile colza", "Sucre", "Farine",
+  "Oignons", "Ail", "Épices", "Bouillon cube", "Moutarde",
+  "Ketchup", "Mayonnaise", "Vinaigre", "Beurre", "Lait",
+  "Œufs", "Riz", "Pâtes", "Concentré de tomate"
+];
+
 // État
 let selections = {};
+let stockBase = {}; // Items qu'on a en stock
 let currentCategory = null;
 
 // Init – Initialise les sélections pour chaque catégorie
 function init() {
+  // Initialiser stockBase
+  STOCK_BASE_ITEMS.forEach(item => {
+    stockBase[item] = false;
+  });
+  
+  // Charger stock depuis localStorage
+  const savedStock = localStorage.getItem('food_home_stock_base');
+  if (savedStock) {
+    try {
+      const loaded = JSON.parse(savedStock);
+      Object.assign(stockBase, loaded);
+      console.log('📦 Stock de base chargé');
+    } catch (e) {
+      console.error('Erreur chargement stock:', e);
+    }
+  }
+  
   Object.keys(CATEGORIES).forEach((key) => {
     selections[key] = {};
     const cat = CATEGORIES[key];
@@ -1005,9 +1069,47 @@ function toggleItem(category, item) {
 }
 
 function saveDrawer() {
-  saveToLocalStorage();
-  closeDrawer();
-  showToast('✅ Sauvegardé !');
+  // Si c'est le drawer du stock de base
+  if (currentCategory === null) {
+    closeDrawer();
+    
+    // Filtrer automatiquement les items du stock de la liste
+    let filtered = 0;
+    Object.keys(CATEGORIES).forEach(catKey => {
+      const cat = CATEGORIES[catKey];
+      if (cat.items) {
+        cat.items.forEach(item => {
+          if (stockBase[item] && selections[catKey][item]) {
+            selections[catKey][item] = false;
+            filtered++;
+          }
+        });
+      }
+      if (cat.groups) {
+        Object.values(cat.groups).forEach(items => {
+          items.forEach(item => {
+            if (stockBase[item] && selections[catKey][item]) {
+              selections[catKey][item] = false;
+              filtered++;
+            }
+          });
+        });
+      }
+    });
+    
+    if (filtered > 0) {
+      renderCategories();
+      saveToLocalStorage();
+      showToast(`Stock sauvegardé ! ${filtered} article(s) retiré(s)`);
+    } else {
+      showToast('Stock sauvegardé !');
+    }
+  } else {
+    // Drawer normal de catégorie
+    saveToLocalStorage();
+    closeDrawer();
+    showToast('✅ Sauvegardé !');
+  }
 }
 
 function clearDrawer() {
@@ -1031,7 +1133,6 @@ function switchView(view) {
   // Reset toutes les vues
   document.getElementById("categoriesView").classList.remove("active");
   document.getElementById("shoppingView").classList.remove("active");
-  document.getElementById("supermarketView").classList.remove("active");
   
   // Activer la bonne vue
   if (view === "categories") {
@@ -1041,58 +1142,116 @@ function switchView(view) {
     document.querySelectorAll(".toggle-btn")[1].classList.add("active");
     document.getElementById("shoppingView").classList.add("active");
     renderShoppingList();
-  } else if (view === "supermarket") {
-    document.querySelectorAll(".toggle-btn")[2].classList.add("active");
-    document.getElementById("supermarketView").classList.add("active");
-    renderSupermarketView();
   }
 }
 
 function renderShoppingList() {
   const container = document.getElementById("shoppingList");
+  
+  // Vérifier si items
   const hasItems = Object.values(selections).some((cat) =>
     Object.values(cat).some((v) => v)
   );
+  
   if (!hasItems) {
     container.innerHTML =
       '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
     return;
   }
+  
+  // Ordre logique de parcours du supermarché
+  const supermarketOrder = [
+    { keys: ['fruits'], name: 'Fruits & Légumes', icon: '🍎' },
+    { keys: ['cereales'], name: 'Pâtes, Riz & Féculents', icon: '🌾' },
+    { keys: ['laitiers'], name: 'Produits Laitiers', icon: '🥛' },
+    { keys: ['proteines'], name: 'Viandes & Poissons', icon: '🍖' },
+    { keys: ['graisses'], name: 'Huiles & Matières grasses', icon: '🧈' },
+    { keys: ['transformes'], name: 'Surgelés & Produits transformés', icon: '🍕' },
+    { keys: ['boissons'], name: 'Boissons', icon: '💧' },
+    { keys: ['condiments'], name: 'Épices & Condiments', icon: '🧂' },
+    { keys: ['sucres', 'apero'], name: 'Sucreries & Apéro', icon: '🍬' },
+    { keys: ['hygiene', 'menage', 'wc'], name: 'Hygiène & Entretien', icon: '🧴' },
+    { keys: ['salon', 'electromenager'], name: 'Maison & Électro', icon: '🏠' },
+    { keys: ['autres'], name: 'Autres', icon: '📦' },
+  ];
+  
   let html = "";
-  Object.entries(CATEGORIES)
-    .sort((a, b) => a[1].order - b[1].order)
-    .forEach(([key, cat]) => {
-      const selected = Object.entries(selections[key]).filter(([_, checked]) => checked);
-      if (selected.length > 0) {
-        html += `
-          <div class="shopping-category">
-            <div class="shopping-category-header">
-              <span>${cat.icon}</span>
-              <span>${cat.name}</span>
-            </div>
-            ${selected
-              .map(
-                ([item, _]) => `
-                <div class="shopping-item">
-                  <input type="checkbox"
-                         id="shop-${key}-${item}"
-                         onchange="toggleShopItem('${key}', '${item}')">
-                  <label for="shop-${key}-${item}">${item}</label>
-                </div>
-              `
-              )
-              .join("")}
-          </div>
-        `;
+  
+  supermarketOrder.forEach(section => {
+    // Collecter tous les items de cette section
+    const sectionItems = [];
+    
+    section.keys.forEach(key => {
+      const cat = CATEGORIES[key];
+      if (!cat) return;
+      
+      // Items simples
+      if (cat.items) {
+        cat.items.forEach(item => {
+          if (selections[key][item]) {
+            sectionItems.push({ key, item, group: null });
+          }
+        });
+      }
+      
+      // Items avec groupes
+      if (cat.groups) {
+        Object.entries(cat.groups).forEach(([groupName, items]) => {
+          items.forEach(item => {
+            if (selections[key][item]) {
+              sectionItems.push({ key, item, group: groupName });
+            }
+          });
+        });
       }
     });
+    
+    // Afficher la section si elle a des items
+    if (sectionItems.length > 0) {
+      html += `
+        <div class="supermarket-section">
+          <div class="supermarket-header">
+            <span>${section.icon}</span>
+            <span>${section.name}</span>
+            <span class="supermarket-count">${sectionItems.length}</span>
+          </div>
+          <div class="supermarket-items">
+            ${sectionItems.map(({key, item}) => `
+              <div class="supermarket-item" id="shop-${key}-${item}">
+                <input type="checkbox" 
+                       id="shop-check-${key}-${item}"
+                       onchange="toggleShopItem('${key}', '${item}')">
+                <label for="shop-check-${key}-${item}">${item}</label>
+                <button class="item-delete-btn" onclick="deleteShopItem('${key}', '${item}')" title="Supprimer">×</button>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+  });
+  
   container.innerHTML = html;
 }
 
 function toggleShopItem(category, item) {
-  const checkbox = document.getElementById(`shop-${category}-${item}`);
-  const parent = checkbox.closest(".shopping-item");
+  const checkbox = document.getElementById(`shop-check-${category}-${item}`);
+  const parent = checkbox.closest(".supermarket-item");
   parent.classList.toggle("checked");
+}
+
+function deleteShopItem(category, item) {
+  // Décocher l'item
+  selections[category][item] = false;
+  
+  // Sauvegarder
+  saveToLocalStorage();
+  
+  // Re-render
+  renderShoppingList();
+  renderCategories();
+  
+  showToast('Article supprimé');
 }
 
 // === MODE SUPERMARCHÉ ===
@@ -1207,6 +1366,38 @@ function exportList() {
   showToast("✅ Liste copiée dans le presse-papier !");
 }
 
+// === STOCK DE BASE ===
+function openStockDrawer() {
+  currentCategory = null; // Pas de catégorie spécifique
+  document.getElementById("drawerTitle").innerHTML = `📦 Stock de base`;
+  
+  let html = '<div style="margin-bottom: 16px; font-size: 14px; color: var(--text-secondary); line-height: 1.5;">Coche les produits que tu as déjà en stock.<br>Ils seront automatiquement filtrés de ta liste de courses.</div>';
+  
+  html += STOCK_BASE_ITEMS.map(item => `
+    <div class="checkbox-item ${stockBase[item] ? "checked" : ""}">
+      <input type="checkbox"
+             id="stock-${item}"
+             ${stockBase[item] ? "checked" : ""}
+             onchange="toggleStockItem('${item}')">
+      <label for="stock-${item}">${item}</label>
+    </div>
+  `).join("");
+  
+  document.getElementById("drawerBody").innerHTML = html;
+  document.getElementById("drawer").classList.add("active");
+  document.getElementById("backdrop").classList.add("active");
+}
+
+function toggleStockItem(item) {
+  stockBase[item] = !stockBase[item];
+  const checkbox = document.getElementById(`stock-${item}`);
+  const parent = checkbox.closest(".checkbox-item");
+  parent.classList.toggle("checked");
+  
+  // Sauvegarder immédiatement dans localStorage
+  localStorage.setItem('food_home_stock_base', JSON.stringify(stockBase));
+}
+
 function clearAll() {
   showConfirm(
     '🗑️ Tout effacer',
@@ -1274,20 +1465,25 @@ function loadFromLocalStorage() {
           }
         });
         
-        // 2. Si trouvé, juste cocher
+        // 2. Si trouvé, juste cocher (SAUF si en stock)
         if (exists && targetCategory) {
-          if (!selections[targetCategory][item]) {
+          // ⚠️ Ne pas ajouter si l'item est dans le stock de base
+          if (stockBase[item]) {
+            console.log(`  🚫 Ignoré (en stock): ${item}`);
+          } else if (!selections[targetCategory][item]) {
             selections[targetCategory][item] = true;
             added++;
             console.log(`  ✅ Coché: ${item} dans ${targetCategory}`);
           }
         } 
-        // 3. Sinon, ajouter dans Autres
-        else if (!CATEGORIES.autres.items.includes(item)) {
+        // 3. Sinon, ajouter dans Autres (SAUF si en stock)
+        else if (!stockBase[item] && !CATEGORIES.autres.items.includes(item)) {
           CATEGORIES.autres.items.push(item);
           selections.autres[item] = true;
           added++;
           console.log(`  ➕ Ajouté: ${item} dans Autres`);
+        } else if (stockBase[item]) {
+          console.log(`  🚫 Ignoré (en stock): ${item}`);
         }
       });
       
