@@ -713,6 +713,27 @@
           align-items: center;
           gap: 10px;
         }
+      /* Indicateur drawer - visible surtout sur mobile */
+      .drawer-scroll-hint {
+        display: none;
+      }
+      
+      /* Afficher sur mobile si le drawer-body a du scroll */
+      @media (max-width: 768px) {
+        .drawer-scroll-hint {
+          display: block;
+        }
+      }
+      
+      /* Animation bounce pour l'indicateur */
+      .drawer-scroll-hint {
+        animation: bounceHint 2s ease-in-out infinite;
+      }
+      
+      @keyframes bounceHint {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); }
+      }
             
     </style>
   </head>
@@ -782,6 +803,12 @@
         <button class="drawer-close" onclick="closeDrawer()">&larr;</button>
       </div>
       <div class="drawer-body" id="drawerBody"></div>
+      
+      <!-- ✅ Indicateur scroll EN BAS du drawer (surtout pour mobile) -->
+      <div class="drawer-scroll-hint">
+        ⋯<br>
+        <small>Faites défiler pour voir tout</small>
+      </div>
     </div>
     <script>
       // 🎨 TOAST MODERNE
