@@ -1390,25 +1390,18 @@
 
       function renderShoppingList() {
         const container = document.getElementById("shoppingList");
-
+      
         // Vérifier si items
         const hasItems = Object.values(selections).some((cat) =>
           Object.values(cat).some((v) => v)
         );
-
+      
         if (!hasItems) {
-          // Ajouter l'indicateur de scroll en bas
-          html += `
-            <div class="scroll-indicator-shopping">
-              <span>⋯</span>
-              <p>Faites défiler pour voir les boutons d'action</p>
-            </div>
-          `;
           container.innerHTML =
             '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
           return;
         }
-
+      
         // Ordre logique de parcours du supermarché
         const supermarketOrder = [
           { keys: ["fruits"], name: "Fruits & Légumes", icon: "🍎" },
@@ -1436,17 +1429,17 @@
           },
           { keys: ["autres"], name: "Autres", icon: "📦" },
         ];
-
+      
         let html = "";
-
+      
         supermarketOrder.forEach((section) => {
           // Collecter tous les items de cette section
           const sectionItems = [];
-
+      
           section.keys.forEach((key) => {
             const cat = CATEGORIES[key];
             if (!cat) return;
-
+      
             // Items simples
             if (cat.items) {
               cat.items.forEach((item) => {
@@ -1455,7 +1448,7 @@
                 }
               });
             }
-
+      
             // Items avec groupes
             if (cat.groups) {
               Object.entries(cat.groups).forEach(([groupName, items]) => {
@@ -1467,36 +1460,44 @@
               });
             }
           });
-
+      
           // Afficher la section si elle a des items
           if (sectionItems.length > 0) {
             html += `
-        <div class="supermarket-section">
-          <div class="supermarket-header">
-            <span>${section.icon}</span>
-            <span>${section.name}</span>
-            <span class="supermarket-count">${sectionItems.length}</span>
-          </div>
-          <div class="supermarket-items">
-            ${sectionItems
-              .map(
-                ({ key, item }) => `
-              <div class="supermarket-item" id="shop-${key}-${item}">
-                <input type="checkbox" 
-                       id="shop-check-${key}-${item}"
-                       onchange="toggleShopItem('${key}', '${item}')">
-                <label for="shop-check-${key}-${item}">${item}</label>
-                <button class="item-delete-btn" onclick="deleteShopItem('${key}', '${item}')" title="Supprimer">×</button>
+              <div class="supermarket-section">
+                <div class="supermarket-header">
+                  <span>${section.icon}</span>
+                  <span>${section.name}</span>
+                  <span class="supermarket-count">${sectionItems.length}</span>
+                </div>
+                <div class="supermarket-items">
+                  ${sectionItems
+                    .map(
+                      ({ key, item }) => `
+                    <div class="supermarket-item" id="shop-${key}-${item}">
+                      <input type="checkbox" 
+                             id="shop-check-${key}-${item}"
+                             onchange="toggleShopItem('${key}', '${item}')">
+                      <label for="shop-check-${key}-${item}">${item}</label>
+                      <button class="item-delete-btn" onclick="deleteShopItem('${key}', '${item}')" title="Supprimer">×</button>
+                    </div>
+                  `
+                    )
+                    .join("")}
+                </div>
               </div>
-            `
-              )
-              .join("")}
-          </div>
-        </div>
-      `;
+            `;
           }
         });
-
+      
+        // ✅ AJOUT : Indicateur de scroll en bas
+        html += `
+          <div class="scroll-indicator-shopping">
+            <span>⋯</span>
+            <p>Faites défiler pour voir les boutons d'action</p>
+          </div>
+        `;
+      
         container.innerHTML = html;
       }
 
