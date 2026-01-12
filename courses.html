@@ -713,27 +713,37 @@
           align-items: center;
           gap: 10px;
         }
-      /* Indicateur drawer - visible surtout sur mobile */
-      .drawer-scroll-hint {
-        display: none;
-      }
-      
-      /* Afficher sur mobile si le drawer-body a du scroll */
-      @media (max-width: 768px) {
+        /* Indicateur scroll drawer - FIXE en bas du drawer */
         .drawer-scroll-hint {
-          display: block;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          text-align: center;
+          padding: 16px 20px;
+          color: #9ca3af;
+          font-size: 20px;
+          opacity: 0.5;
+          background: linear-gradient(to top, rgba(255, 255, 255, 0.98), rgba(240, 249, 255, 0.95));
+          backdrop-filter: blur(8px);
+          -webkit-backdrop-filter: blur(8px);
+          pointer-events: none;
+          z-index: 10;
+          box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+          animation: bounceHint 2s ease-in-out infinite;
         }
-      }
-      
-      /* Animation bounce pour l'indicateur */
-      .drawer-scroll-hint {
-        animation: bounceHint 2s ease-in-out infinite;
-      }
-      
-      @keyframes bounceHint {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-4px); }
-      }
+        
+        .drawer-scroll-hint small {
+          display: block;
+          font-size: 10px;
+          margin-top: 4px;
+          font-style: italic;
+        }
+        
+        @keyframes bounceHint {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-4px); }
+        }
             
     </style>
   </head>
