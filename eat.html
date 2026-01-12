@@ -36,6 +36,43 @@
       @keyframes fadeOut {
         to { opacity: 0; transform: translateX(400px); }
       }
+
+      /* Indicateur de scroll en bas de la modale */
+      .scroll-indicator {
+        text-align: center;
+        padding: 40px 20px 20px;
+        color: var(--text-muted);
+        font-size: 13px;
+        opacity: 0.7;
+        border-top: 1px solid rgba(0, 0, 0, 0.06);
+        margin-top: 20px;
+      }
+
+      .scroll-indicator span {
+        display: block;
+        font-size: 32px;
+        margin-bottom: 8px;
+        animation: bounce 2s ease-in-out infinite;
+      }
+
+      @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+
+      .scroll-indicator p {
+        margin: 0;
+        font-style: italic;
+      }
+
+      /* Amélioration du scroll sur mobile */
+      @media (max-width: 768px) {
+        .modal-content {
+          max-height: 85vh;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch; /* Smooth scroll iOS */
+        }
+      }
     </style>
   </head>
   <body>
@@ -121,6 +158,12 @@
         </div>
         <div id="modal-tags" class="tags"></div>
         <div id="modal-meta" class="recipe-meta"></div>
+
+        <!-- Bouton déplacé en haut pour accessibilité mobile -->
+        <button class="btn btn-primary" id="btn-add-shopping" style="width: 100%; margin: 20px 0;">
+          🛒 Ajouter à la liste de courses
+        </button>
+
         <div class="ingredients-list">
           <h4>🛒 Ingrédients</h4>
           <ul id="modal-ingredients"></ul>
@@ -129,9 +172,12 @@
           <h4>👨‍🍳 Préparation</h4>
           <p id="modal-instructions"></p>
         </div>
-        <button class="btn btn-primary" id="btn-add-shopping" style="width: 100%; margin-top: 20px">
-          🛒 Ajouter à la liste de courses
-        </button>
+
+        <!-- Indicateur de scroll pour mobile -->
+        <div class="scroll-indicator">
+          <span>⋯</span>
+          <p>Faites défiler pour voir toute la recette</p>
+        </div>
       </div>
     </div>
     <!-- Modal planning semaine -->
