@@ -73,6 +73,24 @@
           -webkit-overflow-scrolling: touch; /* Smooth scroll iOS */
         }
       }
+
+      .btn-close {
+        background: rgba(59, 130, 246, 0.1);    /* Fond bleu léger */
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-full);      /* Cercle parfait */
+        cursor: pointer;
+        font-size: 20px;
+        color: #0ea5e9;                          /* Flèche bleue */
+        transition: all var(--transition-fast);
+      }
+      
+      .btn-close:hover {
+        background: rgba(59, 130, 246, 0.2);    /* Bleu plus foncé */
+        transform: translateX(-4px);             /* Glisse vers la gauche */
+      }
+      
     </style>
   </head>
   <body>
@@ -154,7 +172,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h2 id="modal-title"></h2>
-          <button class="btn-close" id="btn-close-modal">×</button>
+          <button class="btn-close" id="btn-close-modal">⬅️</button>
         </div>
         <div id="modal-tags" class="tags"></div>
         <div id="modal-meta" class="recipe-meta"></div>
