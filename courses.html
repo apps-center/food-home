@@ -185,19 +185,20 @@
         gap: 12px;
       }
       .drawer-close {
-        background: rgba(239, 68, 68, 0.1);
+        background: rgba(59, 130, 246, 0.1);    /* ✅ Bleu au lieu de rouge */
         border: none;
         width: 36px;
         height: 36px;
         border-radius: var(--radius-full);
         cursor: pointer;
         font-size: 20px;
-        color: #dc2626;
+        color: #0ea5e9;                          /* ✅ Bleu clair */
         transition: all var(--transition-fast);
       }
+      
       .drawer-close:hover {
-        background: rgba(239, 68, 68, 0.2);
-        transform: rotate(90deg);
+        background: rgba(59, 130, 246, 0.2);
+        transform: translateX(-4px);             /* ✅ Glisse vers la gauche */
       }
       .drawer-body {
         flex: 1 1 0%;
