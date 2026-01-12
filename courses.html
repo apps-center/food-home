@@ -1035,52 +1035,81 @@ function clearAll() {
 
 function loadFromLocalStorage() {
   try {
+    let needsRender = false;
+    
     // Charger les sélections
     const savedSelections = localStorage.getItem('food_home_selections');
     if (savedSelections) {
       const loaded = JSON.parse(savedSelections);
       const currentHash = JSON.stringify(selections);
       const newHash = JSON.stringify(loaded);
-      if (currentHash !== newHash) { // Recharge seulement si changé
+      if (currentHash !== newHash) {
         Object.assign(selections, loaded);
-        console.log('📥 Sélections chargées depuis localStorage (changement détecté)');
-      } else {
-        // Pas de log si rien changé
-        return; // Sort tôt si identique
+        console.log('📥 Sélections chargées depuis localStorage');
+        needsRender = true;
       }
     }
    
-    // Charger les items de la liste (depuis eat.html)
+    // 🔥 TOUJOURS vérifier les nouveaux items de eat.html
     const shoppingList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
     if (shoppingList.length > 0) {
-      let added = false;
+      console.log(`📥 ${shoppingList.length} items à traiter depuis eat.html`);
+      let added = 0;
+      
       shoppingList.forEach((item) => {
         let exists = false;
-        // Check dans TOUTES les catégories pour éviter doublons
+        let targetCategory = null;
+        
+        // 1. Chercher si l'item existe déjà dans les catégories
         Object.keys(CATEGORIES).forEach(catKey => {
           const cat = CATEGORIES[catKey];
-          if (cat.items && cat.items.includes(item)) exists = true;
+          if (cat.items && cat.items.includes(item)) {
+            exists = true;
+            targetCategory = catKey;
+          }
           if (cat.groups) {
             Object.values(cat.groups).forEach(group => {
-              if (group.includes(item)) exists = true;
+              if (group.includes(item)) {
+                exists = true;
+                targetCategory = catKey;
+              }
             });
           }
         });
-        if (!exists && !CATEGORIES.autres.items.includes(item)) {
+        
+        // 2. Si trouvé, juste cocher
+        if (exists && targetCategory) {
+          if (!selections[targetCategory][item]) {
+            selections[targetCategory][item] = true;
+            added++;
+            console.log(`  ✅ Coché: ${item} dans ${targetCategory}`);
+          }
+        } 
+        // 3. Sinon, ajouter dans Autres
+        else if (!CATEGORIES.autres.items.includes(item)) {
           CATEGORIES.autres.items.push(item);
           selections.autres[item] = true;
-          added = true;
+          added++;
+          console.log(`  ➕ Ajouté: ${item} dans Autres`);
         }
       });
-      if (added) { // Log et save seulement si items ajoutés
-        console.log(`📥 ${shoppingList.length} items depuis eat.html (nouveaux ajoutés)`);
-        saveToLocalStorage(); // Sauvegarde immédiat pour persister les ajouts
-        localStorage.setItem('food_home_shopping_list', JSON.stringify([])); // Clear la liste temp pour éviter re-ajout
+      
+      if (added > 0) {
+        console.log(`✅ ${added} ingrédient(s) ajouté(s) !`);
+        saveToLocalStorage();
+        needsRender = true;
       }
+      
+      // 🔥 TOUJOURS clear la liste temporaire après traitement
+      localStorage.setItem('food_home_shopping_list', JSON.stringify([]));
     }
-    renderCategories(); // Render seulement après changements
+    
+    // Render seulement si nécessaire
+    if (needsRender) {
+      renderCategories();
+    }
   } catch (error) {
-    console.error("Erreur chargement localStorage:", error);
+    console.error("❌ Erreur chargement localStorage:", error);
     renderCategories();
   }
 }
