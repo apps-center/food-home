@@ -3,60 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>FOOD HOME — Listes de courses</title>
-    <link rel="stylesheet" href="/css/common.css" />
-    <link rel="stylesheet" href="/css/courses.css" />
+    <title>FOOD HOME â€” Listes de courses</title>
+    <link rel="stylesheet" href="/static/css/common.css" />
+    <link rel="stylesheet" href="/static/css/courses.css" />
     <style>
-      /* 🎨 COULEURS NUTRITIONNELLES - Styles dynamiques */
-      .category-btn[data-color="blue"] {
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        border: 2px solid rgba(59, 130, 246, 0.3);
-      }
-      .category-btn[data-color="blue"]:hover {
-        background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
-      }
-      .category-btn[data-color="orange"] {
-        background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
-        border: 2px solid rgba(249, 115, 22, 0.3);
-      }
-      .category-btn[data-color="orange"]:hover {
-        background: linear-gradient(135deg, #fdba74 0%, #fb923c 100%);
-      }
-      .category-btn[data-color="green"] {
-        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-        border: 2px solid rgba(16, 185, 129, 0.3);
-      }
-      .category-btn[data-color="green"]:hover {
-        background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
-      }
-      .category-btn[data-color="yellow"] {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        border: 2px solid rgba(245, 158, 11, 0.3);
-      }
-      .category-btn[data-color="yellow"]:hover {
-        background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
-      }
-      .category-btn[data-color="pink"] {
-        background: linear-gradient(135deg, #fecdd3 0%, #fda4af 100%);
-        border: 2px solid rgba(244, 63, 94, 0.3);
-      }
-      .category-btn[data-color="pink"]:hover {
-        background: linear-gradient(135deg, #fda4af 0%, #fb7185 100%);
-      }
-      .category-btn[data-color="gray"] {
-        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-        border: 2px solid rgba(107, 114, 128, 0.2);
-      }
-      .category-btn[data-color="gray"]:hover {
-        background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
-      }
-      /* Indicateur nutritionnel */
-      .nutrition-indicator {
-        font-size: 10px;
-        color: var(--text-muted);
-        margin-top: 4px;
-        font-weight: var(--font-weight-medium);
-      }
       /* Toggle vues */
       .view-toggle {
         display: flex;
@@ -64,6 +14,7 @@
         margin-bottom: 24px;
         justify-content: center;
       }
+
       .toggle-btn {
         padding: 12px 28px;
         background: rgba(255, 255, 255, 0.9);
@@ -74,32 +25,24 @@
         font-weight: var(--font-weight-semibold);
         font-size: 15px;
       }
+
       .toggle-btn.active {
         background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
         color: white;
         border-color: transparent;
       }
 
-      /* Bouton accent (Stock de base) */
-      .btn-accent {
-        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-        color: white;
-        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
-      }
-
-      .btn-accent:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
-      }
-
-      /* Grille de catégories */
+      /* Grille de catÃ©gories */
       .categories-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 16px;
         margin-bottom: 24px;
       }
+
       .category-btn {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 2px solid rgba(59, 130, 246, 0.15);
         border-radius: var(--radius-xl);
         padding: 24px 16px;
         cursor: pointer;
@@ -107,20 +50,25 @@
         text-align: center;
         position: relative;
       }
+
       .category-btn:hover {
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
         transform: translateY(-4px);
         box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
       }
+
       .category-btn .icon {
         font-size: 40px;
         display: block;
         margin-bottom: 8px;
       }
+
       .category-btn .name {
         font-weight: var(--font-weight-bold);
         font-size: 14px;
         color: var(--text-primary);
       }
+
       .category-btn .badge {
         position: absolute;
         top: 12px;
@@ -132,7 +80,8 @@
         font-size: 12px;
         font-weight: var(--font-weight-bold);
       }
-      /* Drawer (tiroir latéral) */
+
+      /* Drawer (tiroir latÃ©ral) */
       .drawer-backdrop {
         position: fixed;
         top: 0;
@@ -144,10 +93,12 @@
         z-index: 999;
         display: none;
       }
+
       .drawer-backdrop.active {
         display: block;
         animation: fadeIn 0.2s ease-out;
       }
+
       .drawer {
         position: fixed;
         top: 0;
@@ -155,8 +106,6 @@
         bottom: 0;
         width: 90%;
         max-width: 500px;
-        height: 100vh;
-        height: 100dvh; /* Dynamic viewport height pour mobile */
         background: white;
         box-shadow: -4px 0 32px rgba(0, 0, 0, 0.15);
         z-index: 1000;
@@ -165,9 +114,11 @@
         transform: translateX(100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
+
       .drawer.active {
         transform: translateX(0);
       }
+
       .drawer-header {
         padding: 24px;
         border-bottom: 2px solid rgba(59, 130, 246, 0.1);
@@ -175,8 +126,8 @@
         align-items: center;
         justify-content: space-between;
         background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        flex-shrink: 0; /* Empêcher le header de se comprimer */
       }
+
       .drawer-header h2 {
         margin: 0;
         font-size: 24px;
@@ -184,44 +135,43 @@
         align-items: center;
         gap: 12px;
       }
+
       .drawer-close {
-        background: rgba(59, 130, 246, 0.1);    /* ✅ Bleu au lieu de rouge */
+        background: rgba(59, 130, 246, 0.1);
         border: none;
         width: 36px;
         height: 36px;
         border-radius: var(--radius-full);
         cursor: pointer;
         font-size: 20px;
-        color: #0ea5e9;                          /* ✅ Bleu clair */
+        color: #0ea5e9;
         transition: all var(--transition-fast);
       }
-      
+
       .drawer-close:hover {
         background: rgba(59, 130, 246, 0.2);
-        transform: translateX(-4px);             /* ✅ Glisse vers la gauche */
+        transform: translateX(-4px);
       }
+
       .drawer-body {
-        flex: 1 1 0%;
+        flex: 1;
         overflow-y: auto;
-        overflow-x: hidden;
         padding: 24px;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
-        min-height: 0;
-        max-height: 100%;
       }
+
       .drawer-footer {
         padding: 20px 24px;
         border-top: 2px solid rgba(59, 130, 246, 0.1);
         display: flex;
         gap: 12px;
         background: rgba(240, 249, 255, 0.5);
-        flex-shrink: 0; /* Empêcher le footer de se comprimer */
       }
+
       /* Items avec checkbox */
       .item-group {
         margin-bottom: 24px;
       }
+
       .item-group-title {
         font-size: 15px;
         font-weight: var(--font-weight-bold);
@@ -230,6 +180,7 @@
         padding-left: 8px;
         border-left: 3px solid #0ea5e9;
       }
+
       .checkbox-item {
         display: flex;
         align-items: center;
@@ -240,33 +191,41 @@
         margin-bottom: 8px;
         transition: all var(--transition-fast);
       }
+
       .checkbox-item:hover {
         background: rgba(224, 242, 254, 0.8);
         transform: translateX(4px);
       }
+
       .checkbox-item input[type="checkbox"] {
         width: 20px;
         height: 20px;
         cursor: pointer;
       }
+
       .checkbox-item label {
         flex: 1;
         cursor: pointer;
         font-size: 15px;
       }
+
       .checkbox-item.checked {
         opacity: 0.5;
       }
+
       .checkbox-item.checked label {
         text-decoration: line-through;
       }
+
       /* Vue liste courses */
       .shopping-view {
         display: none;
       }
+
       .shopping-view.active {
         display: block;
       }
+
       .shopping-category {
         background: rgba(255, 255, 255, 0.95);
         border: 1px solid rgba(59, 130, 246, 0.1);
@@ -274,6 +233,7 @@
         padding: 20px;
         margin-bottom: 16px;
       }
+
       .shopping-category-header {
         display: flex;
         align-items: center;
@@ -285,6 +245,7 @@
         padding-bottom: 12px;
         border-bottom: 2px solid rgba(14, 165, 233, 0.2);
       }
+
       .shopping-item {
         display: flex;
         align-items: center;
@@ -294,1293 +255,709 @@
         border-radius: var(--radius-md);
         margin-bottom: 8px;
       }
+
       .shopping-item input[type="checkbox"] {
         width: 22px;
         height: 22px;
       }
+
+      .shopping-item label {
+        flex: 1;
+        cursor: pointer;
+      }
+
       .shopping-item.checked {
         opacity: 0.5;
       }
+
       .shopping-item.checked label {
         text-decoration: line-through;
       }
+
+      /* Bouton de suppression dans la shopping list */
+      .btn-delete-item {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        border-radius: var(--radius-md);
+        padding: 6px 10px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all var(--transition-fast);
+        flex-shrink: 0;
+      }
+
+      .btn-delete-item:hover {
+        background: rgba(239, 68, 68, 0.2);
+        transform: scale(1.1);
+      }
+
       .empty-state {
         text-align: center;
         padding: 60px 20px;
         color: var(--text-muted);
       }
+
       .empty-state::before {
-        content: "🛒";
+        content: "ðŸ›’";
         display: block;
         font-size: 64px;
         margin-bottom: 16px;
         opacity: 0.6;
       }
+
       .categories-view,
-      .shopping-view,
-      .supermarket-view {
+      .shopping-view {
         display: none;
       }
+
       .categories-view.active,
-      .shopping-view.active,
-      .supermarket-view.active {
+      .shopping-view.active {
         display: block;
       }
 
-      /* === MODE SUPERMARCHÉ === */
-      .supermarket-view {
-        max-width: 100%;
-      }
-      
-      .supermarket-section {
-        background: white;
-        border: 2px solid rgba(59, 130, 246, 0.15);
-        border-radius: var(--radius-lg);
-        padding: 16px;
-        margin-bottom: 12px;
-        page-break-inside: avoid;
-      }
-      
-      .supermarket-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 16px;
-        font-weight: var(--font-weight-extrabold);
-        color: #0ea5e9;
-        margin-bottom: 12px;
-        padding-bottom: 8px;
-        border-bottom: 2px solid rgba(14, 165, 233, 0.2);
-      }
-      
-      .supermarket-items {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 6px;
-      }
-      
-      .supermarket-item {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 8px;
-        background: rgba(240, 249, 255, 0.4);
-        border-radius: var(--radius-md);
-        font-size: 13px;
-        transition: all var(--transition-fast);
-        position: relative;
-      }
-      
-      .supermarket-item:hover {
-        background: rgba(224, 242, 254, 0.6);
-      }
-      
-      .supermarket-item:hover .item-delete-btn {
-        opacity: 1;
-      }
-      
-      .supermarket-item input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-        cursor: pointer;
-        flex-shrink: 0;
-      }
-      
-      .supermarket-item label {
-        flex: 1;
-        cursor: pointer;
-        font-size: 13px;
-        line-height: 1.2;
-      }
-      
-      .item-delete-btn {
-        width: 22px;
-        height: 22px;
-        border-radius: var(--radius-full);
-        border: none;
-        background: rgba(239, 68, 68, 0.1);
-        color: #dc2626;
-        font-size: 18px;
-        font-weight: bold;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all var(--transition-fast);
-        opacity: 0;
-        flex-shrink: 0;
-      }
-      
-      .item-delete-btn:hover {
-        background: rgba(239, 68, 68, 0.2);
-        transform: scale(1.1);
-      }
-      
-      .supermarket-item.checked {
-        opacity: 0.4;
-        background: rgba(209, 213, 219, 0.3);
-      }
-      
-      .supermarket-item.checked label {
-        text-decoration: line-through;
+      /* Indicateur de scroll dans le drawer */
+      .scroll-indicator-drawer {
+        text-align: center;
+        padding: 30px 20px 20px;
         color: var(--text-muted);
-      }
-      
-      .supermarket-count {
-        display: inline-block;
-        background: #0ea5e9;
-        color: white;
-        padding: 2px 8px;
-        border-radius: var(--radius-full);
-        font-size: 11px;
-        font-weight: var(--font-weight-bold);
-        margin-left: 6px;
+        font-size: 12px;
+        opacity: 0.6;
+        margin-top: 20px;
       }
 
-      /* Info nutritionnelle */
-      .nutrition-info {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        border: 2px solid rgba(245, 158, 11, 0.2);
-        border-radius: var(--radius-lg);
-        padding: 16px;
-        margin-bottom: 24px;
-        font-size: 13px;
-        color: #92400e;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
-      .nutrition-info-icon {
+      .scroll-indicator-drawer span {
+        display: block;
         font-size: 28px;
+        margin-bottom: 6px;
+        animation: bounceDrawer 2s ease-in-out infinite;
       }
+
+      @keyframes bounceDrawer {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+
+      .scroll-indicator-drawer p {
+        margin: 0;
+        font-style: italic;
+      }
+
+      /* Amélioration du scroll sur mobile dans le drawer */
+      .drawer-body {
+        -webkit-overflow-scrolling: touch; /* Scroll fluide iOS */
+      }
+
+      /* Indicateur de scroll dans la shopping list */
+      .scroll-indicator-shopping {
+        text-align: center;
+        padding: 40px 20px 20px;
+        color: var(--text-muted);
+        font-size: 12px;
+        opacity: 0.6;
+        margin-top: 30px;
+      }
+
+      .scroll-indicator-shopping span {
+        display: block;
+        font-size: 28px;
+        margin-bottom: 6px;
+        animation: bounceShopping 2s ease-in-out infinite;
+      }
+
+      @keyframes bounceShopping {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+
+      .scroll-indicator-shopping p {
+        margin: 0;
+        font-style: italic;
+      }
+
       @media (max-width: 768px) {
         .drawer {
           width: 100%;
           max-width: 100%;
         }
+
         .categories-grid {
           grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
           gap: 12px;
         }
+
         .category-btn {
           padding: 20px 12px;
         }
+
         .category-btn .icon {
           font-size: 32px;
         }
-        /* 🔧 FIX MOBILE : Assurer que le drawer prend toute la hauteur */
-        .drawer {
-          height: 100vh;
-          height: 100dvh; /* Dynamic viewport height pour iOS */
-        }
-        .drawer-header {
-          padding: 16px 20px;
-        }
-        .drawer-header h2 {
-          font-size: 20px;
-        }
-        .drawer-body {
-          padding: 20px;
-          /* Calculer la hauteur disponible */
-          max-height: calc(100vh - 160px); /* 100vh - header - footer */
-          max-height: calc(100dvh - 160px); /* Pour iOS */
-        }
-        .drawer-footer {
-          padding: 16px 20px;
-        }
-      }
-      /* 🎨 Toast notification moderne */
-      .toast {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        color: white;
-        padding: 16px 24px;
-        border-radius: var(--radius-xl);
-        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        font-weight: var(--font-weight-semibold);
-        animation: slideInRight 0.3s ease-out, fadeOut 0.3s ease-out 2.7s forwards;
-      }
-      .toast.error {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
-      }
-      @keyframes slideInRight {
-        from { transform: translateX(400px); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-      }
-      @keyframes fadeOut {
-        to { opacity: 0; transform: translateX(400px); }
-      }
-      /* 🎨 Modal de confirmation moderne */
-      .confirm-modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(4px);
-        z-index: 10000;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-      }
-      .confirm-modal.active {
-        display: flex;
-        animation: fadeIn 0.2s ease-out;
-      }
-      .confirm-content {
-        background: white;
-        border-radius: var(--radius-2xl);
-        padding: 32px;
-        max-width: 400px;
-        width: 100%;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        animation: scaleIn 0.3s ease-out;
-      }
-      .confirm-title {
-        font-size: 20px;
-        font-weight: var(--font-weight-bold);
-        margin-bottom: 12px;
-        color: var(--text-primary);
-      }
-      .confirm-message {
-        font-size: 15px;
-        color: var(--text-secondary);
-        margin-bottom: 24px;
-        line-height: 1.5;
-      }
-      .confirm-buttons {
-        display: flex;
-        gap: 12px;
-      }
-      .confirm-btn {
-        flex: 1;
-        padding: 12px 24px;
-        border: none;
-        border-radius: var(--radius-lg);
-        font-size: 15px;
-        font-weight: var(--font-weight-semibold);
-        cursor: pointer;
-        transition: all var(--transition-base);
-      }
-      .confirm-btn-primary {
-        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-        color: white;
-        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
-      }
-      .confirm-btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
-      }
-      .confirm-btn-secondary {
-        background: rgba(255, 255, 255, 0.9);
-        border: 2px solid rgba(0, 0, 0, 0.1);
-        color: var(--text-primary);
-      }
-      .confirm-btn-secondary:hover {
-        background: white;
-        border-color: rgba(0, 0, 0, 0.2);
       }
     </style>
   </head>
   <body>
     <div class="container">
       <div class="header">
-        <div class="logo">🛒</div>
-        <h1>FOOD HOME — Listes de courses</h1>
-        <p class="subtitle">Sélectionne tes catégories et coche tes produits</p>
+        <div class="logo">ðŸ›’</div>
+        <h1>FOOD HOME â€” Listes de courses</h1>
+        <p class="subtitle">SÃ©lectionne tes catÃ©gories et coche tes produits</p>
       </div>
+
       <div class="card">
         <!-- Toggle vues -->
         <div class="view-toggle">
           <button class="toggle-btn active" onclick="switchView('categories')">
-            📦 Catégories
+            ðŸ“¦ CatÃ©gories
           </button>
           <button class="toggle-btn" onclick="switchView('shopping')">
-            🛒 Liste courses
+            ðŸ“‹ Liste courses
           </button>
         </div>
-        <!-- VUE CATÉGORIES -->
+
+        <!-- VUE CATÃ‰GORIES -->
         <div id="categoriesView" class="categories-view active">
           <div class="categories-grid" id="categoriesGrid"></div>
         </div>
-        <!-- VUE LISTE COURSES (format supermarché) -->
+
+        <!-- VUE LISTE COURSES -->
         <div id="shoppingView" class="shopping-view">
           <div id="shoppingList"></div>
         </div>
+
         <!-- Actions -->
         <div class="actions">
-          <button class="btn btn-accent" onclick="openStockDrawer()">
-            📦 Stock de base
-          </button>
           <button class="btn btn-primary" onclick="exportList()">
-            📤 Exporter
+            ðŸ“¤ Exporter
           </button>
           <button class="btn btn-secondary" onclick="clearAll()">
-            🗑️ Tout effacer
+            ðŸ—‘ï¸ Tout effacer
           </button>
         </div>
       </div>
     </div>
+
     <!-- Backdrop -->
     <div id="backdrop" class="drawer-backdrop" onclick="closeDrawer()"></div>
+
     <!-- Drawer dynamique -->
     <div id="drawer" class="drawer">
       <div class="drawer-header">
         <h2 id="drawerTitle"></h2>
-        <button class="drawer-close" onclick="closeDrawer()">⬅️</button>
+        <button class="drawer-close" onclick="closeDrawer()">&larr;</button>
       </div>
-      <div class="drawer-body" id="drawerBody"></div>
+      <div class="drawer-body" id="drawerBody">
+        <!-- Le contenu sera injecté ici dynamiquement -->
+        
+        <!-- Indicateur de scroll pour mobile -->
+        <div class="scroll-indicator-drawer">
+          <span>⋯</span>
+          <p>Faites défiler pour voir tous les produits</p>
+        </div>
+      </div>
       <div class="drawer-footer">
         <button class="btn btn-primary" onclick="saveDrawer()" style="flex: 1">
-          💾 Sauvegarder
+          ðŸ’¾ Sauvegarder
         </button>
         <button class="btn btn-secondary" onclick="clearDrawer()">
-          🗑️ Vider
+          ðŸ—‘ï¸ Vider
         </button>
       </div>
     </div>
+
     <script>
-      // 🎨 TOAST MODERNE
-function showToast(message, type = 'success') {
-  const oldToast = document.querySelector('.toast');
-  if (oldToast) oldToast.remove();
-  const toast = document.createElement('div');
-  toast.className = `toast ${type === 'error' ? 'error' : ''}`;
-  
-  const icon = type === 'error' ? '❌' : '✅';
-  toast.innerHTML = `<span style="font-size: 24px;">${icon}</span><span>${message}</span>`;
-  
-  document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3000);
-}
+      // DÃ©finition des catÃ©gories et produits
+      const CATEGORIES = {
+        // PYRAMIDE ALIMENTAIRE
+        boissons: {
+          icon: "ðŸ’§",
+          name: "Boissons",
+          order: 1,
+          items: ["Eau", "Sanpellegrino", "Jus", "Lait"],
+        },
+        cereales: {
+          icon: "ðŸŒ¾",
+          name: "CÃ©rÃ©ales & FÃ©culents",
+          order: 2,
+          items: ["PÃ¢tes", "Semoule", "Riz", "BlÃ©", "Pain"],
+        },
+        fruits: {
+          icon: "ðŸŽ",
+          name: "Fruits & LÃ©gumes",
+          order: 3,
+          priority: true,
+          groups: {
+            Fruits: ["Pommes", "Bananes", "Noix", "Abricots"],
+            LÃ©gumes: ["Tomates", "Betteraves", "Salade", "Carottes"],
+          },
+        },
+        laitiers: {
+          icon: "ðŸ¥›",
+          name: "Produits laitiers",
+          order: 4,
+          items: [
+            "Fromages",
+            "Yaourts",
+            "Fromage blanc",
+            "Fromage rÃ¢pÃ©",
+            "Skyr",
+            "Lait",
+          ],
+        },
+        proteines: {
+          icon: "ðŸ–",
+          name: "ProtÃ©ines",
+          order: 5,
+          groups: {
+            Viandes: ["BÅ“uf", "Porc", "Veau", "Poulet"],
+            Poissons: ["Cabillaud", "Thon", "Truite", "Saumon"],
+          },
+        },
+        graisses: {
+          icon: "ðŸ§ˆ",
+          name: "MatiÃ¨res grasses",
+          order: 6,
+          items: ["Huile olive", "Huile colza", "Beurre", "Margarine"],
+        },
+        sucres: {
+          icon: "ðŸ¬",
+          name: "Sucreries",
+          order: 7,
+          items: ["GÃ¢teaux", "Bonbons", "Chocolats", "Nutella", "Confiture"],
+        },
 
-// 🎨 CONFIRMATION MODERNE
-let confirmCallback = null;
+        // AUTRES CATÃ‰GORIES
+        condiments: {
+          icon: "ðŸ§‚",
+          name: "Condiments",
+          order: 8,
+          items: [
+            "Sel",
+            "Poivre",
+            "Ã‰pices",
+            "Ketchup",
+            "Moutarde",
+            "Mayonnaise",
+            "Cornichons",
+          ],
+        },
+        transformes: {
+          icon: "ðŸ•",
+          name: "Produits transformÃ©s",
+          order: 9,
+          items: [
+            "Pain Harris",
+            "Farritas",
+            "Pizzas",
+            "Lardons",
+            "CrÃ¨me fraÃ®che",
+            "Saucisses Herta",
+            "Jambon Herta",
+            "Cordons bleus",
+            "Nuggets",
+            "CrÃ¨mes desserts",
+            "Corn flakes",
+            "Biscottes",
+          ],
+        },
+        apero: {
+          icon: "ðŸ¸",
+          name: "ApÃ©ro",
+          order: 10,
+          groups: {
+            Alcools: ["Gin", "Aperol", "Tonic", "Get 27", "Bailey"],
+            Grignotage: ["CacahuÃ¨tes", "Chips", "Saucisson"],
+          },
+        },
+        hygiene: {
+          icon: "ðŸ§´",
+          name: "HygiÃ¨ne",
+          order: 11,
+          items: [
+            "Savon",
+            "Shampoing",
+            "Cotons-tiges",
+            "Coton dÃ©maquillant",
+            "Dentifrice",
+            "DÃ©odorant",
+          ],
+        },
+        menage: {
+          icon: "ðŸ§¹",
+          name: "Produits mÃ©nagers",
+          order: 12,
+          items: [
+            "Liquide vaisselle",
+            "Lessives",
+            "Adoucissant",
+            "LitiÃ¨re",
+            "Calgon",
+            "Powerball",
+            "Sac poubelle",
+            "Aluminium",
+            "Papier cuisson",
+            "Cellophane",
+          ],
+        },
+        wc: {
+          icon: "ðŸš½",
+          name: "WC",
+          order: 13,
+          items: ["Papier toilette", "Canard WC", "DÃ©sodorisant"],
+        },
+        salon: {
+          icon: "ðŸ•¯ï¸",
+          name: "Salon",
+          order: 14,
+          items: ["Bougies", "Allume-feu", "Allumettes"],
+        },
+        electromenager: {
+          icon: "ðŸ’¡",
+          name: "Ã‰lectromÃ©nager",
+          order: 15,
+          items: ["Ampoules", "Piles"],
+        },
+        autres: {
+          icon: "ðŸ“¦",
+          name: "Autres",
+          order: 16,
+          items: [], // Rempli dynamiquement depuis l'API
+        },
+      };
 
-function showConfirm(title, message, onConfirm) {
-  const modal = document.getElementById('confirmModal');
-  const titleEl = document.getElementById('confirmTitle');
-  const messageEl = document.getElementById('confirmMessage');
-  const confirmBtn = document.getElementById('confirmBtn');
-  titleEl.textContent = title;
-  messageEl.textContent = message;
+      // Ã‰tat
+      let selections = {};
+      let currentCategory = null;
 
-  confirmCallback = onConfirm;
-
-  modal.classList.add('active');
-
-  confirmBtn.onclick = () => {
-    modal.classList.remove('active');
-    if (confirmCallback) {
-      confirmCallback();
-      confirmCallback = null;
-    }
-  };
-}
-
-function cancelConfirm() {
-  document.getElementById('confirmModal').classList.remove('active');
-  confirmCallback = null;
-}
-
-// Fermer la modal en cliquant à l'extérieur
-window.addEventListener('click', (e) => {
-  const modal = document.getElementById('confirmModal');
-  if (e.target === modal) {
-    cancelConfirm();
-  }
-});
-
-// 🎨 COULEURS PYRAMIDE ALIMENTAIRE
-const NUTRITION_COLORS = {
-  blue: 'blue', // Base - Hydratation
-  orange: 'orange', // Céréales & Féculents
-  green: 'green', // Fruits & Légumes
-  yellow: 'yellow', // Protéines & Laitiers
-  pink: 'pink', // À limiter
-  gray: 'gray' // Hors pyramide
-};
-
-// Définition des catégories avec couleurs nutritionnelles
-const CATEGORIES = {
-  // PYRAMIDE ALIMENTAIRE
-  boissons: {
-    icon: "💧",
-    name: "Boissons",
-    order: 1,
-    color: 'blue',
-    nutritionLevel: '🟦 Base - À volonté',
-    items: ["Eau", "Sanpellegrino", "Jus", "Lait", "Thé", "Café", "Tisanes", "Sirop", "Coca / Soda"],
-  },
-  cereales: {
-    icon: "🌾",
-    name: "Céréales & Féculents",
-    order: 2,
-    color: 'orange',
-    nutritionLevel: '🟧 1 portion/repas',
-    items: ["Pâtes", "Semoule", "Riz", "Blé", "pain de mie", "krisprolls", "Quinoa", "Boulgour", "Couscous", "Lentilles corail", "Haricots secs", "Pois chiches"],
-  },
-  fruits: {
-    icon: "🍎",
-    name: "Fruits & Légumes",
-    order: 3,
-    priority: true,
-    color: 'green',
-    nutritionLevel: '🟩 5 portions/jour',
-    groups: {
-      Fruits: ["Pommes", "Bananes", "Noix", "Abricots", "Oranges", "Poires", "Raisins", "Fraises", "Kiwis", "Fruits secs", "clémentines", "fraises", "framboises", "myrtilles", "mangue", "fruit de la passion", "litchi", "melon", "pastèque"],
-      Légumes: ["Tomates", "Betteraves", "Salade", "Carottes", "Courgettes", "Brocolis", "Choux", "Poivrons", "Concombres", "Oignons", "Ail", "haricots verts", "céleri", "aubergine", "potimarron", "avocat", "choux rouge", "chou blanc", "poireaux"],
-    },
-  },
-  laitiers: {
-    icon: "🥛",
-    name: "Produits laitiers",
-    order: 4,
-    color: 'yellow',
-    nutritionLevel: '🟨 1 produit/repas',
-    items: [
-      "Fromages",
-      "Yaourts",
-      "Fromage blanc",
-      "Fromage râpé",
-      "Skyr",
-      "Lait",
-      "Beurre",
-      "Crème liquide",
-      "Crème fraîche",
-      "Mascarpone",
-      "saint môret",
-      "mascarpone",
-      "Philadelphia",
-      "mozzarella",
-      "burrata",
-      "fêta",
-      "Parmesan",
-      "Emmental",
-    ],
-  },
-  proteines: {
-    icon: "🍖",
-    name: "Protéines",
-    order: 5,
-    color: 'yellow',
-    nutritionLevel: '🟨 2 portions/jour',
-    groups: {
-      Viandes: ["Bœuf", "Porc", "Veau", "Poulet", "Agneau", "Canard", "Steak haché", "lapin"],
-      Poissons: ["Cabillaud", "Thon", "Truite", "Saumon", "Sardines", "Maquereau", "Crevettes", "Moules"],
-      Autres: ["Œufs", "Tofu"],
-    },
-  },
-  graisses: {
-    icon: "🧈",
-    name: "Matières grasses",
-    order: 6,
-    color: 'pink',
-    nutritionLevel: '🟥 À limiter',
-    items: ["Huile olive", "Huile colza", "Beurre", "Margarine", "Huile tournesol", "Huile noix", "Huile coco"],
-  },
-  sucres: {
-    icon: "🍬",
-    name: "Sucreries",
-    order: 7,
-    color: 'pink',
-    nutritionLevel: '🟥 À limiter',
-    items: ["Gâteaux", "Bonbons", "Chocolats", "Nutella", "Confiture", "Miel", "Sirop d'érable", "Biscuits", "Glaces", "Compote"],
-  },
-  // AUTRES CATÉGORIES
-  condiments: {
-    icon: "🧂",
-    name: "Condiments",
-    order: 8,
-    color: 'gray',
-    items: [
-      "Sel",
-      "Poivre",
-      "Épices",
-      "Ketchup",
-      "pesto vert",
-      "pesto rouge",
-      "Moutarde",
-      "Mayonnaise",
-      "Cornichons",
-      "Vinaigre",
-      "Sauce soja",
-      "Basilic séché",
-      "Thym",
-      "Curry",
-      "Paprika",
-      "Cannelle",
-      "Bouillon cube",
-    ],
-  },
-  transformes: {
-    icon: "🍕",
-    name: "Produits transformés",
-    order: 9,
-    color: 'pink',
-    nutritionLevel: '🟥 À limiter',
-    items: [
-      "Pain Harris",
-      "Farritas",
-      "Pizzas",
-      "Lardons",
-      "Saucisses Herta",
-      "Jambon Herta",
-      "Cordons bleus",
-      "Nuggets",
-      "Cordons bleus",
-      "Crèmes desserts",
-      "Corn flakes",
-      "Surgelés légumes",
-      "Raviolis",
-      "Gnocchis",
-      "Quiches",
-      "Tartes salées",
-      "Soupes",
-      "Poissons panés",
-      "Steaks végétaux",
-      "pâte brisée",
-      "pâte feuilletée",
-    ],
-  },
-  apero: {
-    icon: "🍸",
-    name: "Apéro",
-    order: 10,
-    color: 'pink',
-    nutritionLevel: '🟥 Occasionnel',
-    groups: {
-      Alcools: ["Gin", "Aperol", "Tonic", "Get 27", "Bailey", "Vin rouge", "Vin blanc", "Bière", "Whisky", "Rhum"],
-      Grignotage: ["Cacahuètes", "Chips", "Saucisson", "Olives", "Crackers", "Fruits secs", "Tapenades", "Houmous", "Gressin"],
-    },
-  },
-  hygiene: {
-    icon: "🧴",
-    name: "Hygiène",
-    order: 11,
-    color: 'gray',
-    items: [
-      "Savon",
-      "Shampoing",
-      "Cotons-tiges",
-      "Coton démaquillant",
-      "Dentifrice",
-      "Déodorant",
-      "Gel douche",
-      "Brosse à dents",
-      "Rasoirs",
-      "Mousse à raser",
-      "Crème hydratante",
-      "Protection solaire",
-      "Mouchoirs",
-    ],
-  },
-  menage: {
-    icon: "🧹",
-    name: "Produits ménagers",
-    order: 12,
-    color: 'gray',
-    items: [
-      "Liquide vaisselle",
-      "Lessives",
-      "Adoucissant",
-      "Litière",
-      "Calgon",
-      "Powerball",
-      "Sac poubelle",
-      "Aluminium",
-      "Papier cuisson",
-      "Cellophane",
-      "Éponges",
-      "Javel",
-      "Dégraissant",
-      "Produit vitre",
-      "Produit sol",
-      "Anti-calcaire",
-      "Essuie-tout",
-    ],
-  },
-  wc: {
-    icon: "🚽",
-    name: "WC",
-    order: 13,
-    color: 'gray',
-    items: ["Papier toilette", "Canard WC", "Désodorisant", "Lingettes WC", "Blocs WC"],
-  },
-  salon: {
-    icon: "🕯️",
-    name: "Salon",
-    order: 14,
-    color: 'gray',
-    items: ["Bougies", "Allume-feu", "Allumettes"],
-  },
-  electromenager: {
-    icon: "💡",
-    name: "Électroménager",
-    order: 15,
-    color: 'gray',
-    items: ["Ampoules", "Piles", "Piles rechargeables", "Câbles USB", "Adaptateurs", "Chargeurs"],
-  },
-  autres: {
-    icon: "📦",
-    name: "Autres",
-    order: 16,
-    color: 'gray',
-    items: [],
-  },
-};
-
-// === STOCK DE BASE ===
-// Liste des produits qu'on a généralement en stock
-const STOCK_BASE_ITEMS = [
-  "Sel", "Poivre", "Huile olive", "Huile colza", "Sucre", "Farine",
-  "Oignons", "Ail", "Épices", "Bouillon cube", "Moutarde",
-  "Ketchup", "Mayonnaise", "Vinaigre", "Beurre", "Lait",
-  "Œufs", "Riz", "Pâtes", "Concentré de tomate"
-];
-
-// État
-let selections = {};
-let stockBase = {}; // Items qu'on a en stock
-let currentCategory = null;
-
-// Init – Initialise les sélections pour chaque catégorie
-function init() {
-  // Initialiser stockBase
-  STOCK_BASE_ITEMS.forEach(item => {
-    stockBase[item] = false;
-  });
-  
-  // Charger stock depuis localStorage
-  const savedStock = localStorage.getItem('food_home_stock_base');
-  if (savedStock) {
-    try {
-      const loaded = JSON.parse(savedStock);
-      Object.assign(stockBase, loaded);
-      console.log('📦 Stock de base chargé');
-    } catch (e) {
-      console.error('Erreur chargement stock:', e);
-    }
-  }
-  
-  Object.keys(CATEGORIES).forEach((key) => {
-    selections[key] = {};
-    const cat = CATEGORIES[key];
-    if (cat.items) {
-      cat.items.forEach((item) => (selections[key][item] = false));
-    } else if (cat.groups) {
-      Object.values(cat.groups).forEach((items) => {
-        items.forEach((item) => (selections[key][item] = false));
-      });
-    }
-  });
-  renderCategories();
-  loadFromLocalStorage();
-}
-
-// Render grille catégories avec couleurs
-function renderCategories() {
-  const grid = document.getElementById("categoriesGrid");
-  const sorted = Object.entries(CATEGORIES).sort(
-    (a, b) => a[1].order - b[1].order
-  );
-  grid.innerHTML = sorted
-    .map(([key, cat]) => {
-      const count = Object.values(selections[key]).filter((v) => v).length;
-      const colorAttr = cat.color ? `data-color="${cat.color}"` : '';
-      const nutritionLabel = cat.nutritionLevel || '';
-      
-      return `
-        <div class="category-btn" ${colorAttr} onclick="openDrawer('${key}')">
-          ${count > 0 ? `<div class="badge">${count}</div>` : ""}
-          <span class="icon">${cat.icon}</span>
-          <span class="name">${cat.name}</span>
-          ${nutritionLabel ? `<div class="nutrition-indicator">${nutritionLabel}</div>` : ''}
-        </div>
-      `;
-    })
-    .join("");
-}
-
-// Ouvrir drawer avec les items/groupes
-function openDrawer(categoryKey) {
-  currentCategory = categoryKey;
-  const cat = CATEGORIES[categoryKey];
-  document.getElementById("drawerTitle").innerHTML = `${cat.icon} ${cat.name}`;
-  let html = "";
-  if (cat.items) {
-    html = cat.items
-      .map(
-        (item) => `
-          <div class="checkbox-item ${selections[categoryKey][item] ? "checked" : ""}">
-            <input type="checkbox"
-                   id="item-${item}"
-                   ${selections[categoryKey][item] ? "checked" : ""}
-                   onchange="toggleItem('${categoryKey}', '${item}')">
-            <label for="item-${item}">${item}</label>
-          </div>
-        `
-      )
-      .join("");
-  } else if (cat.groups) {
-    html = Object.entries(cat.groups)
-      .map(
-        ([groupName, items]) => `
-          <div class="item-group">
-            <div class="item-group-title">${groupName}</div>
-            ${items
-              .map(
-                (item) => `
-                <div class="checkbox-item ${selections[categoryKey][item] ? "checked" : ""}">
-                  <input type="checkbox"
-                         id="item-${item}"
-                         ${selections[categoryKey][item] ? "checked" : ""}
-                         onchange="toggleItem('${categoryKey}', '${item}')">
-                  <label for="item-${item}">${item}</label>
-                </div>
-              `
-              )
-              .join("")}
-          </div>
-        `
-      )
-      .join("");
-  }
-  document.getElementById("drawerBody").innerHTML = html;
-  document.getElementById("drawer").classList.add("active");
-  document.getElementById("backdrop").classList.add("active");
-}
-
-function closeDrawer() {
-  document.getElementById("drawer").classList.remove("active");
-  document.getElementById("backdrop").classList.remove("active");
-  renderCategories();
-}
-
-function toggleItem(category, item) {
-  selections[category][item] = !selections[category][item];
-  const checkbox = document.getElementById(`item-${item}`);
-  const parent = checkbox.closest(".checkbox-item");
-  parent.classList.toggle("checked");
-}
-
-function saveDrawer() {
-  // Si c'est le drawer du stock de base
-  if (currentCategory === null) {
-    closeDrawer();
-    
-    // Filtrer automatiquement les items du stock de la liste
-    let filtered = 0;
-    Object.keys(CATEGORIES).forEach(catKey => {
-      const cat = CATEGORIES[catKey];
-      if (cat.items) {
-        cat.items.forEach(item => {
-          if (stockBase[item] && selections[catKey][item]) {
-            selections[catKey][item] = false;
-            filtered++;
-          }
-        });
-      }
-      if (cat.groups) {
-        Object.values(cat.groups).forEach(items => {
-          items.forEach(item => {
-            if (stockBase[item] && selections[catKey][item]) {
-              selections[catKey][item] = false;
-              filtered++;
-            }
-          });
-        });
-      }
-    });
-    
-    if (filtered > 0) {
-      renderCategories();
-      saveToLocalStorage();
-      showToast(`Stock sauvegardé ! ${filtered} article(s) retiré(s)`);
-    } else {
-      showToast('Stock sauvegardé !');
-    }
-  } else {
-    // Drawer normal de catégorie
-    saveToLocalStorage();
-    closeDrawer();
-    showToast('✅ Sauvegardé !');
-  }
-}
-
-function clearDrawer() {
-  showConfirm(
-    '🗑️ Vider la catégorie',
-    'Voulez-vous vraiment vider cette catégorie ?',
-    () => {
-      Object.keys(selections[currentCategory]).forEach((item) => {
-        selections[currentCategory][item] = false;
-      });
-      openDrawer(currentCategory);
-      showToast('Catégorie vidée');
-    }
-  );
-}
-
-function switchView(view) {
-  // Reset tous les boutons
-  document.querySelectorAll(".toggle-btn").forEach((btn) => btn.classList.remove("active"));
-  
-  // Reset toutes les vues
-  document.getElementById("categoriesView").classList.remove("active");
-  document.getElementById("shoppingView").classList.remove("active");
-  
-  // Activer la bonne vue
-  if (view === "categories") {
-    document.querySelectorAll(".toggle-btn")[0].classList.add("active");
-    document.getElementById("categoriesView").classList.add("active");
-  } else if (view === "shopping") {
-    document.querySelectorAll(".toggle-btn")[1].classList.add("active");
-    document.getElementById("shoppingView").classList.add("active");
-    renderShoppingList();
-  }
-}
-
-function renderShoppingList() {
-  const container = document.getElementById("shoppingList");
-  
-  // Vérifier si items
-  const hasItems = Object.values(selections).some((cat) =>
-    Object.values(cat).some((v) => v)
-  );
-  
-  if (!hasItems) {
-    container.innerHTML =
-      '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
-    return;
-  }
-  
-  // Ordre logique de parcours du supermarché
-  const supermarketOrder = [
-    { keys: ['fruits'], name: 'Fruits & Légumes', icon: '🍎' },
-    { keys: ['cereales'], name: 'Pâtes, Riz & Féculents', icon: '🌾' },
-    { keys: ['laitiers'], name: 'Produits Laitiers', icon: '🥛' },
-    { keys: ['proteines'], name: 'Viandes & Poissons', icon: '🍖' },
-    { keys: ['graisses'], name: 'Huiles & Matières grasses', icon: '🧈' },
-    { keys: ['transformes'], name: 'Surgelés & Produits transformés', icon: '🍕' },
-    { keys: ['boissons'], name: 'Boissons', icon: '💧' },
-    { keys: ['condiments'], name: 'Épices & Condiments', icon: '🧂' },
-    { keys: ['sucres', 'apero'], name: 'Sucreries & Apéro', icon: '🍬' },
-    { keys: ['hygiene', 'menage', 'wc'], name: 'Hygiène & Entretien', icon: '🧴' },
-    { keys: ['salon', 'electromenager'], name: 'Maison & Électro', icon: '🏠' },
-    { keys: ['autres'], name: 'Autres', icon: '📦' },
-  ];
-  
-  let html = "";
-  
-  supermarketOrder.forEach(section => {
-    // Collecter tous les items de cette section
-    const sectionItems = [];
-    
-    section.keys.forEach(key => {
-      const cat = CATEGORIES[key];
-      if (!cat) return;
-      
-      // Items simples
-      if (cat.items) {
-        cat.items.forEach(item => {
-          if (selections[key][item]) {
-            sectionItems.push({ key, item, group: null });
-          }
-        });
-      }
-      
-      // Items avec groupes
-      if (cat.groups) {
-        Object.entries(cat.groups).forEach(([groupName, items]) => {
-          items.forEach(item => {
-            if (selections[key][item]) {
-              sectionItems.push({ key, item, group: groupName });
-            }
-          });
-        });
-      }
-    });
-    
-    // Afficher la section si elle a des items
-    if (sectionItems.length > 0) {
-      html += `
-        <div class="supermarket-section">
-          <div class="supermarket-header">
-            <span>${section.icon}</span>
-            <span>${section.name}</span>
-            <span class="supermarket-count">${sectionItems.length}</span>
-          </div>
-          <div class="supermarket-items">
-            ${sectionItems.map(({key, item}) => `
-              <div class="supermarket-item" id="shop-${key}-${item}">
-                <input type="checkbox" 
-                       id="shop-check-${key}-${item}"
-                       onchange="toggleShopItem('${key}', '${item}')">
-                <label for="shop-check-${key}-${item}">${item}</label>
-                <button class="item-delete-btn" onclick="deleteShopItem('${key}', '${item}')" title="Supprimer">×</button>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
-  });
-  
-  container.innerHTML = html;
-}
-
-function toggleShopItem(category, item) {
-  const checkbox = document.getElementById(`shop-check-${category}-${item}`);
-  const parent = checkbox.closest(".supermarket-item");
-  parent.classList.toggle("checked");
-}
-
-function deleteShopItem(category, item) {
-  // Décocher l'item
-  selections[category][item] = false;
-  
-  // Sauvegarder
-  saveToLocalStorage();
-  
-  // Re-render
-  renderShoppingList();
-  renderCategories();
-  
-  showToast('Article supprimé');
-}
-
-// === MODE SUPERMARCHÉ ===
-function renderSupermarketView() {
-  const container = document.getElementById("supermarketList");
-  
-  // Vérifier si items
-  const hasItems = Object.values(selections).some((cat) =>
-    Object.values(cat).some((v) => v)
-  );
-  
-  if (!hasItems) {
-    container.innerHTML =
-      '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
-    return;
-  }
-  
-  // Ordre logique de parcours du supermarché
-  const supermarketOrder = [
-    { keys: ['fruits'], name: '🍎 Fruits & Légumes', icon: '🍎' },
-    { keys: ['cereales'], name: '🌾 Pâtes, Riz & Féculents', icon: '🌾' },
-    { keys: ['laitiers'], name: '🥛 Produits Laitiers', icon: '🥛' },
-    { keys: ['proteines'], name: '🍖 Viandes & Poissons', icon: '🍖' },
-    { keys: ['graisses'], name: '🧈 Huiles & Matières grasses', icon: '🧈' },
-    { keys: ['transformes'], name: '🍕 Surgelés & Produits transformés', icon: '🍕' },
-    { keys: ['boissons'], name: '💧 Boissons', icon: '💧' },
-    { keys: ['condiments'], name: '🧂 Épices & Condiments', icon: '🧂' },
-    { keys: ['sucres', 'apero'], name: '🍬 Sucreries & Apéro', icon: '🍬' },
-    { keys: ['hygiene', 'menage', 'wc'], name: '🧴 Hygiène & Entretien', icon: '🧴' },
-    { keys: ['salon', 'electromenager'], name: '🏠 Maison & Électro', icon: '🏠' },
-    { keys: ['autres'], name: '📦 Autres', icon: '📦' },
-  ];
-  
-  let html = "";
-  
-  supermarketOrder.forEach(section => {
-    // Collecter tous les items de cette section
-    const sectionItems = [];
-    
-    section.keys.forEach(key => {
-      const cat = CATEGORIES[key];
-      if (!cat) return;
-      
-      // Items simples
-      if (cat.items) {
-        cat.items.forEach(item => {
-          if (selections[key][item]) {
-            sectionItems.push({ key, item, group: null });
-          }
-        });
-      }
-      
-      // Items avec groupes
-      if (cat.groups) {
-        Object.entries(cat.groups).forEach(([groupName, items]) => {
-          items.forEach(item => {
-            if (selections[key][item]) {
-              sectionItems.push({ key, item, group: groupName });
-            }
-          });
-        });
-      }
-    });
-    
-    // Afficher la section si elle a des items
-    if (sectionItems.length > 0) {
-      html += `
-        <div class="supermarket-section">
-          <div class="supermarket-header">
-            <span>${section.icon}</span>
-            <span>${section.name}</span>
-            <span class="supermarket-count">${sectionItems.length}</span>
-          </div>
-          <div class="supermarket-items">
-            ${sectionItems.map(({key, item}) => `
-              <div class="supermarket-item" id="super-${key}-${item}">
-                <input type="checkbox" 
-                       id="super-check-${key}-${item}"
-                       onchange="toggleSupermarketItem('${key}', '${item}')">
-                <label for="super-check-${key}-${item}">${item}</label>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      `;
-    }
-  });
-  
-  container.innerHTML = html;
-}
-
-function toggleSupermarketItem(category, item) {
-  const checkbox = document.getElementById(`super-check-${category}-${item}`);
-  const parent = checkbox.closest(".supermarket-item");
-  parent.classList.toggle("checked");
-}
-
-function exportList() {
-  let text = "📋 LISTE DE COURSES\n\n";
-  Object.entries(CATEGORIES)
-    .sort((a, b) => a[1].order - b[1].order)
-    .forEach(([key, cat]) => {
-      const selected = Object.entries(selections[key]).filter(([_, checked]) => checked);
-      if (selected.length > 0) {
-        text += `\n${cat.icon} ${cat.name.toUpperCase()}\n`;
-        selected.forEach(([item, _]) => {
-          text += `☐ ${item}\n`;
-        });
-      }
-    });
-  navigator.clipboard.writeText(text);
-  showToast("✅ Liste copiée dans le presse-papier !");
-}
-
-// === STOCK DE BASE ===
-function openStockDrawer() {
-  currentCategory = null; // Pas de catégorie spécifique
-  document.getElementById("drawerTitle").innerHTML = `📦 Stock de base`;
-  
-  let html = '<div style="margin-bottom: 16px; font-size: 14px; color: var(--text-secondary); line-height: 1.5;">Coche les produits que tu as déjà en stock.<br>Ils seront automatiquement filtrés de ta liste de courses.</div>';
-  
-  html += STOCK_BASE_ITEMS.map(item => `
-    <div class="checkbox-item ${stockBase[item] ? "checked" : ""}">
-      <input type="checkbox"
-             id="stock-${item}"
-             ${stockBase[item] ? "checked" : ""}
-             onchange="toggleStockItem('${item}')">
-      <label for="stock-${item}">${item}</label>
-    </div>
-  `).join("");
-  
-  document.getElementById("drawerBody").innerHTML = html;
-  document.getElementById("drawer").classList.add("active");
-  document.getElementById("backdrop").classList.add("active");
-}
-
-function toggleStockItem(item) {
-  stockBase[item] = !stockBase[item];
-  const checkbox = document.getElementById(`stock-${item}`);
-  const parent = checkbox.closest(".checkbox-item");
-  parent.classList.toggle("checked");
-  
-  // Sauvegarder immédiatement dans localStorage
-  localStorage.setItem('food_home_stock_base', JSON.stringify(stockBase));
-}
-
-function clearAll() {
-  showConfirm(
-    '🗑️ Tout effacer',
-    'Voulez-vous vraiment effacer toute la liste de courses ?',
-    () => {
-      Object.keys(selections).forEach((cat) => {
-        Object.keys(selections[cat]).forEach((item) => {
-          selections[cat][item] = false;
-        });
-      });
-      renderCategories();
-      
-      // Rafraîchir immédiatement l'affichage
-      if (document.getElementById("shoppingView").classList.contains("active")) {
-        renderShoppingList();
-      }
-      
-      saveToLocalStorage();
-      showToast('Liste de courses effacée');
-    }
-  );
-}
-
-function loadFromLocalStorage() {
-  try {
-    let needsRender = false;
-    
-    // Charger les sélections
-    const savedSelections = localStorage.getItem('food_home_selections');
-    if (savedSelections) {
-      const loaded = JSON.parse(savedSelections);
-      const currentHash = JSON.stringify(selections);
-      const newHash = JSON.stringify(loaded);
-      if (currentHash !== newHash) {
-        Object.assign(selections, loaded);
-        console.log('📥 Sélections chargées depuis localStorage');
-        needsRender = true;
-      }
-    }
-   
-    // 🔥 TOUJOURS vérifier les nouveaux items de eat.html
-    const shoppingList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
-    if (shoppingList.length > 0) {
-      console.log(`📥 ${shoppingList.length} items à traiter depuis eat.html`);
-      let added = 0;
-      
-      shoppingList.forEach((item) => {
-        let exists = false;
-        let targetCategory = null;
-        
-        // 1. Chercher si l'item existe déjà dans les catégories
-        Object.keys(CATEGORIES).forEach(catKey => {
-          const cat = CATEGORIES[catKey];
-          if (cat.items && cat.items.includes(item)) {
-            exists = true;
-            targetCategory = catKey;
-          }
-          if (cat.groups) {
-            Object.values(cat.groups).forEach(group => {
-              if (group.includes(item)) {
-                exists = true;
-                targetCategory = catKey;
-              }
+      // Init
+      function init() {
+        // Initialiser selections
+        Object.keys(CATEGORIES).forEach((key) => {
+          selections[key] = {};
+          const cat = CATEGORIES[key];
+          if (cat.items) {
+            cat.items.forEach((item) => (selections[key][item] = false));
+          } else if (cat.groups) {
+            Object.values(cat.groups).forEach((items) => {
+              items.forEach((item) => (selections[key][item] = false));
             });
           }
         });
-        
-        // 2. Si trouvé, juste cocher (SAUF si en stock)
-        if (exists && targetCategory) {
-          // ⚠️ Ne pas ajouter si l'item est dans le stock de base
-          if (stockBase[item]) {
-            console.log(`  🚫 Ignoré (en stock): ${item}`);
-          } else if (!selections[targetCategory][item]) {
-            selections[targetCategory][item] = true;
-            added++;
-            console.log(`  ✅ Coché: ${item} dans ${targetCategory}`);
-          }
-        } 
-        // 3. Sinon, ajouter dans Autres (SAUF si en stock)
-        else if (!stockBase[item] && !CATEGORIES.autres.items.includes(item)) {
-          CATEGORIES.autres.items.push(item);
-          selections.autres[item] = true;
-          added++;
-          console.log(`  ➕ Ajouté: ${item} dans Autres`);
-        } else if (stockBase[item]) {
-          console.log(`  🚫 Ignoré (en stock): ${item}`);
-        }
-      });
-      
-      if (added > 0) {
-        console.log(`✅ ${added} ingrédient(s) ajouté(s) !`);
-        saveToLocalStorage();
-        needsRender = true;
+
+        renderCategories();
+        loadFromAPI();
       }
-      
-      // 🔥 TOUJOURS clear la liste temporaire après traitement
-      localStorage.setItem('food_home_shopping_list', JSON.stringify([]));
-    }
-    
-    // Render seulement si nécessaire
-    if (needsRender) {
-      renderCategories();
-    }
-  } catch (error) {
-    console.error("❌ Erreur chargement localStorage:", error);
-    renderCategories();
-  }
-}
-      
-function saveToLocalStorage() {
-  try {
-    // Sauvegarder les sélections
-    localStorage.setItem('food_home_selections', JSON.stringify(selections));
-    
-    // Sauvegarder aussi la liste complète des items cochés
-    const allItems = [];
-    Object.entries(selections).forEach(([cat, items]) => {
-      Object.entries(items).forEach(([item, checked]) => {
-        if (checked) allItems.push(item);
-      });
-    });
-    
-    localStorage.setItem('food_home_shopping_list', JSON.stringify(allItems));
-    console.log('💾 Sauvegardé dans localStorage');
-  } catch (error) {
-    console.error("Erreur sauvegarde:", error);
-  }
-}
 
-// 🎯 ÉCOUTER LES MESSAGES postMessage POUR RAFRAÎCHIR SANS RELOAD
-window.addEventListener("message", (event) => {
-  if (event.origin !== window.location.origin) return; // Vérif sécu pour éviter messages externes
-  
-  const { type } = event.data || {};
+      // Render grille catÃ©gories
+      function renderCategories() {
+        const grid = document.getElementById("categoriesGrid");
 
-  if (type === "REFRESH_DATA" || type === "SHOPPING_LIST_UPDATED") {
-    console.log("🔄 Received refresh message, reloading...");
-    
-    // Rafraîchir depuis localStorage
-    loadFromLocalStorage();
-    
-    // Si on est sur la vue shopping, rafraîchir aussi
-    if (document.getElementById("shoppingView").classList.contains("active")) {
-      renderShoppingList();
-    }
-  }
-});
+        const sorted = Object.entries(CATEGORIES).sort(
+          (a, b) => a[1].order - b[1].order
+        );
 
-// Check périodique pour synchro auto (fix bug timing)
-setInterval(() => {
-  const oldSelections = JSON.stringify(selections);
-  const oldCategories = JSON.stringify(CATEGORIES);
-  loadFromLocalStorage();
-  if (JSON.stringify(selections) !== oldSelections || JSON.stringify(CATEGORIES) !== oldCategories) {
-    if (document.getElementById("shoppingView").classList.contains("active")) {
-      renderShoppingList();
-    } else {
-      renderCategories();
-    }
-  }
-}, 5000); // Garde 5s, mais optimise
+        grid.innerHTML = sorted
+          .map(([key, cat]) => {
+            const count = Object.values(selections[key]).filter(
+              (v) => v
+            ).length;
+            return `
+                    <div class="category-btn" onclick="openDrawer('${key}')">
+                        ${count > 0 ? `<div class="badge">${count}</div>` : ""}
+                        <span class="icon">${cat.icon}</span>
+                        <span class="name">${cat.name}</span>
+                    </div>
+                `;
+          })
+          .join("");
+      }
 
-window.addEventListener("DOMContentLoaded", init);
+      // Ouvrir drawer
+      function openDrawer(categoryKey) {
+        currentCategory = categoryKey;
+        const cat = CATEGORIES[categoryKey];
+
+        document.getElementById(
+          "drawerTitle"
+        ).innerHTML = `${cat.icon} ${cat.name}`;
+
+        let html = "";
+
+        if (cat.items) {
+          html = cat.items
+            .map(
+              (item) => `
+                    <div class="checkbox-item ${
+                      selections[categoryKey][item] ? "checked" : ""
+                    }">
+                        <input type="checkbox" 
+                               id="item-${item}" 
+                               ${selections[categoryKey][item] ? "checked" : ""}
+                               onchange="toggleItem('${categoryKey}', '${item}')">
+                        <label for="item-${item}">${item}</label>
+                    </div>
+                `
+            )
+            .join("");
+        } else if (cat.groups) {
+          html = Object.entries(cat.groups)
+            .map(
+              ([groupName, items]) => `
+                    <div class="item-group">
+                        <div class="item-group-title">${groupName}</div>
+                        ${items
+                          .map(
+                            (item) => `
+                            <div class="checkbox-item ${
+                              selections[categoryKey][item] ? "checked" : ""
+                            }">
+                                <input type="checkbox" 
+                                       id="item-${item}" 
+                                       ${
+                                         selections[categoryKey][item]
+                                           ? "checked"
+                                           : ""
+                                       }
+                                       onchange="toggleItem('${categoryKey}', '${item}')">
+                                <label for="item-${item}">${item}</label>
+                            </div>
+                        `
+                          )
+                          .join("")}
+                    </div>
+                `
+            )
+            .join("");
+        }
+
+        document.getElementById("drawerBody").innerHTML = html;
+        document.getElementById("drawer").classList.add("active");
+        document.getElementById("backdrop").classList.add("active");
+      }
+
+      // Fermer drawer
+      function closeDrawer() {
+        document.getElementById("drawer").classList.remove("active");
+        document.getElementById("backdrop").classList.remove("active");
+        renderCategories();
+      }
+
+      // Toggle item
+      function toggleItem(category, item) {
+        selections[category][item] = !selections[category][item];
+        const checkbox = document.getElementById(`item-${item}`);
+        const parent = checkbox.closest(".checkbox-item");
+        parent.classList.toggle("checked");
+      }
+
+      // Save drawer
+      function saveDrawer() {
+        closeDrawer();
+        saveToAPI();
+      }
+
+      // Clear drawer
+      function clearDrawer() {
+        if (!confirm("Vider cette catÃ©gorie ?")) return;
+
+        Object.keys(selections[currentCategory]).forEach((item) => {
+          selections[currentCategory][item] = false;
+        });
+
+        openDrawer(currentCategory);
+      }
+
+      // Switch view
+      function switchView(view) {
+        document
+          .querySelectorAll(".toggle-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+
+        if (view === "categories") {
+          document
+            .querySelector(".toggle-btn:first-child")
+            .classList.add("active");
+          document.getElementById("categoriesView").classList.add("active");
+          document.getElementById("shoppingView").classList.remove("active");
+        } else {
+          document
+            .querySelector(".toggle-btn:last-child")
+            .classList.add("active");
+          document.getElementById("categoriesView").classList.remove("active");
+          document.getElementById("shoppingView").classList.add("active");
+          renderShoppingList();
+        }
+      }
+
+      // Render shopping list
+      function renderShoppingList() {
+        const container = document.getElementById("shoppingList");
+
+        // VÃ©rifier si items
+        const hasItems = Object.values(selections).some((cat) =>
+          Object.values(cat).some((v) => v)
+        );
+
+        if (!hasItems) {
+          container.innerHTML =
+            '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "CatÃ©gories"</span></div>';
+          return;
+        }
+
+        let html = "";
+
+        Object.entries(CATEGORIES)
+          .sort((a, b) => a[1].order - b[1].order)
+          .forEach(([key, cat]) => {
+            const selected = Object.entries(selections[key]).filter(
+              ([_, checked]) => checked
+            );
+
+            if (selected.length > 0) {
+              html += `
+                        <div class="shopping-category">
+                            <div class="shopping-category-header">
+                                <span>${cat.icon}</span>
+                                <span>${cat.name}</span>
+                            </div>
+                            ${selected
+                              .map(
+                                ([item, _]) => `
+                                <div class="shopping-item">
+                                    <input type="checkbox" 
+                                           id="shop-${key}-${item}"
+                                           onchange="toggleShopItem('${key}', '${item}')">
+                                    <label for="shop-${key}-${item}">${item}</label>
+                                    <button class="btn-delete-item" onclick="removeFromShoppingList('${key}', '${item}')" title="Supprimer">
+                                        🗑️
+                                    </button>
+                                </div>
+                            `
+                              )
+                              .join("")}
+                        </div>
+                    `;
+            }
+          });
+
+        // Ajouter l'indicateur de scroll en bas
+        html += `
+          <div class="scroll-indicator-shopping">
+            <span>⋯</span>
+            <p>Faites défiler pour voir les boutons d'action</p>
+          </div>
+        `;
+
+        container.innerHTML = html;
+      }
+
+      // Toggle shopping item
+      function toggleShopItem(category, item) {
+        const checkbox = document.getElementById(`shop-${category}-${item}`);
+        const parent = checkbox.closest(".shopping-item");
+        parent.classList.toggle("checked");
+      }
+
+      // Remove item from shopping list
+      function removeFromShoppingList(category, item) {
+        if (!confirm(`Retirer "${item}" de la liste ?`)) return;
+        
+        // Décocher l'item dans les sélections
+        selections[category][item] = false;
+        
+        // Re-render la liste
+        renderShoppingList();
+        
+        // Sauvegarder
+        saveToAPI();
+      }
+
+      // Export
+      function exportList() {
+        let text = "ðŸ“‹ LISTE DE COURSES\n\n";
+
+        Object.entries(CATEGORIES)
+          .sort((a, b) => a[1].order - b[1].order)
+          .forEach(([key, cat]) => {
+            const selected = Object.entries(selections[key]).filter(
+              ([_, checked]) => checked
+            );
+
+            if (selected.length > 0) {
+              text += `\n${cat.icon} ${cat.name.toUpperCase()}\n`;
+              selected.forEach(([item, _]) => {
+                text += `â˜ ${item}\n`;
+              });
+            }
+          });
+
+        navigator.clipboard.writeText(text);
+        alert("âœ… Liste copiÃ©e !");
+      }
+
+      // Clear all
+      function clearAll() {
+        if (!confirm("Tout effacer ?")) return;
+
+        Object.keys(selections).forEach((cat) => {
+          Object.keys(selections[cat]).forEach((item) => {
+            selections[cat][item] = false;
+          });
+        });
+
+        renderCategories();
+        saveToAPI();
+      }
+
+      // Load from API
+      async function loadFromAPI() {
+        try {
+          const response = await fetch("/api/shopping_list");
+          const data = await response.json();
+
+          if (data.success && data.items && data.items.length > 0) {
+            console.log(`ðŸ“¥ ${data.items.length} items chargÃ©s depuis l'API`);
+
+            // Ajouter les items dans la catÃ©gorie "Autres"
+            data.items.forEach((item) => {
+              // Ajouter l'item s'il n'existe pas dÃ©jÃ 
+              if (!CATEGORIES.autres.items.includes(item)) {
+                CATEGORIES.autres.items.push(item);
+              }
+              // Cocher l'item
+              selections.autres[item] = true;
+            });
+          }
+
+          renderCategories();
+        } catch (error) {
+          console.error("Erreur chargement API:", error);
+          renderCategories();
+        }
+      }
+
+      // Save to API
+      async function saveToAPI() {
+        const allItems = [];
+
+        Object.entries(selections).forEach(([cat, items]) => {
+          Object.entries(items).forEach(([item, checked]) => {
+            if (checked) allItems.push(item);
+          });
+        });
+
+        try {
+          await fetch("/api/shared_data", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ shopping_list: allItems }),
+          });
+        } catch (error) {
+          console.error("Erreur:", error);
+        }
+      }
+
+      // Init on load
+      window.addEventListener("DOMContentLoaded", init);
     </script>
-    <!-- 🎨 Modal de confirmation moderne -->
-    <div id="confirmModal" class="confirm-modal">
-      <div class="confirm-content">
-        <div class="confirm-title" id="confirmTitle">Confirmation</div>
-        <div class="confirm-message" id="confirmMessage">Êtes-vous sûr ?</div>
-        <div class="confirm-buttons">
-          <button class="confirm-btn confirm-btn-secondary" onclick="cancelConfirm()">
-            Annuler
-          </button>
-          <button class="confirm-btn confirm-btn-primary" id="confirmBtn">
-            Confirmer
-          </button>
-        </div>
-      </div>
-    </div>
   </body>
 </html>
