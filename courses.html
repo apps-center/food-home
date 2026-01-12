@@ -657,6 +657,38 @@
         margin: 0;
         font-style: italic;
       }
+
+      /* Indicateur scroll shopping list - FIXE EN BAS */
+      .shopping-view .scroll-indicator-shopping {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        text-align: center;
+        padding: 12px 24px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius-full);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        color: var(--text-muted);
+        font-size: 12px;
+        opacity: 0.8;
+        z-index: 100;
+        pointer-events: none;
+      }
+      
+      .shopping-view .scroll-indicator-shopping span {
+        display: inline-block;
+        font-size: 20px;
+        margin-right: 8px;
+        animation: bounceShopping 2s ease-in-out infinite;
+      }
+      
+      .shopping-view .scroll-indicator-shopping p {
+        display: inline;
+        margin: 0;
+        font-style: italic;
+      }
       
     </style>
   </head>
