@@ -658,44 +658,7 @@
         font-style: italic;
       }
 
-      /* Indicateur scroll shopping list - FIXE EN BAS */
-      .scroll-indicator-shopping {
-        display: none; /* ✅ Caché par défaut */
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        text-align: center;
-        padding: 12px 24px;
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: var(--radius-full);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        color: var(--text-muted);
-        font-size: 12px;
-        opacity: 0.8;
-        z-index: 100;
-        pointer-events: none;
-      }
-      
-      /* ✅ Afficher SEULEMENT quand shopping-view est active */
-      .shopping-view.active .scroll-indicator-shopping {
-        display: block;
-      }
-      
-      .scroll-indicator-shopping span {
-        display: inline-block;
-        font-size: 20px;
-        margin-right: 8px;
-        animation: bounceShopping 2s ease-in-out infinite;
-      }
-      
-      .scroll-indicator-shopping p {
-        display: inline;
-        margin: 0;
-        font-style: italic;
-      }
-      
+            
     </style>
   </head>
   <body>
@@ -735,6 +698,13 @@
             🗑️ Tout effacer
           </button>
         </div>
+        
+        <!-- ✅ Indicateur scroll pour shopping -->
+        <div id="scrollHintShopping" style="display: none; text-align: center; padding: 40px 20px; color: #9ca3af; font-size: 28px; opacity: 0.6;">
+          ⋯<br>
+          <small style="display: block; font-size: 12px; margin-top: 8px; font-style: italic;">Faites défiler vers le haut</small>
+        </div>
+        
       </div>
     </div>
     <!-- Backdrop -->
@@ -743,7 +713,7 @@
     <div id="drawer" class="drawer">
       <div class="drawer-header">
         <h2 id="drawerTitle"></h2>
-        <button class="drawer-close" onclick="closeDrawer()">⬅️</button>
+        <button class="drawer-close" onclick="closeDrawer()">&larr;</button>
       </div>
       <div class="drawer-body" id="drawerBody"></div>
       <div class="drawer-footer">
@@ -1410,11 +1380,11 @@
         document
           .querySelectorAll(".toggle-btn")
           .forEach((btn) => btn.classList.remove("active"));
-
+        
         // Reset toutes les vues
         document.getElementById("categoriesView").classList.remove("active");
         document.getElementById("shoppingView").classList.remove("active");
-
+        
         // Activer la bonne vue
         if (view === "categories") {
           document.querySelectorAll(".toggle-btn")[0].classList.add("active");
@@ -1423,6 +1393,12 @@
           document.querySelectorAll(".toggle-btn")[1].classList.add("active");
           document.getElementById("shoppingView").classList.add("active");
           renderShoppingList();
+        }
+        
+        // ✅ Gérer l'indicateur de scroll
+        const hint = document.getElementById('scrollHintShopping');
+        if (hint) {
+          hint.style.display = (view === 'shopping') ? 'block' : 'none';
         }
       }
 
