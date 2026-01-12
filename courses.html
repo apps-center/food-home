@@ -299,13 +299,98 @@
         opacity: 0.6;
       }
       .categories-view,
-      .shopping-view {
+      .shopping-view,
+      .supermarket-view {
         display: none;
       }
       .categories-view.active,
-      .shopping-view.active {
+      .shopping-view.active,
+      .supermarket-view.active {
         display: block;
       }
+
+      /* === MODE SUPERMARCHÉ === */
+      .supermarket-view {
+        max-width: 100%;
+      }
+      
+      .supermarket-section {
+        background: white;
+        border: 2px solid rgba(59, 130, 246, 0.15);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+        margin-bottom: 12px;
+        page-break-inside: avoid;
+      }
+      
+      .supermarket-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 16px;
+        font-weight: var(--font-weight-extrabold);
+        color: #0ea5e9;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid rgba(14, 165, 233, 0.2);
+      }
+      
+      .supermarket-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 6px;
+      }
+      
+      .supermarket-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 8px;
+        background: rgba(240, 249, 255, 0.4);
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        transition: all var(--transition-fast);
+      }
+      
+      .supermarket-item:hover {
+        background: rgba(224, 242, 254, 0.6);
+      }
+      
+      .supermarket-item input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+      
+      .supermarket-item label {
+        flex: 1;
+        cursor: pointer;
+        font-size: 13px;
+        line-height: 1.2;
+      }
+      
+      .supermarket-item.checked {
+        opacity: 0.4;
+        background: rgba(209, 213, 219, 0.3);
+      }
+      
+      .supermarket-item.checked label {
+        text-decoration: line-through;
+        color: var(--text-muted);
+      }
+      
+      .supermarket-count {
+        display: inline-block;
+        background: #0ea5e9;
+        color: white;
+        padding: 2px 8px;
+        border-radius: var(--radius-full);
+        font-size: 11px;
+        font-weight: var(--font-weight-bold);
+        margin-left: 6px;
+      }
+
       /* Info nutritionnelle */
       .nutrition-info {
         background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
@@ -476,6 +561,9 @@
           <button class="toggle-btn" onclick="switchView('shopping')">
             📋 Liste courses
           </button>
+          <button class="toggle-btn" onclick="switchView('supermarket')">
+            🛒 Mode Supermarché
+          </button>
         </div>
         <!-- VUE CATÉGORIES -->
         <div id="categoriesView" class="categories-view active">
@@ -484,6 +572,10 @@
         <!-- VUE LISTE COURSES -->
         <div id="shoppingView" class="shopping-view">
           <div id="shoppingList"></div>
+        </div>
+        <!-- VUE MODE SUPERMARCHÉ -->
+        <div id="supermarketView" class="supermarket-view">
+          <div id="supermarketList"></div>
         </div>
         <!-- Actions -->
         <div class="actions">
@@ -933,16 +1025,26 @@ function clearDrawer() {
 }
 
 function switchView(view) {
+  // Reset tous les boutons
   document.querySelectorAll(".toggle-btn").forEach((btn) => btn.classList.remove("active"));
+  
+  // Reset toutes les vues
+  document.getElementById("categoriesView").classList.remove("active");
+  document.getElementById("shoppingView").classList.remove("active");
+  document.getElementById("supermarketView").classList.remove("active");
+  
+  // Activer la bonne vue
   if (view === "categories") {
-    document.querySelector(".toggle-btn:first-child").classList.add("active");
+    document.querySelectorAll(".toggle-btn")[0].classList.add("active");
     document.getElementById("categoriesView").classList.add("active");
-    document.getElementById("shoppingView").classList.remove("active");
-  } else {
-    document.querySelector(".toggle-btn:last-child").classList.add("active");
-    document.getElementById("categoriesView").classList.remove("active");
+  } else if (view === "shopping") {
+    document.querySelectorAll(".toggle-btn")[1].classList.add("active");
     document.getElementById("shoppingView").classList.add("active");
     renderShoppingList();
+  } else if (view === "supermarket") {
+    document.querySelectorAll(".toggle-btn")[2].classList.add("active");
+    document.getElementById("supermarketView").classList.add("active");
+    renderSupermarketView();
   }
 }
 
@@ -990,6 +1092,101 @@ function renderShoppingList() {
 function toggleShopItem(category, item) {
   const checkbox = document.getElementById(`shop-${category}-${item}`);
   const parent = checkbox.closest(".shopping-item");
+  parent.classList.toggle("checked");
+}
+
+// === MODE SUPERMARCHÉ ===
+function renderSupermarketView() {
+  const container = document.getElementById("supermarketList");
+  
+  // Vérifier si items
+  const hasItems = Object.values(selections).some((cat) =>
+    Object.values(cat).some((v) => v)
+  );
+  
+  if (!hasItems) {
+    container.innerHTML =
+      '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
+    return;
+  }
+  
+  // Ordre logique de parcours du supermarché
+  const supermarketOrder = [
+    { keys: ['fruits'], name: '🍎 Fruits & Légumes', icon: '🍎' },
+    { keys: ['cereales'], name: '🌾 Pâtes, Riz & Féculents', icon: '🌾' },
+    { keys: ['laitiers'], name: '🥛 Produits Laitiers', icon: '🥛' },
+    { keys: ['proteines'], name: '🍖 Viandes & Poissons', icon: '🍖' },
+    { keys: ['graisses'], name: '🧈 Huiles & Matières grasses', icon: '🧈' },
+    { keys: ['transformes'], name: '🍕 Surgelés & Produits transformés', icon: '🍕' },
+    { keys: ['boissons'], name: '💧 Boissons', icon: '💧' },
+    { keys: ['condiments'], name: '🧂 Épices & Condiments', icon: '🧂' },
+    { keys: ['sucres', 'apero'], name: '🍬 Sucreries & Apéro', icon: '🍬' },
+    { keys: ['hygiene', 'menage', 'wc'], name: '🧴 Hygiène & Entretien', icon: '🧴' },
+    { keys: ['salon', 'electromenager'], name: '🏠 Maison & Électro', icon: '🏠' },
+    { keys: ['autres'], name: '📦 Autres', icon: '📦' },
+  ];
+  
+  let html = "";
+  
+  supermarketOrder.forEach(section => {
+    // Collecter tous les items de cette section
+    const sectionItems = [];
+    
+    section.keys.forEach(key => {
+      const cat = CATEGORIES[key];
+      if (!cat) return;
+      
+      // Items simples
+      if (cat.items) {
+        cat.items.forEach(item => {
+          if (selections[key][item]) {
+            sectionItems.push({ key, item, group: null });
+          }
+        });
+      }
+      
+      // Items avec groupes
+      if (cat.groups) {
+        Object.entries(cat.groups).forEach(([groupName, items]) => {
+          items.forEach(item => {
+            if (selections[key][item]) {
+              sectionItems.push({ key, item, group: groupName });
+            }
+          });
+        });
+      }
+    });
+    
+    // Afficher la section si elle a des items
+    if (sectionItems.length > 0) {
+      html += `
+        <div class="supermarket-section">
+          <div class="supermarket-header">
+            <span>${section.icon}</span>
+            <span>${section.name}</span>
+            <span class="supermarket-count">${sectionItems.length}</span>
+          </div>
+          <div class="supermarket-items">
+            ${sectionItems.map(({key, item}) => `
+              <div class="supermarket-item" id="super-${key}-${item}">
+                <input type="checkbox" 
+                       id="super-check-${key}-${item}"
+                       onchange="toggleSupermarketItem('${key}', '${item}')">
+                <label for="super-check-${key}-${item}">${item}</label>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+  });
+  
+  container.innerHTML = html;
+}
+
+function toggleSupermarketItem(category, item) {
+  const checkbox = document.getElementById(`super-check-${category}-${item}`);
+  const parent = checkbox.closest(".supermarket-item");
   parent.classList.toggle("checked");
 }
 
