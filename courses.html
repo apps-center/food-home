@@ -659,7 +659,8 @@
       }
 
       /* Indicateur scroll shopping list - FIXE EN BAS */
-      .shopping-view .scroll-indicator-shopping {
+      .scroll-indicator-shopping {
+        display: none; /* ✅ Caché par défaut */
         position: fixed;
         bottom: 20px;
         left: 50%;
@@ -677,14 +678,19 @@
         pointer-events: none;
       }
       
-      .shopping-view .scroll-indicator-shopping span {
+      /* ✅ Afficher SEULEMENT quand shopping-view est active */
+      .shopping-view.active .scroll-indicator-shopping {
+        display: block;
+      }
+      
+      .scroll-indicator-shopping span {
         display: inline-block;
         font-size: 20px;
         margin-right: 8px;
         animation: bounceShopping 2s ease-in-out infinite;
       }
       
-      .shopping-view .scroll-indicator-shopping p {
+      .scroll-indicator-shopping p {
         display: inline;
         margin: 0;
         font-style: italic;
