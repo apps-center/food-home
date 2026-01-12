@@ -658,6 +658,61 @@
         font-style: italic;
       }
 
+      /* Boutons compacts dans le header */
+        .btn-compact {
+          padding: 8px 16px;
+          border: none;
+          border-radius: var(--radius-md);
+          font-size: 13px;
+          font-weight: var(--font-weight-semibold);
+          cursor: pointer;
+          transition: all var(--transition-fast);
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+        }
+        
+        .btn-compact-primary {
+          background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+          color: white;
+          box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
+        }
+        
+        .btn-compact-primary:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-compact-secondary {
+          background: rgba(255, 255, 255, 0.9);
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          color: var(--text-primary);
+        }
+        
+        .btn-compact-secondary:hover {
+          background: white;
+          border-color: rgba(239, 68, 68, 0.3);
+          color: #dc2626;
+        }
+        
+        /* Ajuster le header pour 2 lignes */
+        .drawer-header {
+          padding: 20px 24px;
+          border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+          flex-shrink: 0;
+        }
+        
+        .drawer-header h2 {
+          margin: 0;
+          font-size: 20px;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
             
     </style>
   </head>
@@ -709,28 +764,24 @@
     </div>
     <!-- Backdrop -->
     <div id="backdrop" class="drawer-backdrop" onclick="closeDrawer()"></div>
-    <!-- Drawer dynamique -->
+    <!-- Drawer dynamique - BOUTONS DANS LE HEADER -->
     <div id="drawer" class="drawer">
       <div class="drawer-header">
-        <h2 id="drawerTitle"></h2>
+        <div style="flex: 1;">
+          <h2 id="drawerTitle" style="margin: 0 0 12px 0;"></h2>
+          <!-- ✅ Boutons compacts dans le header -->
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-compact btn-compact-primary" onclick="saveDrawer()">
+              💾 Sauvegarder
+            </button>
+            <button class="btn-compact btn-compact-secondary" onclick="clearDrawer()">
+              🗑️ Vider
+            </button>
+          </div>
+        </div>
         <button class="drawer-close" onclick="closeDrawer()">&larr;</button>
       </div>
       <div class="drawer-body" id="drawerBody"></div>
-      
-      <!-- ✅ Indicateur scroll drawer (AVANT le footer, APRÈS le body) -->
-      <div class="drawer-scroll-hint" style="text-align: center; padding: 20px; color: #9ca3af; font-size: 24px; opacity: 0.5; background: rgba(240, 249, 255, 0.5); flex-shrink: 0;">
-        ⋯<br>
-        <small style="display: block; font-size: 11px; margin-top: 6px; font-style: italic;">Faites défiler vers le bas</small>
-      </div>
-      
-      <div class="drawer-footer">
-        <button class="btn btn-primary" onclick="saveDrawer()" style="flex: 1">
-          💾 Sauvegarder
-        </button>
-        <button class="btn btn-secondary" onclick="clearDrawer()">
-          🗑️ Vider
-        </button>
-      </div>
     </div>
     <script>
       // 🎨 TOAST MODERNE
