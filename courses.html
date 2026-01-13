@@ -1384,13 +1384,55 @@
   },
 };
 
-      // État
+     // État
       let selections = {};
       let currentCategory = null;
-      let stockItems = {}; // Items du stock de base
+      
+      // === STOCK DE BASE - LISTE FIXE DES ESSENTIELS ===
+      const STOCK_BASE_ITEMS = [
+        "Sel",
+        "Poivre",
+        "Huile olive",
+        "Huile colza",
+        "Sucre",
+        "Farine",
+        "Oignons",
+        "Ail",
+        "Épices",
+        "Bouillon cube",
+        "Moutarde",
+        "Ketchup",
+        "Mayonnaise",
+        "Vinaigre",
+        "Beurre",
+        "Lait",
+        "Œufs",
+        "Riz",
+        "Pâtes",
+        "Concentré de tomate",
+      ];
+      
+      let stockBase = {}; // Items qu'on a en stock
 
       // Init
       function init() {
+        // Initialiser stockBase avec les items essentiels
+        STOCK_BASE_ITEMS.forEach((item) => {
+          stockBase[item] = false;
+        });
+
+        // Charger stock depuis localStorage
+        const savedStock = localStorage.getItem("food_home_stock_base");
+        if (savedStock) {
+          try {
+            const loaded = JSON.parse(savedStock);
+            Object.assign(stockBase, loaded);
+            console.log("📦 Stock de base chargé depuis localStorage");
+          } catch (e) {
+            console.error("Erreur chargement stock:", e);
+          }
+        }
+        
         // Initialiser selections
         Object.keys(CATEGORIES).forEach((key) => {
           selections[key] = {};
@@ -1519,6 +1561,9 @@
       function saveDrawer() {
         // Si c'est le drawer du stock de base
         if (currentCategory === null) {
+          // Sauvegarder le stock dans localStorage (déjà fait dans toggleStockItem)
+          localStorage.setItem("food_home_stock_base", JSON.stringify(stockBase));
+          
           closeDrawer();
 
           // Filtrer automatiquement les items du stock de la liste
@@ -1527,7 +1572,7 @@
             const cat = CATEGORIES[catKey];
             if (cat.items) {
               cat.items.forEach((item) => {
-                if (stockItems[item] && selections[catKey][item]) {
+                if (stockBase[item] && selections[catKey][item]) {
                   selections[catKey][item] = false;
                   filtered++;
                 }
@@ -1535,7 +1580,7 @@
             } else if (cat.groups) {
               Object.values(cat.groups).forEach((items) => {
                 items.forEach((item) => {
-                  if (stockItems[item] && selections[catKey][item]) {
+                  if (stockBase[item] && selections[catKey][item]) {
                     selections[catKey][item] = false;
                     filtered++;
                   }
@@ -1735,6 +1780,7 @@
       }
 
       // Stock de base
+      // Stock de base - Afficher uniquement les essentiels
       function openStockDrawer() {
         currentCategory = null; // Indiquer que c'est le stock
         
@@ -1742,42 +1788,22 @@
         
         let html = `
           <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">
-            Le <strong>stock de base</strong> contient les produits que vous avez toujours chez vous.
+            Le <strong>stock de base</strong> contient les produits essentiels que vous avez toujours chez vous.
             Ces items seront <strong>automatiquement filtrés</strong> de votre liste de courses quand vous cliquez sur "Sauvegarder".
           </p>
+          <div class="item-group">
+            <div class="item-group-title">🧂 Produits essentiels</div>
+            ${STOCK_BASE_ITEMS.map(item => `
+              <div class="checkbox-item ${stockBase[item] ? 'checked' : ''}">
+                <input type="checkbox"
+                       id="stock-${item}"
+                       ${stockBase[item] ? 'checked' : ''}
+                       onchange="toggleStockItem('${item}')">
+                <label for="stock-${item}">${item}</label>
+              </div>
+            `).join('')}
+          </div>
         `;
-        
-        // Organiser par catégorie
-        Object.entries(CATEGORIES)
-          .sort((a, b) => a[1].order - b[1].order)
-          .forEach(([catKey, cat]) => {
-            const allItems = [];
-            
-            if (cat.items) {
-              allItems.push(...cat.items);
-            } else if (cat.groups) {
-              Object.values(cat.groups).forEach((items) => {
-                allItems.push(...items);
-              });
-            }
-            
-            if (allItems.length > 0) {
-              html += `
-                <div class="item-group">
-                  <div class="item-group-title">${cat.icon} ${cat.name}</div>
-                  ${allItems.map(item => `
-                    <div class="checkbox-item ${stockItems[item] ? 'checked' : ''}">
-                      <input type="checkbox"
-                             id="stock-${item}"
-                             ${stockItems[item] ? 'checked' : ''}
-                             onchange="toggleStockItem('${item}')">
-                      <label for="stock-${item}">${item}</label>
-                    </div>
-                  `).join('')}
-                </div>
-              `;
-            }
-          });
         
         document.getElementById("drawerBody").innerHTML = html;
         document.getElementById("drawer").classList.add("active");
@@ -1785,10 +1811,13 @@
       }
 
       function toggleStockItem(item) {
-        stockItems[item] = !stockItems[item];
+        stockBase[item] = !stockBase[item];
         const checkbox = document.getElementById(`stock-${item}`);
         const parent = checkbox.closest(".checkbox-item");
         parent.classList.toggle("checked");
+        
+        // Sauvegarder dans localStorage
+        localStorage.setItem("food_home_stock_base", JSON.stringify(stockBase));
       }
 
       // Load from API
