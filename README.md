@@ -25,7 +25,7 @@ Une application moderne pour gérer vos repas, recettes et listes de courses en 
 - Design glassmorphisme avec gradients
 - Responsive mobile-first
 - Navigation fluide entre modules
-- Icône Apple Touch pour iOS
+- Icône Apple Touch pour iOS et 1
 
 ---
 
