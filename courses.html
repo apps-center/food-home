@@ -819,6 +819,10 @@
           0%, 100% { transform: translateY(0); }
           50% { transform: translateY(-4px); }
         }
+
+      .shopping-item {
+        transition: all 0.3s ease;
+      }
             
     </style>
   </head>
@@ -1752,7 +1756,50 @@
       // Toggle shopping item
       function toggleShopItem(checkbox) {
         const parent = checkbox.closest(".shopping-item");
-        parent.classList.toggle("checked");
+        const label = parent.querySelector("label");
+        const itemName = label.textContent.trim();
+        
+        // Trouver dans quelle catégorie est cet item
+        let foundCategory = null;
+        for (const [catKey, items] of Object.entries(selections)) {
+          if (items[itemName] !== undefined) {
+            foundCategory = catKey;
+            break;
+          }
+        }
+        
+        if (foundCategory) {
+          // Inverser la sélection
+          selections[foundCategory][itemName] = !selections[foundCategory][itemName];
+          
+          // Si décoché, retirer visuellement
+          if (!selections[foundCategory][itemName]) {
+            parent.style.opacity = '0';
+            parent.style.transform = 'translateX(-20px)';
+            setTimeout(() => {
+              parent.remove();
+              
+              // Si plus d'items dans cette section, la retirer
+              const section = parent.closest('.shopping-category');
+              if (section && section.querySelectorAll('.shopping-item').length === 0) {
+                section.remove();
+              }
+              
+              // Si plus d'items du tout, afficher message vide
+              const container = document.getElementById('shoppingList');
+              if (container.querySelectorAll('.shopping-item').length === 0) {
+                container.innerHTML = '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
+              }
+              
+              // Mettre à jour les badges et sauvegarder
+              renderCategories();
+              saveToAPI();
+            }, 300);
+          } else {
+            // Si coché, juste barrer
+            parent.classList.toggle("checked");
+          }
+        }
       }
 
       // Export
