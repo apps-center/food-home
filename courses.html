@@ -865,6 +865,50 @@
       .shopping-item {
         transition: all 0.3s ease;
       }
+
+      /* Items en stock - Style orange */
+.shopping-item.in-stock {
+  background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%) !important;
+  border: 2px solid #fb923c !important;
+  position: relative;
+}
+
+.shopping-item.in-stock:hover {
+  background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%) !important;
+  border-color: #f97316 !important;
+}
+
+.shopping-item.in-stock label {
+  color: #ea580c;
+  font-weight: var(--font-weight-semibold);
+}
+
+.stock-badge {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+  color: white;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  font-weight: var(--font-weight-bold);
+  box-shadow: 0 2px 8px rgba(251, 146, 60, 0.3);
+}
+
+/* Ajustement pour mobile */
+@media (max-width: 768px) {
+  .stock-badge {
+    position: static;
+    display: inline-block;
+    margin-left: 8px;
+  }
+  
+  .shopping-item.in-stock {
+    flex-wrap: wrap;
+    padding-right: 12px;
+  }
+}
             
     </style>
   </head>
@@ -1637,37 +1681,15 @@
           
           closeDrawer();
 
-          // Filtrer automatiquement les items du stock de la liste
-          let filtered = 0;
-          Object.keys(CATEGORIES).forEach((catKey) => {
-            const cat = CATEGORIES[catKey];
-            if (cat.items) {
-              cat.items.forEach((item) => {
-                if (stockBase[item] && selections[catKey][item]) {
-                  selections[catKey][item] = false;
-                  filtered++;
-                }
-              });
-            } else if (cat.groups) {
-              Object.values(cat.groups).forEach((items) => {
-                items.forEach((item) => {
-                  if (stockBase[item] && selections[catKey][item]) {
-                    selections[catKey][item] = false;
-                    filtered++;
-                  }
-                });
-              });
-            }
-          });
+          // NE PLUS filtrer automatiquement - juste afficher en orange
+          // (Ancien code de filtrage supprimé)
+          let filtered = 0; // Garder pour compatibilité
 
           renderCategories();
           saveToAPI();
           
           if (filtered > 0) {
-            showToast(`✅ Stock de base sauvegardé ! ${filtered} item(s) filtré(s) de votre liste.`);
-          } else {
-            showToast("✅ Stock de base sauvegardé !");
-          }
+            showToast("✅ Stock de base sauvegardé ! Les items en stock seront affichés en orange.");
           
           return;
         }
@@ -1784,14 +1806,22 @@
                 </div>
                 ${sectionItems
                   .map(
-                    (item) => `
-                  <div class="shopping-item">
-                    <input type="checkbox"
-                           id="shop-${item}"
-                           onchange="toggleShopItem(this)">
-                    <label for="shop-${item}">${item}</label>
-                  </div>
-                `
+                    (item) => {
+                      // 🎯 Vérifier si l'item est dans le stock de base
+                      const isInStock = stockBase[item] === true;
+                      const stockClass = isInStock ? 'in-stock' : '';
+                      const stockBadge = isInStock ? '<span class="stock-badge">📦 En stock</span>' : '';
+                      
+                      return `
+                        <div class="shopping-item ${stockClass}">
+                          <input type="checkbox"
+                                 id="shop-${item}"
+                                 onchange="toggleShopItem(this)">
+                          <label for="shop-${item}">${item}</label>
+                          ${stockBadge}
+                        </div>
+                      `;
+                    }
                   )
                   .join("")}
               </div>
