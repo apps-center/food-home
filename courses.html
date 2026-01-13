@@ -110,6 +110,48 @@
         box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
       }
 
+      /* Bouton Undo flottant */
+      .btn-undo {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+        color: white;
+        border: none;
+        border-radius: var(--radius-full);
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+        z-index: 999;
+        font-weight: var(--font-weight-semibold);
+        font-size: 15px;
+        transition: all var(--transition-base);
+        animation: slideInUp 0.3s ease-out;
+      }
+      
+      .btn-undo:hover {
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 12px 32px rgba(139, 92, 246, 0.5);
+      }
+      
+      .btn-undo:active {
+        transform: translateY(-2px) scale(1.02);
+      }
+      
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(60px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
       /* Grille de catégories */
       .categories-grid {
         display: grid;
@@ -863,6 +905,11 @@
             🗑️ Tout effacer
           </button>
         </div>
+        <!-- Bouton Undo flottant -->
+        <button class="btn-undo" id="undoBtn" onclick="undoLastAction()" style="display: none;">
+          <span style="font-size: 20px;">↩️</span>
+          <span id="undoText">Annuler</span>
+        </button>
         
         <!-- ✅ Indicateur scroll pour shopping (SOUS les boutons) -->
         <div id="scrollHintShopping" style="display: none; text-align: center; padding: 40px 20px; color: #9ca3af; font-size: 28px; opacity: 0.6;">
@@ -1435,6 +1482,8 @@
       ];
       
       let stockBase = {}; // Items qu'on a en stock
+      let undoHistory = []; // Historique des suppressions (max 10)
+      const MAX_UNDO = 10;
 
       // Init
       function init() {
@@ -1753,7 +1802,7 @@
         container.innerHTML = html;
       }
 
-      // Toggle shopping item
+      // Toggle shopping item avec Undo
       function toggleShopItem(checkbox) {
         const parent = checkbox.closest(".shopping-item");
         const label = parent.querySelector("label");
@@ -1774,6 +1823,14 @@
           
           // Si décoché, retirer visuellement
           if (!selections[foundCategory][itemName]) {
+            // 💾 SAUVEGARDER dans l'historique avant de supprimer
+            addToUndoHistory({
+              action: 'remove',
+              item: itemName,
+              category: foundCategory,
+              timestamp: Date.now()
+            });
+            
             parent.style.opacity = '0';
             parent.style.transform = 'translateX(-20px)';
             setTimeout(() => {
@@ -1799,6 +1856,71 @@
             // Si coché, juste barrer
             parent.classList.toggle("checked");
           }
+        }
+      }
+
+      
+      // ============================================
+      // 🔄 SYSTÈME UNDO
+      // ============================================
+      
+      function addToUndoHistory(action) {
+        undoHistory.push(action);
+        
+        // Limiter l'historique à MAX_UNDO items
+        if (undoHistory.length > MAX_UNDO) {
+          undoHistory.shift(); // Retirer le plus ancien
+        }
+        
+        // Afficher le bouton Undo
+        showUndoButton();
+      }
+      
+      function showUndoButton() {
+        const undoBtn = document.getElementById('undoBtn');
+        const undoText = document.getElementById('undoText');
+        
+        if (undoHistory.length > 0) {
+          const lastAction = undoHistory[undoHistory.length - 1];
+          undoText.textContent = `Annuler (${lastAction.item})`;
+          undoBtn.style.display = 'flex';
+          
+          // Masquer après 5 secondes d'inactivité
+          clearTimeout(undoBtn._hideTimeout);
+          undoBtn._hideTimeout = setTimeout(() => {
+            undoBtn.style.opacity = '0';
+            setTimeout(() => {
+              undoBtn.style.display = 'none';
+              undoBtn.style.opacity = '1';
+            }, 300);
+          }, 5000);
+        } else {
+          undoBtn.style.display = 'none';
+        }
+      }
+      
+      function undoLastAction() {
+        if (undoHistory.length === 0) return;
+        
+        const lastAction = undoHistory.pop();
+        
+        if (lastAction.action === 'remove') {
+          // Restaurer l'item
+          selections[lastAction.category][lastAction.item] = true;
+          
+          // Rafraîchir l'affichage
+          renderCategories();
+          renderShoppingList();
+          saveToAPI();
+          
+          showToast(`✅ "${lastAction.item}" restauré !`);
+        }
+        
+        // Mettre à jour le bouton
+        if (undoHistory.length > 0) {
+          showUndoButton();
+        } else {
+          document.getElementById('undoBtn').style.display = 'none';
         }
       }
 
@@ -1932,46 +2054,7 @@
       }
 
 
-      // ============================================
-      // 🎯 FONCTION : Trouver la catégorie d'un item
-      // ============================================
-      function findCategoryForItem(itemName) {
-        // Normaliser le nom pour la recherche (enlever quantités entre parenthèses)
-        const cleanName = itemName.split('(')[0].trim();
-        
-        // Chercher dans toutes les catégories
-        for (const [catKey, cat] of Object.entries(CATEGORIES)) {
-          // Vérifier dans les items directs
-          if (cat.items) {
-            // Recherche exacte
-            if (cat.items.includes(itemName)) {
-              return catKey;
-            }
-            // Recherche partielle (pour items avec quantités)
-            if (cat.items.some(item => item.startsWith(cleanName) || cleanName.startsWith(item))) {
-              return catKey;
-            }
-          }
-          
-          // Vérifier dans les groupes
-          if (cat.groups) {
-            for (const [groupName, items] of Object.entries(cat.groups)) {
-              // Recherche exacte
-              if (items.includes(itemName)) {
-                return catKey;
-              }
-              // Recherche partielle
-              if (items.some(item => item.startsWith(cleanName) || cleanName.startsWith(item))) {
-                return catKey;
-              }
-            }
-          }
-        }
-        
-        // Si pas trouvé, retourner "autres"
-        return 'autres';
-      }
-      
+           
       // ============================================
       // 💾 STOCKAGE LOCALSTORAGE
       // ============================================
