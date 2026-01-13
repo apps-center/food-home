@@ -1845,6 +1845,87 @@
       }
 
       // ============================================
+      // 🎯 FONCTION : Trouver la catégorie d'un item
+      // ============================================
+      function findCategoryForItem(itemName) {
+        // Normaliser le nom pour la recherche (enlever quantités entre parenthèses)
+        const cleanName = itemName.split('(')[0].trim();
+        
+        // Chercher dans toutes les catégories
+        for (const [catKey, cat] of Object.entries(CATEGORIES)) {
+          // Vérifier dans les items directs
+          if (cat.items) {
+            // Recherche exacte
+            if (cat.items.includes(itemName)) {
+              return catKey;
+            }
+            // Recherche partielle (pour items avec quantités)
+            if (cat.items.some(item => item.startsWith(cleanName) || cleanName.startsWith(item))) {
+              return catKey;
+            }
+          }
+          
+          // Vérifier dans les groupes
+          if (cat.groups) {
+            for (const [groupName, items] of Object.entries(cat.groups)) {
+              // Recherche exacte
+              if (items.includes(itemName)) {
+                return catKey;
+              }
+              // Recherche partielle
+              if (items.some(item => item.startsWith(cleanName) || cleanName.startsWith(item))) {
+                return catKey;
+              }
+            }
+          }
+        }
+        
+        // Si pas trouvé, retourner "autres"
+        return 'autres';
+      }
+
+
+      // ============================================
+      // 🎯 FONCTION : Trouver la catégorie d'un item
+      // ============================================
+      function findCategoryForItem(itemName) {
+        // Normaliser le nom pour la recherche (enlever quantités entre parenthèses)
+        const cleanName = itemName.split('(')[0].trim();
+        
+        // Chercher dans toutes les catégories
+        for (const [catKey, cat] of Object.entries(CATEGORIES)) {
+          // Vérifier dans les items directs
+          if (cat.items) {
+            // Recherche exacte
+            if (cat.items.includes(itemName)) {
+              return catKey;
+            }
+            // Recherche partielle (pour items avec quantités)
+            if (cat.items.some(item => item.startsWith(cleanName) || cleanName.startsWith(item))) {
+              return catKey;
+            }
+          }
+          
+          // Vérifier dans les groupes
+          if (cat.groups) {
+            for (const [groupName, items] of Object.entries(cat.groups)) {
+              // Recherche exacte
+              if (items.includes(itemName)) {
+                return catKey;
+              }
+              // Recherche partielle
+              if (items.some(item => item.startsWith(cleanName) || cleanName.startsWith(item))) {
+                return catKey;
+              }
+            }
+          }
+        }
+        
+        // Si pas trouvé, retourner "autres"
+        return 'autres';
+      }
+      
+      // ============================================
       // 💾 STOCKAGE LOCALSTORAGE
       // ============================================
       
@@ -1863,15 +1944,41 @@
               console.error("Erreur parsing localStorage:", e);
             }
           }
-
-          // Ajouter les items dans la catégorie "Autres"
+          
+          // ✅ DISPATCHER dans les bonnes catégories
           itemsFromStorage.forEach((item) => {
-            if (!CATEGORIES.autres.items.includes(item)) {
-              CATEGORIES.autres.items.push(item);
+            const categoryKey = findCategoryForItem(item);
+            
+            // S'assurer que la catégorie a un tableau items
+            const cat = CATEGORIES[categoryKey];
+            
+            if (cat.items) {
+              // Si la catégorie a déjà un tableau items, ajouter si absent
+              if (!cat.items.includes(item)) {
+                cat.items.push(item);
+              }
+            } else if (cat.groups) {
+              // Si c'est une catégorie avec groupes, ne rien ajouter (déjà présent)
+              // Les items sont déjà dans les groupes
+            } else {
+              // Pour "autres" qui n'a pas de items/groups, créer le tableau
+              if (!CATEGORIES.autres.items) {
+                CATEGORIES.autres.items = [];
+              }
+              if (!CATEGORIES.autres.items.includes(item)) {
+                CATEGORIES.autres.items.push(item);
+              }
             }
-            selections.autres[item] = true;
+            
+            // ✅ INITIALISER la sélection si elle n'existe pas
+            if (selections[categoryKey][item] === undefined) {
+              selections[categoryKey][item] = false;
+            }
+            
+            // Cocher l'item
+            selections[categoryKey][item] = true;
           });
-
+      
           renderCategories();
           
           // Si on est sur la vue shopping, rafraîchir
@@ -1893,7 +2000,7 @@
             if (checked) allItems.push(item);
           });
         });
-
+        
         try {
           // ✅ SAUVEGARDER dans localStorage
           localStorage.setItem('food_home_shopping_list', JSON.stringify(allItems));
@@ -1902,6 +2009,7 @@
           console.error("Erreur sauvegarde:", error);
         }
       }
+      
       
       // ============================================
       // TOAST & MODALS
