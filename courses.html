@@ -1771,9 +1771,15 @@
                 selections[cat][item] = false;
               });
             });
-
+      
             renderCategories();
             saveToAPI();
+            
+            // ✅ AJOUT : Rafraîchir aussi la vue shopping list
+            if (document.getElementById('shoppingView').classList.contains('active')) {
+              renderShoppingList();
+            }
+            
             showToast("Liste effacée");
           }
         );
