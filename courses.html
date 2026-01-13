@@ -1820,23 +1820,33 @@
         localStorage.setItem("food_home_stock_base", JSON.stringify(stockBase));
       }
 
-      // Load from API
+      // ============================================
+      // 💾 STOCKAGE LOCALSTORAGE
+      // ============================================
+      
+      // Load from localStorage
       async function loadFromAPI() {
         try {
-          const response = await fetch("/recipes.json");
-          const data = await response.json();
-
-          if (data && data.shopping_list && data.shopping_list.length > 0) {
-            console.log(`📥 ${data.shopping_list.length} items chargés depuis l'API`);
-
-            // Ajouter les items dans la catégorie "Autres"
-            data.shopping_list.forEach((item) => {
-              if (!CATEGORIES.autres.items.includes(item)) {
-                CATEGORIES.autres.items.push(item);
-              }
-              selections.autres[item] = true;
-            });
+          // ✅ CHARGER depuis localStorage
+          const savedList = localStorage.getItem('food_home_shopping_list');
+          let itemsFromStorage = [];
+          
+          if (savedList) {
+            try {
+              itemsFromStorage = JSON.parse(savedList);
+              console.log(`📥 ${itemsFromStorage.length} items chargés depuis localStorage`);
+            } catch (e) {
+              console.error("Erreur parsing localStorage:", e);
+            }
           }
+
+          // Ajouter les items dans la catégorie "Autres"
+          itemsFromStorage.forEach((item) => {
+            if (!CATEGORIES.autres.items.includes(item)) {
+              CATEGORIES.autres.items.push(item);
+            }
+            selections.autres[item] = true;
+          });
 
           renderCategories();
           
@@ -1845,15 +1855,15 @@
             renderShoppingList();
           }
         } catch (error) {
-          console.error("Erreur chargement API:", error);
+          console.error("Erreur chargement:", error);
           renderCategories();
         }
       }
-
-      // Save to API
+      
+      // Save to localStorage
       async function saveToAPI() {
         const allItems = [];
-
+        
         Object.entries(selections).forEach(([cat, items]) => {
           Object.entries(items).forEach(([item, checked]) => {
             if (checked) allItems.push(item);
@@ -1861,45 +1871,44 @@
         });
 
         try {
-          const response = await fetch("/recipes.json");
-          const data = await response.json();
-          data.shopping_list = allItems;
-
-          // Note: En production, faire un vrai POST
-          console.log("💾 Sauvegarde:", data);
+          // ✅ SAUVEGARDER dans localStorage
+          localStorage.setItem('food_home_shopping_list', JSON.stringify(allItems));
+          console.log("💾 Sauvegarde dans localStorage:", allItems.length, "items");
         } catch (error) {
-          console.error("Erreur:", error);
+          console.error("Erreur sauvegarde:", error);
         }
       }
-
+      
+      // ============================================
+      // TOAST & MODALS
+      // ============================================
+      
       // Toast notification
       function showToast(message, type = "success") {
         const oldToast = document.querySelector(".toast");
         if (oldToast) oldToast.remove();
-
         const toast = document.createElement("div");
         toast.className = `toast ${type === "error" ? "error" : ""}`;
         toast.textContent = message;
-
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
       }
-
+      
       // Modal de confirmation réutilisable
       let confirmCallback = null;
-
+      
       function showConfirmModal(title, message, callback) {
         document.getElementById("confirmTitle").textContent = title;
         document.getElementById("confirmMessage").textContent = message;
         confirmCallback = callback;
         document.getElementById("confirmModal").classList.add("active");
       }
-
+      
       function closeConfirmModal() {
         document.getElementById("confirmModal").classList.remove("active");
         confirmCallback = null;
       }
-
+      
       document.getElementById("confirmButton").addEventListener("click", () => {
         if (confirmCallback) {
           confirmCallback();
@@ -1907,31 +1916,34 @@
         }
         closeConfirmModal();
       });
-
+      
       // Fermer les modals en cliquant à l'extérieur
       document.getElementById("confirmModal").addEventListener("click", (e) => {
         if (e.target.id === "confirmModal") {
           closeConfirmModal();
         }
       });
-
+      
       // Modal nutrition
       function openNutritionModal() {
         document.getElementById("nutritionModal").classList.add("active");
       }
-
+      
       function closeNutritionModal() {
         document.getElementById("nutritionModal").classList.remove("active");
       }
-
+      
       document.getElementById("nutritionModal").addEventListener("click", (e) => {
         if (e.target.id === "nutritionModal") {
           closeNutritionModal();
         }
       });
-
-      // Init on load
+      
+      // ============================================
+      // INIT
+      // ============================================
       window.addEventListener("DOMContentLoaded", init);
+      
     </script>
   </body>
 </html>
