@@ -883,32 +883,7 @@
   font-weight: var(--font-weight-semibold);
 }
 
-.stock-badge {
-  position: absolute;
-  top: 8px;
-  right: 12px;
-  background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
-  color: white;
-  font-size: 11px;
-  padding: 4px 10px;
-  border-radius: var(--radius-full);
-  font-weight: var(--font-weight-bold);
-  box-shadow: 0 2px 8px rgba(251, 146, 60, 0.3);
-}
 
-/* Ajustement pour mobile */
-@media (max-width: 768px) {
-  .stock-badge {
-    position: static;
-    display: inline-block;
-    margin-left: 8px;
-  }
-  
-  .shopping-item.in-stock {
-    flex-wrap: wrap;
-    padding-right: 12px;
-  }
-}
             
     </style>
   </head>
@@ -1810,7 +1785,6 @@
                       // 🎯 Vérifier si l'item est dans le stock de base
                       const isInStock = stockBase[item] === true;
                       const stockClass = isInStock ? 'in-stock' : '';
-                      const stockBadge = isInStock ? '<span class="stock-badge">📦 En stock</span>' : '';
                       
                       return `
                         <div class="shopping-item ${stockClass}">
@@ -1818,7 +1792,6 @@
                                  id="shop-${item}"
                                  onchange="toggleShopItem(this)">
                           <label for="shop-${item}">${item}</label>
-                          ${stockBadge}
                         </div>
                       `;
                     }
