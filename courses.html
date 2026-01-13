@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>FOOD HOME — Listes de courses</title>
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/courses.css" />
+    <style>
+      /* 🎨 COULEURS NUTRITIONNELLES - Styles dynamiques */
+      .category-btn[data-color="blue"] {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        border: 2px solid rgba(59, 130, 246, 0.3);
+      }
+      .category-btn[data-color="blue"]:hover {
+        background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+      }
+      .category-btn[data-color="orange"] {
+        background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+        border: 2px solid rgba(249, 115, 22, 0.3);
+      }
+      .category-btn[data-color="orange"]:hover {
+        background: linear-gradient(135deg, #fdba74 0%, #fb923c 100%);
+      }
+      .category-btn[data-color="green"] {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        border: 2px solid rgba(16, 185, 129, 0.3);
+      }
+      .category-btn[data-color="green"]:hover {
+        background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+      }
+      .category-btn[data-color="yellow"] {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border: 2px solid rgba(245, 158, 11, 0.3);
+      }
+      .category-btn[data-color="yellow"]:hover {
+        background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+      }
+      .category-btn[data-color="pink"] {
+        background: linear-gradient(135deg, #fecdd3 0%, #fda4af 100%);
+        border: 2px solid rgba(244, 63, 94, 0.3);
+      }
+      .category-btn[data-color="pink"]:hover {
+        background: linear-gradient(135deg, #fda4af 0%, #fb7185 100%);
+      }
+      .category-btn[data-color="gray"] {
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        border: 2px solid rgba(107, 114, 128, 0.2);
+      }
+      .category-btn[data-color="gray"]:hover {
+        background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+      }
+      /* Indicateur nutritionnel */
+      .nutrition-indicator {
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-top: 4px;
+        font-weight: var(--font-weight-medium);
+      }
+      /* Toggle vues */
+      .view-toggle {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+        justify-content: center;
+      }
+      .toggle-btn {
+        padding: 12px 28px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(59, 130, 246, 0.2);
+        border-radius: var(--radius-full);
+        cursor: pointer;
+        transition: all var(--transition-base);
+        font-weight: var(--font-weight-semibold);
+        font-size: 15px;
+      }
+      .toggle-btn.active {
+        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        color: white;
+        border-color: transparent;
+      }
+
+      /* Bouton accent (Stock de base) */
+      .btn-accent {
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+      }
+
+      .btn-accent:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
+      }
+
+      /* Grille de catégories */
+      .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .category-btn {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 2px solid rgba(59, 130, 246, 0.15);
+        border-radius: var(--radius-xl);
+        padding: 24px 16px;
+        cursor: pointer;
+        transition: all var(--transition-base);
+        text-align: center;
+        position: relative;
+      }
+
+      .category-btn:hover {
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+      }
+
+      .category-btn .icon {
+        font-size: 40px;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .category-btn .name {
+        font-weight: var(--font-weight-bold);
+        font-size: 14px;
+        color: var(--text-primary);
+      }
+
+      .category-btn .badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: #0ea5e9;
+        color: white;
+        border-radius: var(--radius-full);
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: var(--font-weight-bold);
+      }
+
+      /* Drawer (tiroir latéral) */
+      .drawer-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        display: none;
+      }
+
+      .drawer-backdrop.active {
+        display: block;
+        animation: fadeIn 0.2s ease-out;
+      }
+
+      .drawer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 90%;
+        max-width: 500px;
+        background: white;
+        box-shadow: -4px 0 32px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        transform: translateX(100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .drawer.active {
+        transform: translateX(0);
+      }
+
+      .drawer-header {
+        padding: 24px;
+        border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      }
+
+      .drawer-header h2 {
+        margin: 0;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .drawer-close {
+        background: rgba(239, 68, 68, 0.1);
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-full);
+        cursor: pointer;
+        font-size: 20px;
+        color: #dc2626;
+        transition: all var(--transition-fast);
+      }
+
+      .drawer-close:hover {
+        background: rgba(239, 68, 68, 0.2);
+        transform: rotate(90deg);
+      }
+
+      .drawer-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px;
+      }
+
+      .drawer-footer {
+        padding: 20px 24px;
+        border-top: 2px solid rgba(59, 130, 246, 0.1);
+        display: flex;
+        gap: 12px;
+        background: rgba(240, 249, 255, 0.5);
+      }
+
+      /* Items avec checkbox */
+      .item-group {
+        margin-bottom: 24px;
+      }
+
+      .item-group-title {
+        font-size: 15px;
+        font-weight: var(--font-weight-bold);
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+        padding-left: 8px;
+        border-left: 3px solid #0ea5e9;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        background: rgba(240, 249, 255, 0.5);
+        border-radius: var(--radius-md);
+        margin-bottom: 8px;
+        transition: all var(--transition-fast);
+      }
+
+      .checkbox-item:hover {
+        background: rgba(224, 242, 254, 0.8);
+        transform: translateX(4px);
+      }
+
+      .checkbox-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+
+      .checkbox-item label {
+        flex: 1;
+        cursor: pointer;
+        font-size: 15px;
+      }
+
+      .checkbox-item.checked {
+        opacity: 0.5;
+      }
+
+      .checkbox-item.checked label {
+        text-decoration: line-through;
+      }
+
+      /* Vue liste courses */
+      .shopping-view {
+        display: none;
+      }
+
+      .shopping-view.active {
+        display: block;
+      }
+
+      .shopping-category {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(59, 130, 246, 0.1);
+        border-radius: var(--radius-xl);
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+
+      .shopping-category-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 18px;
+        font-weight: var(--font-weight-extrabold);
+        color: #0ea5e9;
+        margin-bottom: 16px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid rgba(14, 165, 233, 0.2);
+      }
+
+      .shopping-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        background: rgba(240, 249, 255, 0.5);
+        border-radius: var(--radius-md);
+        margin-bottom: 8px;
+      }
+
+      .shopping-item input[type="checkbox"] {
+        width: 22px;
+        height: 22px;
+      }
+
+      .shopping-item.checked {
+        opacity: 0.5;
+      }
+
+      .shopping-item.checked label {
+        text-decoration: line-through;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+      }
+
+      .empty-state::before {
+        content: "🛒";
+        display: block;
+        font-size: 64px;
+        margin-bottom: 16px;
+        opacity: 0.6;
+      }
+
+      .categories-view,
+      .shopping-view {
+        display: none;
+      }
+
+      .categories-view.active,
+      .shopping-view.active {
+        display: block;
+      }
+            /* Modal infos nutritionnelles */
+      .nutrition-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 10001;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .nutrition-modal.active {
+        display: flex;
+        animation: fadeIn 0.2s ease-out;
+      }
+      .nutrition-modal-content {
+        background: white;
+        border-radius: var(--radius-2xl);
+        max-width: 800px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+        position: relative;
+      }
+      .nutrition-modal-header {
+        position: sticky;
+        top: 0;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        padding: 24px;
+        border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 10;
+      }
+      .nutrition-modal-header h2 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nutrition-modal-body {
+        padding: 24px;
+      }
+      .nutrition-section {
+        margin-bottom: 32px;
+      }
+      .nutrition-section h3 {
+        color: #0ea5e9;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .nutrition-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+      }
+      .nutrition-card {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+      }
+      .nutrition-card h4 {
+        margin: 0 0 12px 0;
+        color: #1e40af;
+        font-size: 16px;
+      }
+      .nutrition-card ul {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+      .nutrition-card li {
+        margin-bottom: 6px;
+      }
+      .pyramid-image {
+        width: 100%;
+        max-width: 600px;
+        margin: 20px auto;
+        display: block;
+        border-radius: var(--radius-xl);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      }
+      .nutrition-tips {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        border-left: 4px solid #0ea5e9;
+        padding: 16px 20px;
+        border-radius: var(--radius-lg);
+        margin-top: 24px;
+      }
+      .nutrition-tips h4 {
+        margin: 0 0 12px 0;
+        color: #1e40af;
+      }
+      .nutrition-tips ul {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--text-secondary);
+        line-height: 1.7;
+      }
+      .nutrition-info-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nutrition-info-icon {
+        font-size: 28px;
+      }
+      @media (max-width: 768px) {
+        .drawer {
+          width: 100%;
+          max-width: 100%;
+        }
+        .categories-grid {
+          grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+          gap: 12px;
+        }
+        .category-btn {
+          padding: 20px 12px;
+        }
+        .category-btn .icon {
+          font-size: 32px;
+        }
+        /* 🔧 FIX MOBILE : Assurer que le drawer prend toute la hauteur */
+        .drawer {
+          height: 100vh;
+          height: 100dvh; /* Dynamic viewport height pour iOS */
+        }
+        .drawer-header {
+          padding: 16px 20px;
+        }
+        .drawer-header h2 {
+          font-size: 20px;
+        }
+        .drawer-body {
+          padding: 20px;
+          /* Calculer la hauteur disponible */
+          max-height: calc(100vh - 160px); /* 100vh - header - footer */
+          max-height: calc(100dvh - 160px); /* Pour iOS */
+        }
+        .drawer-footer {
+          padding: 16px 20px;
+        }
+      }
+      /* 🎨 Toast notification moderne */
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 16px 24px;
+        border-radius: var(--radius-xl);
+        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: var(--font-weight-semibold);
+        animation: slideInRight 0.3s ease-out,
+          fadeOut 0.3s ease-out 2.7s forwards;
+      }
+      .toast.error {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+      }
+      @keyframes slideInRight {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes fadeOut {
+        to {
+          opacity: 0;
+          transform: translateX(400px);
+        }
+      }
+      /* 🎨 Modal de confirmation moderne */
+      .confirm-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 10000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .confirm-modal.active {
+        display: flex;
+        animation: fadeIn 0.2s ease-out;
+      }
+      .confirm-content {
+        background: white;
+        border-radius: var(--radius-2xl);
+        padding: 32px;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+      .confirm-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+      .confirm-content h3 {
+        margin: 0 0 12px;
+        font-size: 22px;
+      }
+      .confirm-content p {
+        margin: 0 0 24px;
+        color: var(--text-secondary);
+      }
+      .confirm-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+      .confirm-btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: var(--radius-lg);
+        font-size: 15px;
+        font-weight: var(--font-weight-semibold);
+        cursor: pointer;
+        transition: all var(--transition-base);
+      }
+      .confirm-btn-primary {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+      }
+      .confirm-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
+      }
+      .confirm-btn-secondary {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        color: var(--text-primary);
+      }
+      .confirm-btn-secondary:hover {
+        background: white;
+        border-color: rgba(59, 130, 246, 0.2);
+      }
+
+      /* Indicateur scroll drawer */
+      .drawer-scroll-hint {
+        text-align: center;
+        padding: 20px;
+        color: #9ca3af;
+        font-size: 28px;
+        opacity: 0.6;
+        position: sticky;
+        bottom: 0;
+        background: linear-gradient(to top, white 70%, transparent);
+        pointer-events: none;
+      }
+      
+      .drawer-scroll-hint span {
+        display: block;
+        animation: bounceDrawer 2s ease-in-out infinite;
+      }
+      
+      @keyframes bounceDrawer {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+      
+      .drawer-scroll-hint p {
+        margin: 0;
+        font-style: italic;
+      }
+      
+      .drawer-body {
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Indicateur scroll shopping list */
+      .scroll-indicator-shopping {
+        text-align: center;
+        padding: 40px 20px 20px;
+        color: var(--text-muted);
+        font-size: 12px;
+        opacity: 0.6;
+        margin-top: 30px;
+      }
+      
+      .scroll-indicator-shopping span {
+        display: block;
+        font-size: 28px;
+        margin-bottom: 6px;
+        animation: bounceShopping 2s ease-in-out infinite;
+      }
+      
+      @keyframes bounceShopping {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
+      
+      .scroll-indicator-shopping p {
+        margin: 0;
+        font-style: italic;
+      }
+
+      /* Boutons compacts dans le header */
+        .btn-compact {
+          padding: 8px 16px;
+          border: none;
+          border-radius: var(--radius-md);
+          font-size: 13px;
+          font-weight: var(--font-weight-semibold);
+          cursor: pointer;
+          transition: all var(--transition-fast);
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+        }
+        
+        .btn-compact-primary {
+          background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+          color: white;
+          box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
+        }
+        
+        .btn-compact-primary:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-compact-secondary {
+          background: rgba(255, 255, 255, 0.9);
+          border: 1px solid rgba(0, 0, 0, 0.1);
+          color: var(--text-primary);
+        }
+        
+        .btn-compact-secondary:hover {
+          background: white;
+          border-color: rgba(239, 68, 68, 0.3);
+          color: #dc2626;
+        }
+        
+        /* Ajuster le header pour 2 lignes */
+        .drawer-header {
+          padding: 20px 24px;
+          display: flex;
+          align-items: flex-start;
+          gap: 16px;
+        }
+        
+        .drawer-header > div:first-child {
+          flex: 1;
+        }
+        
+        /* Icône de fermeture plus pro */
+        .drawer-close {
+          background: rgba(0, 0, 0, 0.05);
+          border: none;
+          width: 36px;
+          height: 36px;
+          border-radius: var(--radius-md);
+          cursor: pointer;
+          font-size: 24px;
+          color: var(--text-muted);
+          transition: all var(--transition-fast);
+          flex-shrink: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        
+        .drawer-close:hover {
+          background: rgba(239, 68, 68, 0.1);
+          color: #dc2626;
+          transform: translateX(-4px);
+        }
+
+        /* Améliorer empty state */
+        .empty-state {
+          animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        /* Animation pour les categories */
+        .category-btn {
+          animation: scaleIn 0.3s ease-out;
+        }
+        
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        
+        /* Animation pour shopping items */
+        .shopping-category {
+          animation: slideInUp 0.3s ease-out;
+        }
+        
+        @keyframes slideInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* Bounce animation pour le scroll indicator */
+        @keyframes bounce {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-4px); }
+        }
+            
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="logo">🛒</div>
+        <h1>FOOD HOME — Listes de courses</h1>
+        <p class="subtitle">Sélectionne tes catégories et coche tes produits</p>
+      </div>
+      <div class="card">
+        <!-- 🔄 Toggle vues INVERSÉ : Liste courses à GAUCHE, Catégories à DROITE -->
+        <div class="view-toggle">
+          <button class="toggle-btn active" onclick="switchView('shopping')">
+            🛒 Liste courses
+          </button>
+          <button class="toggle-btn" onclick="switchView('categories')">
+            📦 Catégories
+          </button>
+        </div>
+        <!-- VUE CATÉGORIES -->
+        <div id="categoriesView" class="categories-view">
+          <div class="categories-grid" id="categoriesGrid"></div>
+        </div>
+        <!-- VUE LISTE COURSES (format supermarché) - AFFICHÉE PAR DÉFAUT -->
+        <div id="shoppingView" class="shopping-view active">
+          <div id="shoppingList"></div>
+        </div>
+        <!-- Actions -->
+        <div class="actions">
+          <button class="btn btn-accent" onclick="openStockDrawer()">
+            📦 Stock de base
+          </button>
+          <button class="btn btn-primary" onclick="exportList()">
+            📤 Exporter
+          </button>
+          <button class="btn btn-secondary" onclick="clearAll()">
+            🗑️ Tout effacer
+          </button>
+        </div>
+        
+        <!-- ✅ Indicateur scroll pour shopping (SOUS les boutons) -->
+        <div id="scrollHintShopping" style="display: none; text-align: center; padding: 40px 20px; color: #9ca3af; font-size: 28px; opacity: 0.6;">
+          ⋯<br>
+          <small style="display: block; font-size: 12px; margin-top: 8px; font-style: italic;">Faites défiler vers le haut</small>
+        </div>
+        
+      </div>
+    </div>
+    <!-- Backdrop -->
+    <div id="backdrop" class="drawer-backdrop" onclick="closeDrawer()"></div>
+    <!-- Drawer dynamique - BOUTONS DANS LE HEADER -->
+    <div id="drawer" class="drawer">
+      <div class="drawer-header">
+        <div style="flex: 1;">
+          <h2 id="drawerTitle" style="margin: 0 0 12px 0;"></h2>
+          <!-- ✅ Boutons compacts dans le header -->
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-compact btn-compact-primary" onclick="saveDrawer()">
+              💾 Sauvegarder
+            </button>
+            <button class="btn-compact btn-compact-secondary" onclick="clearDrawer()">
+              🗑️ Vider
+            </button>
+          </div>
+        </div>
+        <button class="drawer-close" onclick="closeDrawer()">&larr;</button>
+      </div>
+      <div class="drawer-body" id="drawerBody"></div>
+      
+      <!-- ✅ Indicateur scroll EN BAS du drawer (surtout pour mobile) -->
+      <div class="drawer-scroll-hint">
+        ⋯<br>
+        <small>Faites défiler pour voir tout</small>
+      </div>
+    </div>
+
+    <!-- Modal infos nutritionnelles -->
+    <div id="nutritionModal" class="nutrition-modal">
+      <div class="nutrition-modal-content">
+        <div class="nutrition-modal-header">
+          <h2>ℹ️ Pyramide Alimentaire & Nutrition</h2>
+          <button class="drawer-close" onclick="closeNutritionModal()">×</button>
+        </div>
+        <div class="nutrition-modal-body">
+          <p style="color: var(--text-secondary); margin-bottom: 24px;">
+            Une alimentation équilibrée est essentielle pour maintenir une santé optimale. 
+            Voici un guide pour comprendre comment construire des repas équilibrés.
+          </p>
+
+          <!-- Image de la pyramide -->
+          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect fill='%23f0f9ff' width='800' height='600'/%3E%3Ctext x='400' y='300' text-anchor='middle' font-size='32' fill='%230ea5e9'%3E🍎 Pyramide Alimentaire 🥗%3C/text%3E%3C/svg%3E" 
+               alt="Pyramide Alimentaire" 
+               class="pyramid-image"
+               style="width: 100%; max-width: 100%; height: auto;">
+
+          <div class="nutrition-section">
+            <h3>🌈 Les Groupes Alimentaires</h3>
+            <div class="nutrition-grid">
+              <div class="nutrition-card">
+                <h4>💧 Boissons (Base)</h4>
+                <ul>
+                  <li>Eau à volonté</li>
+                  <li>Thé, tisanes</li>
+                  <li>Limiter les boissons sucrées</li>
+                </ul>
+              </div>
+              <div class="nutrition-card">
+                <h4>🌾 Céréales & Féculents</h4>
+                <ul>
+                  <li>À chaque repas</li>
+                  <li>Pâtes, riz, pain, pommes de terre</li>
+                  <li>Privilégier les complets</li>
+                </ul>
+              </div>
+              <div class="nutrition-card">
+                <h4>🍎 Fruits & Légumes</h4>
+                <ul>
+                  <li>5 portions par jour minimum</li>
+                  <li>Variez les couleurs</li>
+                  <li>Frais, surgelés ou en conserve</li>
+                </ul>
+              </div>
+              <div class="nutrition-card">
+                <h4>🥛 Produits Laitiers</h4>
+                <ul>
+                  <li>3 produits par jour</li>
+                  <li>Lait, yaourt, fromage</li>
+                  <li>Sources de calcium</li>
+                </ul>
+              </div>
+              <div class="nutrition-card">
+                <h4>🍖 Protéines</h4>
+                <ul>
+                  <li>1-2 portions par jour</li>
+                  <li>Viandes, poissons, œufs</li>
+                  <li>Varier les sources</li>
+                </ul>
+              </div>
+              <div class="nutrition-card">
+                <h4>🧈 Matières Grasses</h4>
+                <ul>
+                  <li>Avec modération</li>
+                  <li>Privilégier les huiles végétales</li>
+                  <li>Limiter le beurre</li>
+                </ul>
+              </div>
+              <div class="nutrition-card">
+                <h4>🍬 Sucreries</h4>
+                <ul>
+                  <li>Occasionnellement</li>
+                  <li>Pour le plaisir</li>
+                  <li>À consommer avec modération</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="nutrition-tips">
+            <h4>💡 Conseils Pratiques</h4>
+            <ul>
+              <li><strong>Variété :</strong> Mangez différents aliments chaque jour</li>
+              <li><strong>Équilibre :</strong> Répartissez bien vos repas dans la journée</li>
+              <li><strong>Quantité :</strong> Adaptez les portions à vos besoins</li>
+              <li><strong>Activité :</strong> Combinez alimentation équilibrée et exercice physique</li>
+              <li><strong>Plaisir :</strong> Prenez le temps de savourer vos repas</li>
+            </ul>
+          </div>
+
+          <div class="nutrition-section" style="margin-top: 32px;">
+            <h3>🎨 Code Couleur de vos Catégories</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 16px;">
+              Les catégories de votre liste sont colorées selon leur position dans la pyramide alimentaire :
+            </p>
+            <div class="nutrition-grid">
+              <div class="nutrition-card" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);">
+                <h4>🔵 Bleu - Base</h4>
+                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Boissons, céréales : à consommer à chaque repas</p>
+              </div>
+              <div class="nutrition-card" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);">
+                <h4>🟢 Vert - Priorité</h4>
+                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Fruits & légumes : 5 portions/jour minimum</p>
+              </div>
+              <div class="nutrition-card" style="background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);">
+                <h4>🟠 Orange - Modération</h4>
+                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Laitiers, protéines : quantités mesurées</p>
+              </div>
+              <div class="nutrition-card" style="background: linear-gradient(135deg, #fecdd3 0%, #fda4af 100%);">
+                <h4>🔴 Rose - Occasionnel</h4>
+                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Graisses, sucres : avec parcimonie</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div id="confirmModal" class="confirm-modal">
+      <div class="confirm-content">
+        <div class="confirm-icon">⚠️</div>
+        <h3 id="confirmTitle">Confirmation</h3>
+        <p id="confirmMessage">Êtes-vous sûr ?</p>
+        <div class="confirm-actions">
+          <button class="confirm-btn confirm-btn-secondary" onclick="closeConfirmModal()">
+            Annuler
+          </button>
+          <button class="confirm-btn confirm-btn-primary" id="confirmButton">
+            Confirmer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Définition des catégories et produits avec COULEURS NUTRITIONNELLES
+      const CATEGORIES = {
+        // 💧 BASE - BLEU (à consommer abondamment)
+        boissons: {
+          icon: "💧",
+          name: "Boissons",
+          order: 1,
+          color: "blue",
+          nutritionLevel: "Base de la pyramide",
+          items: ["Eau", "Sanpellegrino", "Jus", "Lait"],
+        },
+        cereales: {
+          icon: "🌾",
+          name: "Céréales & Féculents",
+          order: 2,
+          color: "blue",
+          nutritionLevel: "Base de la pyramide",
+          items: ["Pâtes", "Semoule", "Riz", "Blé", "Pain"],
+        },
+        
+        // 🍎 PRIORITÉ - VERT (5 portions/jour)
+        fruits: {
+          icon: "🍎",
+          name: "Fruits & Légumes",
+          order: 3,
+          priority: true,
+          color: "green",
+          nutritionLevel: "Priorité absolue",
+          groups: {
+            Fruits: ["Pommes", "Bananes", "Noix", "Abricots"],
+            Légumes: ["Tomates", "Betteraves", "Salade", "Carottes"],
+          },
+        },
+        
+        // 🥛 MODÉRATION - ORANGE (portions contrôlées)
+        laitiers: {
+          icon: "🥛",
+          name: "Produits laitiers",
+          order: 4,
+          color: "orange",
+          nutritionLevel: "Avec modération",
+          items: [
+            "Fromages",
+            "Yaourts",
+            "Fromage blanc",
+            "Fromage râpé",
+            "Skyr",
+            "Lait",
+          ],
+        },
+        proteines: {
+          icon: "🍖",
+          name: "Protéines",
+          order: 5,
+          color: "orange",
+          nutritionLevel: "Avec modération",
+          groups: {
+            Viandes: ["Bœuf", "Porc", "Veau", "Poulet"],
+            Poissons: ["Cabillaud", "Thon", "Truite", "Saumon"],
+          },
+        },
+        
+        // 🧈 LIMITÉ - ROSE (consommation occasionnelle)
+        graisses: {
+          icon: "🧈",
+          name: "Matières grasses",
+          order: 6,
+          color: "pink",
+          nutritionLevel: "À limiter",
+          items: ["Huile olive", "Huile colza", "Beurre", "Margarine"],
+        },
+        sucres: {
+          icon: "🍬",
+          name: "Sucreries",
+          order: 7,
+          color: "pink",
+          nutritionLevel: "À limiter",
+          items: ["Gâteaux", "Bonbons", "Chocolats", "Nutella", "Confiture"],
+        },
+
+        // AUTRES CATÉGORIES - GRIS (hors pyramide)
+        condiments: {
+          icon: "🧂",
+          name: "Condiments",
+          order: 8,
+          color: "gray",
+          items: [
+            "Sel",
+            "Poivre",
+            "Épices",
+            "Ketchup",
+            "Moutarde",
+            "Mayonnaise",
+            "Cornichons",
+          ],
+        },
+        transformes: {
+          icon: "🍕",
+          name: "Produits transformés",
+          order: 9,
+          color: "yellow",
+          nutritionLevel: "Occasionnel",
+          items: [
+            "Pain Harris",
+            "Farritas",
+            "Pizzas",
+            "Lardons",
+            "Crème fraîche",
+            "Saucisses Herta",
+            "Jambon Herta",
+            "Cordons bleus",
+            "Nuggets",
+            "Crèmes desserts",
+            "Corn flakes",
+            "Biscottes",
+          ],
+        },
+        apero: {
+          icon: "🍸",
+          name: "Apéro",
+          order: 10,
+          color: "gray",
+          groups: {
+            Alcools: ["Gin", "Aperol", "Tonic", "Get 27", "Bailey"],
+            Grignotage: ["Cacahuètes", "Chips", "Saucisson"],
+          },
+        },
+        hygiene: {
+          icon: "🧴",
+          name: "Hygiène",
+          order: 11,
+          color: "gray",
+          items: [
+            "Savon",
+            "Shampoing",
+            "Cotons-tiges",
+            "Coton démaquillant",
+            "Dentifrice",
+            "Déodorant",
+          ],
+        },
+        menage: {
+          icon: "🧹",
+          name: "Produits ménagers",
+          order: 12,
+          color: "gray",
+          items: [
+            "Liquide vaisselle",
+            "Lessives",
+            "Adoucissant",
+            "Litière",
+            "Calgon",
+            "Powerball",
+            "Sac poubelle",
+            "Aluminium",
+            "Papier cuisson",
+            "Cellophane",
+          ],
+        },
+        wc: {
+          icon: "🚽",
+          name: "WC",
+          order: 13,
+          color: "gray",
+          items: ["Papier toilette", "Canard WC", "Désodorisant"],
+        },
+        salon: {
+          icon: "🕯️",
+          name: "Salon",
+          order: 14,
+          color: "gray",
+          items: ["Bougies", "Allume-feu", "Allumettes"],
+        },
+        electromenager: {
+          icon: "💡",
+          name: "Électroménager",
+          order: 15,
+          color: "gray",
+          items: ["Ampoules", "Piles"],
+        },
+        autres: {
+          icon: "📦",
+          name: "Autres",
+          order: 16,
+          color: "gray",
+          items: [],
+        },
+      };
+
+      // État
+      let selections = {};
+      let currentCategory = null;
+      let stockItems = {}; // Items du stock de base
+
+      // Init
+      function init() {
+        // Initialiser selections
+        Object.keys(CATEGORIES).forEach((key) => {
+          selections[key] = {};
+          const cat = CATEGORIES[key];
+          if (cat.items) {
+            cat.items.forEach((item) => (selections[key][item] = false));
+          } else if (cat.groups) {
+            Object.values(cat.groups).forEach((items) => {
+              items.forEach((item) => (selections[key][item] = false));
+            });
+          }
+        });
+
+        renderCategories();
+        loadFromAPI();
+        
+        // 🎯 ÉCOUTER LES MESSAGES de home.html pour switcher automatiquement
+        window.addEventListener('message', (event) => {
+          if (event.data.type === 'SHOW_SHOPPING_LIST') {
+            console.log('📨 Message reçu : afficher Liste courses');
+            switchView('shopping');
+          } else if (event.data.type === 'REFRESH_DATA') {
+            console.log('🔄 Refresh data demandé');
+            loadFromAPI();
+          }
+        });
+      }
+
+      // Render grille catégories avec couleurs
+      function renderCategories() {
+        const grid = document.getElementById("categoriesGrid");
+        const sorted = Object.entries(CATEGORIES).sort(
+          (a, b) => a[1].order - b[1].order
+        );
+
+        grid.innerHTML = sorted
+          .map(([key, cat]) => {
+            const count = Object.values(selections[key]).filter(
+              (v) => v
+            ).length;
+            const colorAttr = cat.color ? `data-color="${cat.color}"` : '';
+            const nutritionLabel = cat.nutritionLevel ? 
+              `<div class="nutrition-indicator">${cat.nutritionLevel}</div>` : '';
+            
+            return `
+              <div class="category-btn" ${colorAttr} onclick="openDrawer('${key}')">
+                ${count > 0 ? `<div class="badge">${count}</div>` : ""}
+                <span class="icon">${cat.icon}</span>
+                <span class="name">${cat.name}</span>
+                ${nutritionLabel}
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      // Ouvrir drawer
+      function openDrawer(categoryKey) {
+        currentCategory = categoryKey;
+        const cat = CATEGORIES[categoryKey];
+        document.getElementById(
+          "drawerTitle"
+        ).innerHTML = `${cat.icon} ${cat.name}`;
+
+        let html = "";
+        if (cat.items) {
+          html = cat.items
+            .map(
+              (item) => `
+          <div class="checkbox-item ${
+            selections[categoryKey][item] ? "checked" : ""
+          }">
+            <input type="checkbox"
+                   id="item-${item}"
+                   ${selections[categoryKey][item] ? "checked" : ""}
+                   onchange="toggleItem('${categoryKey}', '${item}')">
+            <label for="item-${item}">${item}</label>
+          </div>
+        `
+            )
+            .join("");
+        } else if (cat.groups) {
+          html = Object.entries(cat.groups)
+            .map(
+              ([groupName, items]) => `
+          <div class="item-group">
+            <div class="item-group-title">${groupName}</div>
+            ${items
+              .map(
+                (item) => `
+                <div class="checkbox-item ${
+                  selections[categoryKey][item] ? "checked" : ""
+                }">
+                  <input type="checkbox"
+                         id="item-${item}"
+                         ${selections[categoryKey][item] ? "checked" : ""}
+                         onchange="toggleItem('${categoryKey}', '${item}')">
+                  <label for="item-${item}">${item}</label>
+                </div>
+              `
+              )
+              .join("")}
+          </div>
+        `
+            )
+            .join("");
+        }
+        document.getElementById("drawerBody").innerHTML = html;
+        document.getElementById("drawer").classList.add("active");
+        document.getElementById("backdrop").classList.add("active");
+      }
+
+      function closeDrawer() {
+        document.getElementById("drawer").classList.remove("active");
+        document.getElementById("backdrop").classList.remove("active");
+        renderCategories();
+      }
+
+      function toggleItem(category, item) {
+        selections[category][item] = !selections[category][item];
+        const checkbox = document.getElementById(`item-${item}`);
+        const parent = checkbox.closest(".checkbox-item");
+        parent.classList.toggle("checked");
+      }
+
+      function saveDrawer() {
+        // Si c'est le drawer du stock de base
+        if (currentCategory === null) {
+          closeDrawer();
+
+          // Filtrer automatiquement les items du stock de la liste
+          let filtered = 0;
+          Object.keys(CATEGORIES).forEach((catKey) => {
+            const cat = CATEGORIES[catKey];
+            if (cat.items) {
+              cat.items.forEach((item) => {
+                if (stockItems[item] && selections[catKey][item]) {
+                  selections[catKey][item] = false;
+                  filtered++;
+                }
+              });
+            } else if (cat.groups) {
+              Object.values(cat.groups).forEach((items) => {
+                items.forEach((item) => {
+                  if (stockItems[item] && selections[catKey][item]) {
+                    selections[catKey][item] = false;
+                    filtered++;
+                  }
+                });
+              });
+            }
+          });
+
+          renderCategories();
+          saveToAPI();
+          
+          if (filtered > 0) {
+            showToast(`✅ Stock de base sauvegardé ! ${filtered} item(s) filtré(s) de votre liste.`);
+          } else {
+            showToast("✅ Stock de base sauvegardé !");
+          }
+          
+          return;
+        }
+
+        closeDrawer();
+        saveToAPI();
+      }
+
+      function clearDrawer() {
+        showConfirmModal(
+          "Vider cette catégorie ?",
+          "Tous les items cochés de cette catégorie seront décochés.",
+          () => {
+            Object.keys(selections[currentCategory]).forEach((item) => {
+              selections[currentCategory][item] = false;
+            });
+            openDrawer(currentCategory);
+            showToast("Catégorie vidée");
+          }
+        );
+      }
+
+      // 🎯 MODIFICATION : switchView avec bascule des boutons et affichage de la vue
+      function switchView(view) {
+        // Reset tous les boutons
+        document
+          .querySelectorAll(".toggle-btn")
+          .forEach((btn) => btn.classList.remove("active"));
+        
+        // Reset toutes les vues
+        document.getElementById("categoriesView").classList.remove("active");
+        document.getElementById("shoppingView").classList.remove("active");
+        
+        // Activer la bonne vue et le bon bouton
+        if (view === "categories") {
+          // Le bouton "Catégories" est maintenant le DEUXIÈME (index 1)
+          document.querySelectorAll(".toggle-btn")[1].classList.add("active");
+          document.getElementById("categoriesView").classList.add("active");
+        } else if (view === "shopping") {
+          // Le bouton "Liste courses" est maintenant le PREMIER (index 0)
+          document.querySelectorAll(".toggle-btn")[0].classList.add("active");
+          document.getElementById("shoppingView").classList.add("active");
+          renderShoppingList();
+        }
+        
+        // ✅ Gérer l'indicateur de scroll
+        const hint = document.getElementById('scrollHintShopping');
+        if (hint) {
+          hint.style.display = (view === 'shopping') ? 'block' : 'none';
+        }
+      }
+
+      function renderShoppingList() {
+        const container = document.getElementById("shoppingList");
+      
+        // Vérifier si items
+        const hasItems = Object.values(selections).some((cat) =>
+          Object.values(cat).some((v) => v)
+        );
+      
+        if (!hasItems) {
+          container.innerHTML =
+            '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
+          return;
+        }
+      
+        // Ordre logique de parcours du supermarché
+        const supermarketOrder = [
+          { keys: ["fruits"], name: "Fruits & Légumes", icon: "🍎" },
+          { keys: ["cereales"], name: "Pâtes, Riz & Féculents", icon: "🌾" },
+          { keys: ["laitiers"], name: "Produits Laitiers", icon: "🥛" },
+          { keys: ["proteines"], name: "Viandes & Poissons", icon: "🍖" },
+          { keys: ["graisses"], name: "Huiles & Matières grasses", icon: "🧈" },
+          {
+            keys: ["transformes"],
+            name: "Surgelés & Produits transformés",
+            icon: "🍕",
+          },
+          { keys: ["boissons"], name: "Boissons", icon: "💧" },
+          { keys: ["sucres", "apero"], name: "Snacks & Gourmandises", icon: "🍬" },
+          { keys: ["condiments"], name: "Épicerie & Condiments", icon: "🧂" },
+          {
+            keys: ["hygiene", "menage", "wc"],
+            name: "Hygiène & Entretien",
+            icon: "🧹",
+          },
+          {
+            keys: ["salon", "electromenager", "autres"],
+            name: "Maison & Autres",
+            icon: "🏠",
+          },
+        ];
+      
+        let html = "";
+      
+        supermarketOrder.forEach((section) => {
+          const sectionItems = [];
+      
+          section.keys.forEach((key) => {
+            const selected = Object.entries(selections[key] || {}).filter(
+              ([_, checked]) => checked
+            );
+            selected.forEach(([item, _]) => {
+              sectionItems.push(item);
+            });
+          });
+      
+          if (sectionItems.length > 0) {
+            html += `
+              <div class="shopping-category">
+                <div class="shopping-category-header">
+                  <span>${section.icon}</span>
+                  <span>${section.name}</span>
+                </div>
+                ${sectionItems
+                  .map(
+                    (item) => `
+                  <div class="shopping-item">
+                    <input type="checkbox"
+                           id="shop-${item}"
+                           onchange="toggleShopItem(this)">
+                    <label for="shop-${item}">${item}</label>
+                  </div>
+                `
+                  )
+                  .join("")}
+              </div>
+            `;
+          }
+        });
+      
+        container.innerHTML = html;
+      }
+
+      // Toggle shopping item
+      function toggleShopItem(checkbox) {
+        const parent = checkbox.closest(".shopping-item");
+        parent.classList.toggle("checked");
+      }
+
+      // Export
+      function exportList() {
+        let text = "🛒 LISTE DE COURSES\n\n";
+
+        Object.entries(CATEGORIES)
+          .sort((a, b) => a[1].order - b[1].order)
+          .forEach(([key, cat]) => {
+            const selected = Object.entries(selections[key]).filter(
+              ([_, checked]) => checked
+            );
+
+            if (selected.length > 0) {
+              text += `\n${cat.icon} ${cat.name.toUpperCase()}\n`;
+              selected.forEach(([item, _]) => {
+                text += `☐ ${item}\n`;
+              });
+            }
+          });
+
+        navigator.clipboard.writeText(text);
+        showToast("✅ Liste copiée dans le presse-papier !");
+      }
+
+      // Clear all
+      function clearAll() {
+        showConfirmModal(
+          "Tout effacer ?",
+          "Toute votre liste de courses sera vidée. Cette action est irréversible.",
+          () => {
+            Object.keys(selections).forEach((cat) => {
+              Object.keys(selections[cat]).forEach((item) => {
+                selections[cat][item] = false;
+              });
+            });
+
+            renderCategories();
+            saveToAPI();
+            showToast("Liste effacée");
+          }
+        );
+      }
+
+      // Stock de base
+      function openStockDrawer() {
+        currentCategory = null; // Indiquer que c'est le stock
+        
+        document.getElementById("drawerTitle").innerHTML = `📦 Stock de base`;
+        
+        let html = `
+          <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">
+            Le <strong>stock de base</strong> contient les produits que vous avez toujours chez vous.
+            Ces items seront <strong>automatiquement filtrés</strong> de votre liste de courses quand vous cliquez sur "Sauvegarder".
+          </p>
+        `;
+        
+        // Organiser par catégorie
+        Object.entries(CATEGORIES)
+          .sort((a, b) => a[1].order - b[1].order)
+          .forEach(([catKey, cat]) => {
+            const allItems = [];
+            
+            if (cat.items) {
+              allItems.push(...cat.items);
+            } else if (cat.groups) {
+              Object.values(cat.groups).forEach((items) => {
+                allItems.push(...items);
+              });
+            }
+            
+            if (allItems.length > 0) {
+              html += `
+                <div class="item-group">
+                  <div class="item-group-title">${cat.icon} ${cat.name}</div>
+                  ${allItems.map(item => `
+                    <div class="checkbox-item ${stockItems[item] ? 'checked' : ''}">
+                      <input type="checkbox"
+                             id="stock-${item}"
+                             ${stockItems[item] ? 'checked' : ''}
+                             onchange="toggleStockItem('${item}')">
+                      <label for="stock-${item}">${item}</label>
+                    </div>
+                  `).join('')}
+                </div>
+              `;
+            }
+          });
+        
+        document.getElementById("drawerBody").innerHTML = html;
+        document.getElementById("drawer").classList.add("active");
+        document.getElementById("backdrop").classList.add("active");
+      }
+
+      function toggleStockItem(item) {
+        stockItems[item] = !stockItems[item];
+        const checkbox = document.getElementById(`stock-${item}`);
+        const parent = checkbox.closest(".checkbox-item");
+        parent.classList.toggle("checked");
+      }
+
+      // Load from API
+      async function loadFromAPI() {
+        try {
+          const response = await fetch("/recipes.json");
+          const data = await response.json();
+
+          if (data && data.shopping_list && data.shopping_list.length > 0) {
+            console.log(`📥 ${data.shopping_list.length} items chargés depuis l'API`);
+
+            // Ajouter les items dans la catégorie "Autres"
+            data.shopping_list.forEach((item) => {
+              if (!CATEGORIES.autres.items.includes(item)) {
+                CATEGORIES.autres.items.push(item);
+              }
+              selections.autres[item] = true;
+            });
+          }
+
+          renderCategories();
+          
+          // Si on est sur la vue shopping, rafraîchir
+          if (document.getElementById('shoppingView').classList.contains('active')) {
+            renderShoppingList();
+          }
+        } catch (error) {
+          console.error("Erreur chargement API:", error);
+          renderCategories();
+        }
+      }
+
+      // Save to API
+      async function saveToAPI() {
+        const allItems = [];
+
+        Object.entries(selections).forEach(([cat, items]) => {
+          Object.entries(items).forEach(([item, checked]) => {
+            if (checked) allItems.push(item);
+          });
+        });
+
+        try {
+          const response = await fetch("/recipes.json");
+          const data = await response.json();
+          data.shopping_list = allItems;
+
+          // Note: En production, faire un vrai POST
+          console.log("💾 Sauvegarde:", data);
+        } catch (error) {
+          console.error("Erreur:", error);
+        }
+      }
+
+      // Toast notification
+      function showToast(message, type = "success") {
+        const oldToast = document.querySelector(".toast");
+        if (oldToast) oldToast.remove();
+
+        const toast = document.createElement("div");
+        toast.className = `toast ${type === "error" ? "error" : ""}`;
+        toast.textContent = message;
+
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+
+      // Modal de confirmation réutilisable
+      let confirmCallback = null;
+
+      function showConfirmModal(title, message, callback) {
+        document.getElementById("confirmTitle").textContent = title;
+        document.getElementById("confirmMessage").textContent = message;
+        confirmCallback = callback;
+        document.getElementById("confirmModal").classList.add("active");
+      }
+
+      function closeConfirmModal() {
+        document.getElementById("confirmModal").classList.remove("active");
+        confirmCallback = null;
+      }
+
+      document.getElementById("confirmButton").addEventListener("click", () => {
+        if (confirmCallback) {
+          confirmCallback();
+          confirmCallback = null;
+        }
+        closeConfirmModal();
+      });
+
+      // Fermer les modals en cliquant à l'extérieur
+      document.getElementById("confirmModal").addEventListener("click", (e) => {
+        if (e.target.id === "confirmModal") {
+          closeConfirmModal();
+        }
+      });
+
+      // Modal nutrition
+      function openNutritionModal() {
+        document.getElementById("nutritionModal").classList.add("active");
+      }
+
+      function closeNutritionModal() {
+        document.getElementById("nutritionModal").classList.remove("active");
+      }
+
+      document.getElementById("nutritionModal").addEventListener("click", (e) => {
+        if (e.target.id === "nutritionModal") {
+          closeNutritionModal();
+        }
+      });
+
+      // Init on load
+      window.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>
