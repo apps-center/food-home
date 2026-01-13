@@ -653,14 +653,31 @@
       function closePlanningModal() {
         planningModal.classList.remove("active");
       }
+      
       // ============================================
       // AJOUT À LA LISTE DE COURSES
       // ============================================
       function addToShoppingList() {
         if (!currentRecipe) return;
-        const ingredients = currentRecipe.ingredients
+        
+        // Splitter et nettoyer les ingrédients
+        let ingredients = currentRecipe.ingredients
           .split("|")
           .filter((i) => i.trim());
+      
+        // 🎯 SPLITTER les items avec virgules (ex: "Sel, poivre" → ["Sel", "Poivre"])
+        const expandedIngredients = [];
+        ingredients.forEach(ing => {
+          if (ing.includes(',')) {
+            // Splitter par virgule et nettoyer
+            const parts = ing.split(',').map(p => p.trim()).filter(p => p);
+            expandedIngredients.push(...parts);
+          } else {
+            expandedIngredients.push(ing);
+          }
+        });
+        ingredients = expandedIngredients;
+      
         // Sauvegarder dans localStorage
         let currentList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
         const newItems = ingredients.filter(item => !currentList.includes(item));
@@ -674,6 +691,7 @@
         
         showToast(`✅ ${newItems.length} ingrédient(s) ajouté(s) !`);
       }
+      
       // ============================================
       // PLAT AU HASARD
       // ============================================
