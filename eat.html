@@ -91,6 +91,28 @@
         transform: translateX(-4px);             /* Glisse vers la gauche */
       }
       
+      /* 🎯 Meal slots cliquables dans le planning */
+      .meal-slot.clickable {
+        cursor: pointer;
+        transition: all var(--transition-base);
+      }
+      
+      .meal-slot.clickable:hover {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        border-color: rgba(59, 130, 246, 0.3);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+      }
+      
+      .meal-slot.clickable .meal-content {
+        color: #0ea5e9;
+        font-weight: var(--font-weight-semibold);
+      }
+      
+      .meal-slot.clickable:hover .meal-content {
+        text-decoration: underline;
+      }
+      
     </style>
   </head>
   <body>
@@ -208,15 +230,16 @@
         <div class="alert-info">
           👨‍👩‍👧‍👦 Planning pour une famille de 4 (2 adultes + 2 enfants) - Lundi au Vendredi
         </div>
-        <div class="week-grid" id="weekGrid"></div>
-        <div style="margin-top: 24px; display: flex; gap: 12px; flex-wrap: wrap">
-          <button class="btn btn-primary" id="btn-export-planning">
+        <!-- 🎯 BOUTONS DÉPLACÉS EN HAUT en version compacte -->
+        <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+          <button class="btn btn-primary" id="btn-export-planning" style="padding: 10px 20px; font-size: 14px;">
             🛒 Exporter tous les ingrédients
           </button>
-          <button class="btn btn-secondary" id="btn-regenerate">
+          <button class="btn btn-secondary" id="btn-regenerate" style="padding: 10px 20px; font-size: 14px;">
             🔄 Régénérer le planning
           </button>
         </div>
+        <div class="week-grid" id="weekGrid"></div>
       </div>
     </div>
     <script>
@@ -428,13 +451,13 @@
           dayCard.innerHTML = `
             <div class="day-name">${day}</div>
            
-            <div class="meal-slot">
+            <div class="meal-slot ${dejeunerRecipe ? 'clickable' : ''}" ${dejeunerRecipe ? `onclick="openRecipeFromPlanning('${day}', 'dejeuner')"` : ''}>
               <div class="meal-label">☀️ Déjeuner</div>
               <div class="meal-content">
                 ${dejeunerRecipe ? dejeunerRecipe.nom : "Aucune recette"}
               </div>
             </div>
-            <div class="meal-slot">
+            <div class="meal-slot ${dinerRecipe ? 'clickable' : ''}" ${dinerRecipe ? `onclick="openRecipeFromPlanning('${day}', 'diner')"` : ''}>
               <div class="meal-label">🌙 Dîner</div>
               <div class="meal-content">
                 ${dinerRecipe ? dinerRecipe.nom : "Aucune recette"}
@@ -513,6 +536,27 @@
       function closeRecipeModal() {
         modal.classList.remove("active");
         currentRecipe = null;
+        
+        // 🎯 Si on vient du planning, on y retourne automatiquement
+        if (sessionStorage.getItem('returnToPlanning') === 'true') {
+          sessionStorage.removeItem('returnToPlanning');
+          planningModal.classList.add("active");
+        }
+      }
+      
+      // 🎯 NOUVELLE FONCTION : Ouvrir une recette depuis le planning
+      function openRecipeFromPlanning(day, meal) {
+        const recipe = weeklyPlanning[day]?.[meal];
+        if (!recipe) return;
+        
+        // Marquer qu'on vient du planning pour y retourner après
+        sessionStorage.setItem('returnToPlanning', 'true');
+        
+        // Fermer la modal planning
+        planningModal.classList.remove("active");
+        
+        // Ouvrir la modal recette
+        openRecipeModal(recipe);
       }
       function closePlanningModal() {
         planningModal.classList.remove("active");
