@@ -1431,543 +1431,552 @@
       ];
       
       let stockBase = {}; // Items qu'on a en stock
-
-      // Init
-      function init() {
-        // Initialiser stockBase avec les items essentiels
-        STOCK_BASE_ITEMS.forEach((item) => {
-          stockBase[item] = false;
-        });
-
-        // Charger stock depuis localStorage
-        const savedStock = localStorage.getItem("food_home_stock_base");
-        if (savedStock) {
-          try {
-            const loaded = JSON.parse(savedStock);
-            Object.assign(stockBase, loaded);
-            console.log("📦 Stock de base chargé depuis localStorage");
-          } catch (e) {
-            console.error("Erreur chargement stock:", e);
+// Init
+function init() {
+  // Initialiser stockBase avec les items essentiels
+  STOCK_BASE_ITEMS.forEach((item) => {
+    stockBase[item] = false;
+  });
+  // Charger stock depuis localStorage
+  const savedStock = localStorage.getItem("food_home_stock_base");
+  if (savedStock) {
+    try {
+      const loaded = JSON.parse(savedStock);
+      Object.assign(stockBase, loaded);
+      console.log("📦 Stock de base chargé depuis localStorage");
+    } catch (e) {
+      console.error("Erreur chargement stock:", e);
+    }
+  }
+ 
+  // Initialiser selections
+  Object.keys(CATEGORIES).forEach((key) => {
+    selections[key] = {};
+    const cat = CATEGORIES[key];
+    if (cat.items) {
+      cat.items.forEach((item) => (selections[key][item] = false));
+    } else if (cat.groups) {
+      Object.values(cat.groups).forEach((items) => {
+        items.forEach((item) => (selections[key][item] = false));
+      });
+    }
+  });
+  renderCategories();
+  loadFromAPI();
+ 
+  // 🎯 ÉCOUTER LES MESSAGES de home.html pour switcher automatiquement
+  window.addEventListener('message', (event) => {
+    if (event.data.type === 'SHOW_SHOPPING_LIST') {
+      console.log('📨 Message reçu : afficher Liste courses');
+      switchView('shopping');
+    } else if (event.data.type === 'REFRESH_DATA') {
+      console.log('🔄 Refresh data demandé');
+      loadFromAPI();
+    }
+  });
+}
+// Render grille catégories avec couleurs
+function renderCategories() {
+  const grid = document.getElementById("categoriesGrid");
+  const sorted = Object.entries(CATEGORIES).sort(
+    (a, b) => a[1].order - b[1].order
+  );
+  grid.innerHTML = sorted
+    .map(([key, cat]) => {
+      const count = Object.values(selections[key]).filter(
+        (v) => v
+      ).length;
+      const colorAttr = cat.color ? `data-color="${cat.color}"` : '';
+      const nutritionLabel = cat.nutritionLevel ?
+        `<div class="nutrition-indicator">${cat.nutritionLevel}</div>` : '';
+     
+      return `
+        <div class="category-btn" ${colorAttr} onclick="openDrawer('${key}')">
+          ${count > 0 ? `<div class="badge">${count}</div>` : ""}
+          <span class="icon">${cat.icon}</span>
+          <span class="name">${cat.name}</span>
+          ${nutritionLabel}
+        </div>
+      `;
+    })
+    .join("");
+}
+// Ouvrir drawer
+function openDrawer(categoryKey) {
+  currentCategory = categoryKey;
+  const cat = CATEGORIES[categoryKey];
+  document.getElementById(
+    "drawerTitle"
+  ).innerHTML = `${cat.icon} ${cat.name}`;
+  let html = "";
+  if (cat.items) {
+    html = cat.items
+      .map(
+        (item) => `
+      <div class="checkbox-item ${
+        selections[categoryKey][item] ? "checked" : ""
+      }">
+        <input type="checkbox"
+               id="item-${item}"
+               ${selections[categoryKey][item] ? "checked" : ""}
+               onchange="toggleItem('${categoryKey}', '${item}')">
+        <label for="item-${item}">${item}</label>
+      </div>
+    `
+      )
+      .join("");
+  } else if (cat.groups) {
+    html = Object.entries(cat.groups)
+      .map(
+        ([groupName, items]) => `
+      <div class="item-group">
+        <div class="item-group-title">${groupName}</div>
+        ${items
+          .map(
+            (item) => `
+            <div class="checkbox-item ${
+              selections[categoryKey][item] ? "checked" : ""
+            }">
+              <input type="checkbox"
+                     id="item-${item}"
+                     ${selections[categoryKey][item] ? "checked" : ""}
+                     onchange="toggleItem('${categoryKey}', '${item}')">
+              <label for="item-${item}">${item}</label>
+            </div>
+          `
+          )
+          .join("")}
+      </div>
+    `
+      )
+      .join("");
+  }
+  document.getElementById("drawerBody").innerHTML = html;
+  document.getElementById("drawer").classList.add("active");
+  document.getElementById("backdrop").classList.add("active");
+}
+function closeDrawer() {
+  document.getElementById("drawer").classList.remove("active");
+  document.getElementById("backdrop").classList.remove("active");
+  renderCategories();
+}
+function toggleItem(category, item) {
+  selections[category][item] = !selections[category][item];
+  const checkbox = document.getElementById(`item-${item}`);
+  const parent = checkbox.closest(".checkbox-item");
+  parent.classList.toggle("checked");
+}
+function saveDrawer() {
+  // Si c'est le drawer du stock de base
+  if (currentCategory === null) {
+    // Sauvegarder le stock dans localStorage (déjà fait dans toggleStockItem)
+    localStorage.setItem("food_home_stock_base", JSON.stringify(stockBase));
+   
+    closeDrawer();
+    // Filtrer automatiquement les items du stock de la liste
+    let filtered = 0;
+    Object.keys(CATEGORIES).forEach((catKey) => {
+      const cat = CATEGORIES[catKey];
+      if (cat.items) {
+        cat.items.forEach((item) => {
+          if (stockBase[item] && selections[catKey][item]) {
+            selections[catKey][item] = false;
+            filtered++;
           }
-        }
-        
-        // Initialiser selections
-        Object.keys(CATEGORIES).forEach((key) => {
-          selections[key] = {};
-          const cat = CATEGORIES[key];
-          if (cat.items) {
-            cat.items.forEach((item) => (selections[key][item] = false));
-          } else if (cat.groups) {
-            Object.values(cat.groups).forEach((items) => {
-              items.forEach((item) => (selections[key][item] = false));
-            });
-          }
         });
-
-        renderCategories();
-        loadFromAPI();
-        
-        // 🎯 ÉCOUTER LES MESSAGES de home.html pour switcher automatiquement
-        window.addEventListener('message', (event) => {
-          if (event.data.type === 'SHOW_SHOPPING_LIST') {
-            console.log('📨 Message reçu : afficher Liste courses');
-            switchView('shopping');
-          } else if (event.data.type === 'REFRESH_DATA') {
-            console.log('🔄 Refresh data demandé');
-            loadFromAPI();
+      } else if (cat.groups) {
+        Object.values(cat.groups).forEach((items) => {
+          items.forEach((item) => {
+            if (stockBase[item] && selections[catKey][item]) {
+              selections[catKey][item] = false;
+              filtered++;
+            }
           }
         });
       }
+    });
+    renderCategories();
+    saveToAPI();
+   
+    if (filtered > 0) {
+      showToast(`✅ Stock de base sauvegardé ! ${filtered} item(s) filtré(s) de votre liste.`);
+    } else {
+      showToast("✅ Stock de base sauvegardé !");
+    }
+   
+    return;
+  }
+  closeDrawer();
+  saveToAPI();
+}
+function clearDrawer() {
+  showConfirmModal(
+    "Vider cette catégorie ?",
+    "Tous les items cochés de cette catégorie seront décochés.",
+    () => {
+      Object.keys(selections[currentCategory]).forEach((item) => {
+        selections[currentCategory][item] = false;
+      });
+      openDrawer(currentCategory);
+      showToast("Catégorie vidée");
+    }
+  );
+}
+// 🎯 MODIFICATION : switchView avec bascule des boutons et affichage de la vue
+function switchView(view) {
+  // Reset tous les boutons
+  document
+    .querySelectorAll(".toggle-btn")
+    .forEach((btn) => btn.classList.remove("active"));
+ 
+  // Reset toutes les vues
+  document.getElementById("categoriesView").classList.remove("active");
+  document.getElementById("shoppingView").classList.remove("active");
+ 
+  // Activer la bonne vue et le bon bouton
+  if (view === "categories") {
+    // Le bouton "Catégories" est maintenant le DEUXIÈME (index 1)
+    document.querySelectorAll(".toggle-btn")[1].classList.add("active");
+    document.getElementById("categoriesView").classList.add("active");
+  } else if (view === "shopping") {
+    // Le bouton "Liste courses" est maintenant le PREMIER (index 0)
+    document.querySelectorAll(".toggle-btn")[0].classList.add("active");
+    document.getElementById("shoppingView").classList.add("active");
+    renderShoppingList();
+  }
+ 
+  // ✅ Gérer l'indicateur de scroll
+  const hint = document.getElementById('scrollHintShopping');
+  if (hint) {
+    hint.style.display = (view === 'shopping') ? 'block' : 'none';
+  }
+}
+function renderShoppingList() {
+  const container = document.getElementById("shoppingList");
 
-      // Render grille catégories avec couleurs
-      function renderCategories() {
-        const grid = document.getElementById("categoriesGrid");
-        const sorted = Object.entries(CATEGORIES).sort(
-          (a, b) => a[1].order - b[1].order
-        );
+  // Vérifier si items
+  const hasItems = Object.values(selections).some((cat) =>
+    Object.values(cat).some((v) => v)
+  );
 
-        grid.innerHTML = sorted
-          .map(([key, cat]) => {
-            const count = Object.values(selections[key]).filter(
-              (v) => v
-            ).length;
-            const colorAttr = cat.color ? `data-color="${cat.color}"` : '';
-            const nutritionLabel = cat.nutritionLevel ? 
-              `<div class="nutrition-indicator">${cat.nutritionLevel}</div>` : '';
-            
-            return `
-              <div class="category-btn" ${colorAttr} onclick="openDrawer('${key}')">
-                ${count > 0 ? `<div class="badge">${count}</div>` : ""}
-                <span class="icon">${cat.icon}</span>
-                <span class="name">${cat.name}</span>
-                ${nutritionLabel}
-              </div>
-            `;
-          })
-          .join("");
-      }
+  if (!hasItems) {
+    container.innerHTML =
+      '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
+    return;
+  }
 
-      // Ouvrir drawer
-      function openDrawer(categoryKey) {
-        currentCategory = categoryKey;
-        const cat = CATEGORIES[categoryKey];
-        document.getElementById(
-          "drawerTitle"
-        ).innerHTML = `${cat.icon} ${cat.name}`;
+  // Ordre logique de parcours du supermarché
+  const supermarketOrder = [
+    { keys: ["fruits"], name: "Fruits & Légumes", icon: "🍎" },
+    { keys: ["cereales"], name: "Pâtes, Riz & Féculents", icon: "🌾" },
+    { keys: ["laitiers"], name: "Produits Laitiers", icon: "🥛" },
+    { keys: ["proteines"], name: "Viandes & Poissons", icon: "🍖" },
+    { keys: ["graisses"], name: "Huiles & Matières grasses", icon: "🧈" },
+    {
+      keys: ["transformes"],
+      name: "Surgelés & Produits transformés",
+      icon: "🍕",
+    },
+    { keys: ["boissons"], name: "Boissons", icon: "💧" },
+    { keys: ["sucres", "apero"], name: "Snacks & Gourmandises", icon: "🍬" },
+    { keys: ["condiments"], name: "Épicerie & Condiments", icon: "🧂" },
+    {
+      keys: ["hygiene", "menage", "wc"],
+      name: "Hygiène & Entretien",
+      icon: "🧹",
+    },
+    {
+      keys: ["salon", "electromenager", "autres"],
+      name: "Maison & Autres",
+      icon: "🏠",
+    },
+  ];
 
-        let html = "";
-        if (cat.items) {
-          html = cat.items
+  let html = "";
+
+  supermarketOrder.forEach((section) => {
+    const sectionItems = [];
+
+    section.keys.forEach((key) => {
+      const selected = Object.entries(selections[key] || {}).filter(
+        ([_, checked]) => checked
+      );
+      selected.forEach(([item, _]) => {
+        sectionItems.push(item);
+      });
+    });
+
+    if (sectionItems.length > 0) {
+      html += `
+        <div class="shopping-category">
+          <div class="shopping-category-header">
+            <span>${section.icon}</span>
+            <span>${section.name}</span>
+          </div>
+          ${sectionItems
             .map(
               (item) => `
-          <div class="checkbox-item ${
-            selections[categoryKey][item] ? "checked" : ""
-          }">
-            <input type="checkbox"
-                   id="item-${item}"
-                   ${selections[categoryKey][item] ? "checked" : ""}
-                   onchange="toggleItem('${categoryKey}', '${item}')">
-            <label for="item-${item}">${item}</label>
-          </div>
-        `
+            <div class="shopping-item">
+              <input type="checkbox"
+                     id="shop-${item}"
+                     onchange="toggleShopItem(this)">
+              <label for="shop-${item}">${item}</label>
+            </div>
+          `
             )
-            .join("");
-        } else if (cat.groups) {
-          html = Object.entries(cat.groups)
-            .map(
-              ([groupName, items]) => `
-          <div class="item-group">
-            <div class="item-group-title">${groupName}</div>
-            ${items
-              .map(
-                (item) => `
-                <div class="checkbox-item ${
-                  selections[categoryKey][item] ? "checked" : ""
-                }">
-                  <input type="checkbox"
-                         id="item-${item}"
-                         ${selections[categoryKey][item] ? "checked" : ""}
-                         onchange="toggleItem('${categoryKey}', '${item}')">
-                  <label for="item-${item}">${item}</label>
-                </div>
-              `
-              )
-              .join("")}
-          </div>
-        `
-            )
-            .join("");
-        }
-        document.getElementById("drawerBody").innerHTML = html;
-        document.getElementById("drawer").classList.add("active");
-        document.getElementById("backdrop").classList.add("active");
-      }
+            .join("")}
+        </div>
+      `;
+    }
+  });
 
-      function closeDrawer() {
-        document.getElementById("drawer").classList.remove("active");
-        document.getElementById("backdrop").classList.remove("active");
-        renderCategories();
-      }
-
-      function toggleItem(category, item) {
-        selections[category][item] = !selections[category][item];
-        const checkbox = document.getElementById(`item-${item}`);
-        const parent = checkbox.closest(".checkbox-item");
-        parent.classList.toggle("checked");
-      }
-
-      function saveDrawer() {
-        // Si c'est le drawer du stock de base
-        if (currentCategory === null) {
-          // Sauvegarder le stock dans localStorage (déjà fait dans toggleStockItem)
-          localStorage.setItem("food_home_stock_base", JSON.stringify(stockBase));
-          
-          closeDrawer();
-
-          // Filtrer automatiquement les items du stock de la liste
-          let filtered = 0;
-          Object.keys(CATEGORIES).forEach((catKey) => {
-            const cat = CATEGORIES[catKey];
-            if (cat.items) {
-              cat.items.forEach((item) => {
-                if (stockBase[item] && selections[catKey][item]) {
-                  selections[catKey][item] = false;
-                  filtered++;
-                }
-              });
-            } else if (cat.groups) {
-              Object.values(cat.groups).forEach((items) => {
-                items.forEach((item) => {
-                  if (stockBase[item] && selections[catKey][item]) {
-                    selections[catKey][item] = false;
-                    filtered++;
-                  }
-                });
-              });
-            }
-          });
-
-          renderCategories();
-          saveToAPI();
-          
-          if (filtered > 0) {
-            showToast(`✅ Stock de base sauvegardé ! ${filtered} item(s) filtré(s) de votre liste.`);
-          } else {
-            showToast("✅ Stock de base sauvegardé !");
-          }
-          
-          return;
-        }
-
-        closeDrawer();
-        saveToAPI();
-      }
-
-      function clearDrawer() {
-        showConfirmModal(
-          "Vider cette catégorie ?",
-          "Tous les items cochés de cette catégorie seront décochés.",
-          () => {
-            Object.keys(selections[currentCategory]).forEach((item) => {
-              selections[currentCategory][item] = false;
-            });
-            openDrawer(currentCategory);
-            showToast("Catégorie vidée");
-          }
-        );
-      }
-
-      // 🎯 MODIFICATION : switchView avec bascule des boutons et affichage de la vue
-      function switchView(view) {
-        // Reset tous les boutons
-        document
-          .querySelectorAll(".toggle-btn")
-          .forEach((btn) => btn.classList.remove("active"));
-        
-        // Reset toutes les vues
-        document.getElementById("categoriesView").classList.remove("active");
-        document.getElementById("shoppingView").classList.remove("active");
-        
-        // Activer la bonne vue et le bon bouton
-        if (view === "categories") {
-          // Le bouton "Catégories" est maintenant le DEUXIÈME (index 1)
-          document.querySelectorAll(".toggle-btn")[1].classList.add("active");
-          document.getElementById("categoriesView").classList.add("active");
-        } else if (view === "shopping") {
-          // Le bouton "Liste courses" est maintenant le PREMIER (index 0)
-          document.querySelectorAll(".toggle-btn")[0].classList.add("active");
-          document.getElementById("shoppingView").classList.add("active");
-          renderShoppingList();
-        }
-        
-        // ✅ Gérer l'indicateur de scroll
-        const hint = document.getElementById('scrollHintShopping');
-        if (hint) {
-          hint.style.display = (view === 'shopping') ? 'block' : 'none';
-        }
-      }
-
-      function renderShoppingList() {
-        const container = document.getElementById("shoppingList");
-      
-        // Vérifier si items
-        const hasItems = Object.values(selections).some((cat) =>
-          Object.values(cat).some((v) => v)
-        );
-      
-        if (!hasItems) {
-          container.innerHTML =
-            '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
-          return;
-        }
-      
-        // Ordre logique de parcours du supermarché
-        const supermarketOrder = [
-          { keys: ["fruits"], name: "Fruits & Légumes", icon: "🍎" },
-          { keys: ["cereales"], name: "Pâtes, Riz & Féculents", icon: "🌾" },
-          { keys: ["laitiers"], name: "Produits Laitiers", icon: "🥛" },
-          { keys: ["proteines"], name: "Viandes & Poissons", icon: "🍖" },
-          { keys: ["graisses"], name: "Huiles & Matières grasses", icon: "🧈" },
-          {
-            keys: ["transformes"],
-            name: "Surgelés & Produits transformés",
-            icon: "🍕",
-          },
-          { keys: ["boissons"], name: "Boissons", icon: "💧" },
-          { keys: ["sucres", "apero"], name: "Snacks & Gourmandises", icon: "🍬" },
-          { keys: ["condiments"], name: "Épicerie & Condiments", icon: "🧂" },
-          {
-            keys: ["hygiene", "menage", "wc"],
-            name: "Hygiène & Entretien",
-            icon: "🧹",
-          },
-          {
-            keys: ["salon", "electromenager", "autres"],
-            name: "Maison & Autres",
-            icon: "🏠",
-          },
-        ];
-      
-        let html = "";
-      
-        supermarketOrder.forEach((section) => {
-          const sectionItems = [];
-      
-          section.keys.forEach((key) => {
-            const selected = Object.entries(selections[key] || {}).filter(
-              ([_, checked]) => checked
-            );
-            selected.forEach(([item, _]) => {
-              sectionItems.push(item);
-            });
-          });
-      
-          if (sectionItems.length > 0) {
-            html += `
-              <div class="shopping-category">
-                <div class="shopping-category-header">
-                  <span>${section.icon}</span>
-                  <span>${section.name}</span>
-                </div>
-                ${sectionItems
-                  .map(
-                    (item) => `
-                  <div class="shopping-item">
-                    <input type="checkbox"
-                           id="shop-${item}"
-                           onchange="toggleShopItem(this)">
-                    <label for="shop-${item}">${item}</label>
-                  </div>
-                `
-                  )
-                  .join("")}
-              </div>
-            `;
-          }
+  container.innerHTML = html;
+}
+// Toggle shopping item
+function toggleShopItem(checkbox) {
+  const parent = checkbox.closest(".shopping-item");
+  parent.classList.toggle("checked");
+}
+// Export
+function exportList() {
+  let text = "🛒 LISTE DE COURSES\n\n";
+  Object.entries(CATEGORIES)
+    .sort((a, b) => a[1].order - b[1].order)
+    .forEach(([key, cat]) => {
+      const selected = Object.entries(selections[key]).filter(
+        ([_, checked]) => checked
+      );
+      if (selected.length > 0) {
+        text += `\n${cat.icon} ${cat.name.toUpperCase()}\n`;
+        selected.forEach(([item, _]) => {
+          text += `☐ ${item}\n`;
         });
-      
-        container.innerHTML = html;
       }
-
-      // Toggle shopping item
-      function toggleShopItem(checkbox) {
-        const parent = checkbox.closest(".shopping-item");
-        parent.classList.toggle("checked");
-      }
-
-      // Export
-      function exportList() {
-        let text = "🛒 LISTE DE COURSES\n\n";
-
-        Object.entries(CATEGORIES)
-          .sort((a, b) => a[1].order - b[1].order)
-          .forEach(([key, cat]) => {
-            const selected = Object.entries(selections[key]).filter(
-              ([_, checked]) => checked
-            );
-
-            if (selected.length > 0) {
-              text += `\n${cat.icon} ${cat.name.toUpperCase()}\n`;
-              selected.forEach(([item, _]) => {
-                text += `☐ ${item}\n`;
-              });
-            }
-          });
-
-        navigator.clipboard.writeText(text);
-        showToast("✅ Liste copiée dans le presse-papier !");
-      }
-
-      // Clear all
-      function clearAll() {
-        showConfirmModal(
-          "Tout effacer ?",
-          "Toute votre liste de courses sera vidée. Cette action est irréversible.",
-          () => {
-            Object.keys(selections).forEach((cat) => {
-              Object.keys(selections[cat]).forEach((item) => {
-                selections[cat][item] = false;
-              });
-            });
-      
-            renderCategories();
-            saveToAPI();
-            
-            // ✅ AJOUT : Rafraîchir aussi la vue shopping list
-            if (document.getElementById('shoppingView').classList.contains('active')) {
-              renderShoppingList();
-            }
-            
-            showToast("Liste effacée");
-          }
-        );
-      }
-
-      // Stock de base
-      // Stock de base - Afficher uniquement les essentiels
-      function openStockDrawer() {
-        currentCategory = null; // Indiquer que c'est le stock
-        
-        document.getElementById("drawerTitle").innerHTML = `📦 Stock de base`;
-        
-        let html = `
-          <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">
-            Le <strong>stock de base</strong> contient les produits essentiels que vous avez toujours chez vous.
-            Ces items seront <strong>automatiquement filtrés</strong> de votre liste de courses quand vous cliquez sur "Sauvegarder".
-          </p>
-          <div class="item-group">
-            <div class="item-group-title">🧂 Produits essentiels</div>
-            ${STOCK_BASE_ITEMS.map(item => `
-              <div class="checkbox-item ${stockBase[item] ? 'checked' : ''}">
-                <input type="checkbox"
-                       id="stock-${item}"
-                       ${stockBase[item] ? 'checked' : ''}
-                       onchange="toggleStockItem('${item}')">
-                <label for="stock-${item}">${item}</label>
-              </div>
-            `).join('')}
-          </div>
-        `;
-        
-        document.getElementById("drawerBody").innerHTML = html;
-        document.getElementById("drawer").classList.add("active");
-        document.getElementById("backdrop").classList.add("active");
-      }
-
-      function toggleStockItem(item) {
-        stockBase[item] = !stockBase[item];
-        const checkbox = document.getElementById(`stock-${item}`);
-        const parent = checkbox.closest(".checkbox-item");
-        parent.classList.toggle("checked");
-        
-        // Sauvegarder dans localStorage
-        localStorage.setItem("food_home_stock_base", JSON.stringify(stockBase));
-      }
-
-      // ============================================
-      // 💾 STOCKAGE LOCALSTORAGE
-      // ============================================
-      
-      // Load from localStorage
-      async function loadFromAPI() {
-        try {
-          // ✅ CHARGER depuis localStorage
-          const savedList = localStorage.getItem('food_home_shopping_list');
-          let itemsFromStorage = [];
-          
-          if (savedList) {
-            try {
-              itemsFromStorage = JSON.parse(savedList);
-              console.log(`📥 ${itemsFromStorage.length} items chargés depuis localStorage`);
-            } catch (e) {
-              console.error("Erreur parsing localStorage:", e);
-            }
-          }
-
-          // Ajouter les items dans la catégorie "Autres"
-          itemsFromStorage.forEach((item) => {
-            if (!CATEGORIES.autres.items.includes(item)) {
-              CATEGORIES.autres.items.push(item);
-            }
-            selections.autres[item] = true;
-          });
-
-          renderCategories();
-          
-          // Si on est sur la vue shopping, rafraîchir
-          if (document.getElementById('shoppingView').classList.contains('active')) {
-            renderShoppingList();
-          }
-        } catch (error) {
-          console.error("Erreur chargement:", error);
-          renderCategories();
-        }
-      }
-      
-      // Save to localStorage
-      async function saveToAPI() {
-        const allItems = [];
-        
-        Object.entries(selections).forEach(([cat, items]) => {
-          Object.entries(items).forEach(([item, checked]) => {
-            if (checked) allItems.push(item);
-          });
+    });
+  navigator.clipboard.writeText(text);
+  showToast("✅ Liste copiée dans le presse-papier !");
+}
+// Clear all
+function clearAll() {
+  showConfirmModal(
+    "Tout effacer ?",
+    "Toute votre liste de courses sera vidée. Cette action est irréversible.",
+    () => {
+      Object.keys(selections).forEach((cat) => {
+        Object.keys(selections[cat]).forEach((item) => {
+          selections[cat][item] = false;
         });
+      });
 
-        try {
-          // ✅ SAUVEGARDER dans localStorage
-          localStorage.setItem('food_home_shopping_list', JSON.stringify(allItems));
-          console.log("💾 Sauvegarde dans localStorage:", allItems.length, "items");
-        } catch (error) {
-          console.error("Erreur sauvegarde:", error);
+      renderCategories();
+      saveToAPI();
+     
+      // ✅ AJOUT : Rafraîchir aussi la vue shopping list
+      if (document.getElementById('shoppingView').classList.contains('active')) {
+        renderShoppingList();
+      }
+     
+      showToast("Liste effacée");
+    }
+  );
+}
+// Stock de base - Afficher uniquement les essentiels
+function openStockDrawer() {
+  currentCategory = null; // Indiquer que c'est le stock
+ 
+  document.getElementById("drawerTitle").innerHTML = `📦 Stock de base`;
+ 
+  let html = `
+    <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">
+      Le <strong>stock de base</strong> contient les produits essentiels que vous avez toujours chez vous.
+      Ces items seront <strong>automatiquement filtrés</strong> de votre liste de courses quand vous cliquez sur "Sauvegarder".
+    </p>
+    <div class="item-group">
+      <div class="item-group-title">🧂 Produits essentiels</div>
+      ${STOCK_BASE_ITEMS.map(item => `
+        <div class="checkbox-item ${stockBase[item] ? 'checked' : ''}">
+          <input type="checkbox"
+                 id="stock-${item}"
+                 ${stockBase[item] ? 'checked' : ''}
+                 onchange="toggleStockItem('${item}')">
+          <label for="stock-${item}">${item}</label>
+        </div>
+      `).join('')}
+    </div>
+  `;
+ 
+  document.getElementById("drawerBody").innerHTML = html;
+  document.getElementById("drawer").classList.add("active");
+  document.getElementById("backdrop").classList.add("active");
+}
+function toggleStockItem(item) {
+  stockBase[item] = !stockBase[item];
+  const checkbox = document.getElementById(`stock-${item}`);
+  const parent = checkbox.closest(".checkbox-item");
+  parent.classList.toggle("checked");
+ 
+  // Sauvegarder dans localStorage
+  localStorage.setItem("food_home_stock_base", JSON.stringify(stockBase));
+}
+// ============================================
+// 💾 STOCKAGE LOCALSTORAGE
+// ============================================
+
+// ============================================
+// 🎯 FONCTION : Trouver la catégorie d'un item
+// ============================================
+function findCategoryForItem(itemName) {
+  // Chercher dans toutes les catégories
+  for (const [catKey, cat] of Object.entries(CATEGORIES)) {
+    // Vérifier dans les items directs
+    if (cat.items && cat.items.includes(itemName)) {
+      return catKey;
+    }
+    
+    // Vérifier dans les groupes
+    if (cat.groups) {
+      for (const [groupName, items] of Object.entries(cat.groups)) {
+        if (items.includes(itemName)) {
+          return catKey;
+        }
+      }
+    }
+  }
+  
+  // Si pas trouvé, retourner "autres"
+  return 'autres';
+}
+
+// Load from localStorage
+async function loadFromAPI() {
+  try {
+    // ✅ CHARGER depuis localStorage
+    const savedList = localStorage.getItem('food_home_shopping_list');
+    let itemsFromStorage = [];
+   
+    if (savedList) {
+      try {
+        itemsFromStorage = JSON.parse(savedList);
+        console.log(`📥 ${itemsFromStorage.length} items chargés depuis localStorage`);
+      } catch (e) {
+        console.error("Erreur parsing localStorage:", e);
+      }
+    }
+    // ✅ NOUVEAU CODE : Dispatcher dans les bonnes catégories
+    itemsFromStorage.forEach((item) => {
+      const categoryKey = findCategoryForItem(item);
+      
+      // Ajouter l'item dans la catégorie trouvée (si pas déjà présent)
+      const cat = CATEGORIES[categoryKey];
+      if (cat.items && !cat.items.includes(item)) {
+        cat.items.push(item);
+      } else if (!cat.items && categoryKey === 'autres') {
+        // Pour "autres" qui n'a pas de items par défaut, créer le tableau
+        if (!CATEGORIES.autres.items) {
+          CATEGORIES.autres.items = [];
+        }
+        if (!CATEGORIES.autres.items.includes(item)) {
+          CATEGORIES.autres.items.push(item);
         }
       }
       
-      // ============================================
-      // TOAST & MODALS
-      // ============================================
-      
-      // Toast notification
-      function showToast(message, type = "success") {
-        const oldToast = document.querySelector(".toast");
-        if (oldToast) oldToast.remove();
-        const toast = document.createElement("div");
-        toast.className = `toast ${type === "error" ? "error" : ""}`;
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 3000);
-      }
-      
-      // Modal de confirmation réutilisable
-      let confirmCallback = null;
-      
-      function showConfirmModal(title, message, callback) {
-        document.getElementById("confirmTitle").textContent = title;
-        document.getElementById("confirmMessage").textContent = message;
-        confirmCallback = callback;
-        document.getElementById("confirmModal").classList.add("active");
-      }
-      
-      function closeConfirmModal() {
-        document.getElementById("confirmModal").classList.remove("active");
-        confirmCallback = null;
-      }
-      
-      document.getElementById("confirmButton").addEventListener("click", () => {
-        if (confirmCallback) {
-          confirmCallback();
-          confirmCallback = null;
-        }
-        closeConfirmModal();
-      });
-      
-      // Fermer les modals en cliquant à l'extérieur
-      document.getElementById("confirmModal").addEventListener("click", (e) => {
-        if (e.target.id === "confirmModal") {
-          closeConfirmModal();
-        }
-      });
-      
-      // Modal nutrition
-      function openNutritionModal() {
-        document.getElementById("nutritionModal").classList.add("active");
-      }
-      
-      function closeNutritionModal() {
-        document.getElementById("nutritionModal").classList.remove("active");
-      }
-      
-      document.getElementById("nutritionModal").addEventListener("click", (e) => {
-        if (e.target.id === "nutritionModal") {
-          closeNutritionModal();
-        }
-      });
-      
-      // ============================================
-      // INIT
-      // ============================================
-      window.addEventListener("DOMContentLoaded", init);
-      
-    </script>
+      // Cocher l'item dans la bonne catégorie
+      selections[categoryKey][item] = true;
+    });
+    renderCategories();
+   
+    // Si on est sur la vue shopping, rafraîchir
+    if (document.getElementById('shoppingView').classList.contains('active')) {
+      renderShoppingList();
+    }
+  } catch (error) {
+    console.error("Erreur chargement:", error);
+    renderCategories();
+  }
+}
+
+// Save to localStorage
+async function saveToAPI() {
+  const allItems = [];
+ 
+  Object.entries(selections).forEach(([cat, items]) => {
+    Object.entries(items).forEach(([item, checked]) => {
+      if (checked) allItems.push(item);
+    });
+  });
+  try {
+    // ✅ SAUVEGARDER dans localStorage
+    localStorage.setItem('food_home_shopping_list', JSON.stringify(allItems));
+    console.log("💾 Sauvegarde dans localStorage:", allItems.length, "items");
+  } catch (error) {
+    console.error("Erreur sauvegarde:", error);
+  }
+}
+
+// ============================================
+// TOAST & MODALS
+// ============================================
+
+// Toast notification
+function showToast(message, type = "success") {
+  const oldToast = document.querySelector(".toast");
+  if (oldToast) oldToast.remove();
+  const toast = document.createElement("div");
+  toast.className = `toast ${type === "error" ? "error" : ""}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// Modal de confirmation réutilisable
+let confirmCallback = null;
+
+function showConfirmModal(title, message, callback) {
+  document.getElementById("confirmTitle").textContent = title;
+  document.getElementById("confirmMessage").textContent = message;
+  confirmCallback = callback;
+  document.getElementById("confirmModal").classList.add("active");
+}
+
+function closeConfirmModal() {
+  document.getElementById("confirmModal").classList.remove("active");
+  confirmCallback = null;
+}
+
+document.getElementById("confirmButton").addEventListener("click", () => {
+  if (confirmCallback) {
+    confirmCallback();
+    confirmCallback = null;
+  }
+  closeConfirmModal();
+});
+
+// Fermer les modals en cliquant à l'extérieur
+document.getElementById("confirmModal").addEventListener("click", (e) => {
+  if (e.target.id === "confirmModal") {
+    closeConfirmModal();
+  }
+});
+
+// Modal nutrition
+function openNutritionModal() {
+  document.getElementById("nutritionModal").classList.add("active");
+}
+
+function closeNutritionModal() {
+  document.getElementById("nutritionModal").classList.remove("active");
+}
+
+document.getElementById("nutritionModal").addEventListener("click", (e) => {
+  if (e.target.id === "nutritionModal") {
+    closeNutritionModal();
+  }
+});
+
+// ============================================
+// INIT
+// ============================================
+window.addEventListener("DOMContentLoaded", init);
+      </script>
   </body>
 </html>
