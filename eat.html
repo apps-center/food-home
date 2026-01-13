@@ -75,20 +75,62 @@
       }
 
       .btn-close {
-        background: rgba(59, 130, 246, 0.1);    /* Fond bleu léger */
+        background: rgba(59, 130, 246, 0.1);
         border: none;
         width: 36px;
         height: 36px;
-        border-radius: var(--radius-full);      /* Cercle parfait */
+        border-radius: var(--radius-full);
         cursor: pointer;
         font-size: 20px;
-        color: #0ea5e9;                          /* Flèche bleue */
+        color: #0ea5e9;
         transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
       
       .btn-close:hover {
-        background: rgba(59, 130, 246, 0.2);    /* Bleu plus foncé */
-        transform: translateX(-4px);             /* Glisse vers la gauche */
+        background: rgba(59, 130, 246, 0.2);
+        transform: scale(1.1);
+      }
+      
+      /* 🎯 Bouton retour planning (flèche) */
+      .btn-back-planning {
+        background: rgba(139, 92, 246, 0.1) !important;
+        color: #8b5cf6 !important;
+      }
+      
+      .btn-back-planning:hover {
+        background: rgba(139, 92, 246, 0.2) !important;
+        transform: translateX(-4px) !important;
+      }
+      
+      /* 🎯 Bouton fermeture directe (croix) */
+      .btn-close-direct {
+        background: rgba(239, 68, 68, 0.1) !important;
+        color: #ef4444 !important;
+      }
+      
+      .btn-close-direct:hover {
+        background: rgba(239, 68, 68, 0.2) !important;
+      }
+      
+      /* 🎯 Bouton toggle filtres */
+      #btn-toggle-filters {
+        white-space: nowrap;
+        min-width: 120px;
+      }
+      
+      #filter-toggle-icon {
+        font-size: 18px;
+        font-weight: bold;
+        display: inline-block;
+        transition: transform var(--transition-base);
+      }
+      
+      #filter-count {
+        color: #0ea5e9;
+        font-weight: var(--font-weight-bold);
       }
       
       /* 🎯 Meal slots cliquables dans le planning */
@@ -124,7 +166,8 @@
       </div>
       <!-- Filtres -->
       <section class="card">
-        <div class="filters-grid">
+        <!-- 🎯 FILTRES PRINCIPAUX (toujours visibles) -->
+        <div class="filters-grid" style="grid-template-columns: 1fr 1fr auto; gap: 12px; margin-bottom: 16px;">
           <div class="filter-group">
             <label for="search">Rechercher</label>
             <input type="text" id="search" placeholder="Nom du plat..." />
@@ -138,38 +181,50 @@
               <option value="dessert">🍰 Dessert</option>
             </select>
           </div>
-          <div class="filter-group">
-            <label for="saison">Saison</label>
-            <select id="saison">
-              <option value="">Toutes</option>
-              <option value="printemps">Printemps</option>
-              <option value="ete">Été</option>
-              <option value="automne">Automne</option>
-              <option value="hiver">Hiver</option>
-            </select>
+          <!-- 🎯 BOUTON TOGGLE FILTRES AVANCÉS -->
+          <div class="filter-group" style="display: flex; align-items: flex-end;">
+            <button class="btn btn-secondary" id="btn-toggle-filters" onclick="toggleAdvancedFilters()">
+              <span id="filter-toggle-icon">+</span> Filtres <span id="filter-count"></span>
+            </button>
           </div>
-          <div class="filter-group">
-            <label for="regime">Régime</label>
-            <select id="regime">
-              <option value="">Tous</option>
-              <option value="rapide">Rapide</option>
-              <option value="facile">Facile</option>
-              <option value="equilibre">Équilibré</option>
-              <option value="vegetarien">Végétarien</option>
-              <option value="viande">Viande</option>
-              <option value="poisson">Poisson</option>
-            </select>
-          </div>
-          <div class="filter-group">
-            <label for="proteine">Protéine</label>
-            <select id="proteine">
-              <option value="">Toutes</option>
-              <option value="volaille">Volaille</option>
-              <option value="viande">Viande</option>
-              <option value="poisson">Poisson</option>
-              <option value="porc">Porc</option>
-              <option value="vegetarien">Végétarien</option>
-            </select>
+        </div>
+
+        <!-- 🎯 FILTRES AVANCÉS (masqués par défaut) -->
+        <div id="advancedFilters" style="display: none; margin-bottom: 16px;">
+          <div class="filters-grid">
+            <div class="filter-group">
+              <label for="saison">Saison</label>
+              <select id="saison">
+                <option value="">Toutes</option>
+                <option value="printemps">Printemps</option>
+                <option value="ete">Été</option>
+                <option value="automne">Automne</option>
+                <option value="hiver">Hiver</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="regime">Régime</label>
+              <select id="regime">
+                <option value="">Tous</option>
+                <option value="rapide">Rapide</option>
+                <option value="facile">Facile</option>
+                <option value="equilibre">Équilibré</option>
+                <option value="vegetarien">Végétarien</option>
+                <option value="viande">Viande</option>
+                <option value="poisson">Poisson</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label for="proteine">Protéine</label>
+              <select id="proteine">
+                <option value="">Toutes</option>
+                <option value="volaille">Volaille</option>
+                <option value="viande">Viande</option>
+                <option value="poisson">Poisson</option>
+                <option value="porc">Porc</option>
+                <option value="vegetarien">Végétarien</option>
+              </select>
+            </div>
           </div>
         </div>
         <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap">
@@ -194,7 +249,15 @@
       <div class="modal-content">
         <div class="modal-header">
           <h2 id="modal-title"></h2>
-          <button class="btn-close" id="btn-close-modal">⬅️</button>
+          <!-- 🎯 DEUX BOUTONS : Retour planning OU Fermeture directe -->
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-close btn-back-planning" id="btn-back-planning" title="Retour au planning" style="display: none;">
+              ←
+            </button>
+            <button class="btn-close btn-close-direct" id="btn-close-modal" title="Fermer">
+              ×
+            </button>
+          </div>
         </div>
         <div id="modal-tags" class="tags"></div>
         <div id="modal-meta" class="recipe-meta"></div>
@@ -502,6 +565,12 @@
       function openRecipeModal(recipe) {
         currentRecipe = recipe;
         document.getElementById("modal-title").textContent = recipe.nom;
+        
+        // 🎯 Gérer l'affichage des boutons selon l'origine
+        const backButton = document.getElementById("btn-back-planning");
+        const fromPlanning = sessionStorage.getItem('returnToPlanning') === 'true';
+        backButton.style.display = fromPlanning ? 'flex' : 'none';
+        
         // Tags
         const saisons = recipe.saisons.split("|").filter((s) => s);
         const diets = recipe.diets.split("|").filter((d) => d);
@@ -536,12 +605,17 @@
       function closeRecipeModal() {
         modal.classList.remove("active");
         currentRecipe = null;
-        
-        // 🎯 Si on vient du planning, on y retourne automatiquement
-        if (sessionStorage.getItem('returnToPlanning') === 'true') {
-          sessionStorage.removeItem('returnToPlanning');
-          planningModal.classList.add("active");
-        }
+        // Ne plus retourner automatiquement au planning
+        // C'est le bouton "back" qui le fera
+        sessionStorage.removeItem('returnToPlanning');
+      }
+      
+      // 🎯 NOUVELLE FONCTION : Retour au planning
+      function backToPlanning() {
+        modal.classList.remove("active");
+        currentRecipe = null;
+        sessionStorage.removeItem('returnToPlanning');
+        planningModal.classList.add("active");
       }
       
       // 🎯 NOUVELLE FONCTION : Ouvrir une recette depuis le planning
@@ -623,6 +697,9 @@
       btnCloseModal.addEventListener("click", closeRecipeModal);
       btnClosePlanning.addEventListener("click", closePlanningModal);
       btnAddToShopping.addEventListener("click", addToShoppingList);
+      
+      // 🎯 Bouton retour au planning
+      document.getElementById("btn-back-planning").addEventListener("click", backToPlanning);
       // Fermer modal en cliquant à l'extérieur
       modal.addEventListener("click", (e) => {
         if (e.target === modal) closeRecipeModal();
@@ -717,6 +794,53 @@
         window.parent.postMessage({ type: 'UNLOCK_SCROLL' }, '*');
         
         // Vire les lockBodyScroll() et unlockBodyScroll() directs dans eat.html, car on délègue au parent
+        
+        // ============================================
+        // 🎯 GESTION DES FILTRES AVANCÉS
+        // ============================================
+        function toggleAdvancedFilters() {
+          const advancedFilters = document.getElementById('advancedFilters');
+          const icon = document.getElementById('filter-toggle-icon');
+          const isVisible = advancedFilters.style.display !== 'none';
+          
+          advancedFilters.style.display = isVisible ? 'none' : 'block';
+          icon.textContent = isVisible ? '+' : '−';
+        }
+        
+        // Mettre à jour le compteur de filtres actifs
+        function updateFilterCount() {
+          const saison = saisonSelect.value;
+          const regime = regimeSelect.value;
+          const proteine = proteineSelect.value;
+          
+          let count = 0;
+          if (saison) count++;
+          if (regime) count++;
+          if (proteine) count++;
+          
+          const countSpan = document.getElementById('filter-count');
+          countSpan.textContent = count > 0 ? `(${count})` : '';
+          countSpan.style.fontWeight = count > 0 ? 'var(--font-weight-bold)' : 'normal';
+          countSpan.style.color = count > 0 ? '#0ea5e9' : 'inherit';
+        }
+        
+        // Écouter les changements sur les filtres avancés
+        saisonSelect.addEventListener('change', () => {
+          updateFilterCount();
+          filterAndRender();
+        });
+        regimeSelect.addEventListener('change', () => {
+          updateFilterCount();
+          filterAndRender();
+        });
+        proteineSelect.addEventListener('change', () => {
+          updateFilterCount();
+          filterAndRender();
+        });
+        
+        // Init le compteur au chargement
+        updateFilterCount();
     </script>
   </body>
 </html>
+
