@@ -916,19 +916,15 @@
       /* Mode Supermarché - Plein écran */
       .supermarket-mode {
         display: none;
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        z-index: 999999 !important; /* Au-dessus de TOUT avec !important */
+        z-index: 10000;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
-        width: 100vw !important;
-        height: 100vh !important;
-        margin: 0 !important;
-        padding: 0 !important;
       }
 
       .supermarket-mode.active {
@@ -958,7 +954,7 @@
         align-items: center;
         justify-content: space-between;
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-        z-index: 99999; /* Au top pour rester visible */
+        z-index: 100;
       }
 
       .supermarket-header h2 {
@@ -1079,7 +1075,7 @@
         padding: 60px 20px 20px;
         text-align: center;
         pointer-events: none;
-        z-index: 99998; /* Juste en-dessous du header supermarché */
+        z-index: 99;
       }
 
       .supermarket-scroll-indicator.hidden {
@@ -2649,3 +2645,4 @@
     </script>
   </body>
 </html>
+
