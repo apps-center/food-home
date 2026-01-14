@@ -891,6 +891,223 @@
           50% { transform: translateY(-4px); }
         }
 
+      /* Bouton Mode Supermarché */
+      .btn-supermarket {
+        padding: 14px 32px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        border-radius: var(--radius-full);
+        font-size: 16px;
+        font-weight: var(--font-weight-bold);
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+        transition: all var(--transition-base);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn-supermarket:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(16, 185, 129, 0.4);
+      }
+
+      /* Mode Supermarché - Plein écran */
+      .supermarket-mode {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        z-index: 10000;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .supermarket-mode.active {
+        display: block;
+        animation: slideInFromBottom 0.3s ease-out;
+      }
+
+      @keyframes slideInFromBottom {
+        from {
+          transform: translateY(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* Header du mode supermarché */
+      .supermarket-header {
+        position: sticky;
+        top: 0;
+        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        color: white;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        z-index: 100;
+      }
+
+      .supermarket-header h2 {
+        margin: 0;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .supermarket-close {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-full);
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .supermarket-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      /* Contenu du mode supermarché */
+      .supermarket-content {
+        padding: 16px 12px 120px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .supermarket-category {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 12px 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .supermarket-category-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: var(--font-weight-bold);
+        color: var(--text-primary);
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+      }
+
+      /* Grille compacte pour le mode supermarché */
+      .supermarket-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 6px 8px;
+      }
+
+      .supermarket-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 10px;
+        background: #f8fafc;
+        border-radius: var(--radius-md);
+        transition: all var(--transition-fast);
+        border: 1px solid transparent;
+      }
+
+      .supermarket-item:active {
+        background: #e0f2fe;
+        border-color: #0ea5e9;
+      }
+
+      .supermarket-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        flex-shrink: 0;
+        margin: 0;
+      }
+
+      .supermarket-item label {
+        font-size: 13px;
+        cursor: pointer;
+        user-select: none;
+        flex: 1;
+        line-height: 1.3;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin: 0;
+      }
+
+      .supermarket-item.checked {
+        opacity: 0.4;
+        background: #f1f5f9;
+      }
+
+      .supermarket-item.checked label {
+        text-decoration: line-through;
+        color: var(--text-muted);
+      }
+
+      /* Indicateur de scroll en bas (FIXE) */
+      .supermarket-scroll-indicator {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(255,255,255,0.95) 70%, transparent);
+        padding: 60px 20px 20px;
+        text-align: center;
+        pointer-events: none;
+        z-index: 99;
+      }
+
+      .supermarket-scroll-indicator.hidden {
+        display: none;
+      }
+
+      .supermarket-scroll-arrow {
+        font-size: 32px;
+        color: #0ea5e9;
+        opacity: 0.6;
+        animation: bounceUp 2s ease-in-out infinite;
+      }
+
+      @keyframes bounceUp {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+      }
+
+      .supermarket-scroll-text {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 8px;
+        font-style: italic;
+      }
+
+      /* Responsive pour très petits écrans */
+      @media (max-width: 380px) {
+        .supermarket-items {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
       .shopping-item {
         transition: all 0.3s ease;
       }
@@ -931,6 +1148,13 @@
           </button>
           <button class="toggle-btn" onclick="switchView('categories')">
             📦 Catégories
+          </button>
+        </div>
+        
+        <!-- Bouton Mode Supermarché -->
+        <div style="text-align: center; margin: 16px 0;">
+          <button class="btn-supermarket" onclick="openSupermarketMode()">
+            🛒 Mode Supermarché
           </button>
         </div>
         <!-- VUE CATÉGORIES -->
@@ -1129,6 +1353,22 @@
             Confirmer
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- Mode Supermarché Plein Écran -->
+    <div id="supermarketMode" class="supermarket-mode">
+      <div class="supermarket-header">
+        <h2>🛒 Mode Supermarché</h2>
+        <button class="supermarket-close" onclick="closeSupermarketMode()">✕</button>
+      </div>
+      <div class="supermarket-content" id="supermarketContent">
+        <!-- Généré dynamiquement -->
+      </div>
+      <!-- Indicateur de scroll -->
+      <div id="supermarketScrollIndicator" class="supermarket-scroll-indicator">
+        <div class="supermarket-scroll-arrow">↑</div>
+        <div class="supermarket-scroll-text">Plus d'articles ci-dessus</div>
       </div>
     </div>
 
@@ -2234,6 +2474,168 @@
           closeNutritionModal();
         }
       });
+      
+      // ============================================
+      // MODE SUPERMARCHÉ
+      // ============================================
+      
+      function openSupermarketMode() {
+        const mode = document.getElementById('supermarketMode');
+        const content = document.getElementById('supermarketContent');
+        
+        // Générer la liste
+        renderSupermarketList();
+        
+        // Afficher le mode
+        mode.classList.add('active');
+        
+        // Bloquer le scroll du body
+        document.body.style.overflow = 'hidden';
+        
+        // Gérer l'indicateur de scroll
+        setTimeout(() => {
+          updateScrollIndicator();
+          mode.addEventListener('scroll', updateScrollIndicator);
+        }, 100);
+      }
+      
+      function closeSupermarketMode() {
+        const mode = document.getElementById('supermarketMode');
+        mode.classList.remove('active');
+        
+        // Réactiver le scroll du body
+        document.body.style.overflow = '';
+        
+        // Retirer l'écouteur de scroll
+        mode.removeEventListener('scroll', updateScrollIndicator);
+      }
+      
+      function renderSupermarketList() {
+        const container = document.getElementById('supermarketContent');
+        
+        // Ordre logique de parcours du supermarché
+        const supermarketOrder = [
+          { keys: ["fruits"], name: "Fruits & Légumes", icon: "🍎" },
+          { keys: ["cereales"], name: "Pâtes, Riz & Féculents", icon: "🌾" },
+          { keys: ["laitiers"], name: "Produits Laitiers", icon: "🥛" },
+          { keys: ["proteines"], name: "Viandes & Poissons", icon: "🍖" },
+          { keys: ["graisses"], name: "Huiles & Matières grasses", icon: "🧈" },
+          { keys: ["transformes"], name: "Surgelés & Produits transformés", icon: "🍕" },
+          { keys: ["boissons"], name: "Boissons", icon: "💧" },
+          { keys: ["sucres", "apero"], name: "Snacks & Gourmandises", icon: "🍬" },
+          { keys: ["condiments"], name: "Épicerie & Condiments", icon: "🧂" },
+          { keys: ["hygiene", "menage", "wc"], name: "Hygiène & Entretien", icon: "🧹" },
+          { keys: ["salon", "electromenager", "autres"], name: "Maison & Autres", icon: "🏠" },
+        ];
+        
+        let html = "";
+        
+        supermarketOrder.forEach((section) => {
+          const sectionItems = [];
+          
+          section.keys.forEach((key) => {
+            const selected = Object.entries(selections[key] || {}).filter(
+              ([_, checked]) => checked
+            );
+            selected.forEach(([item, _]) => {
+              sectionItems.push({ item, category: key });
+            });
+          });
+          
+          if (sectionItems.length > 0) {
+            html += `
+              <div class="supermarket-category">
+                <div class="supermarket-category-title">
+                  <span>${section.icon}</span>
+                  <span>${section.name}</span>
+                </div>
+                <div class="supermarket-items">
+                ${sectionItems
+                  .map(
+                    ({ item, category }) => {
+                      const uniqueId = `super-${category}-${item.replace(/\s/g, '-')}`;
+                      return `
+                        <div class="supermarket-item" data-item="${item}" data-category="${category}">
+                          <input type="checkbox"
+                                 id="${uniqueId}"
+                                 onchange="toggleSupermarketItem(this, '${item}', '${category}')">
+                          <label for="${uniqueId}">${item}</label>
+                        </div>
+                      `;
+                    }
+                  )
+                  .join("")}
+                </div>
+              </div>
+            `;
+          }
+        });
+        
+        if (html === "") {
+          html = '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Ajoutez des produits depuis "Catégories"</span></div>';
+        }
+        
+        container.innerHTML = html;
+      }
+      
+      function toggleSupermarketItem(checkbox, itemName, categoryKey) {
+        const parent = checkbox.closest(".supermarket-item");
+        
+        if (checkbox.checked) {
+          // Cocher = barrer visuellement
+          parent.classList.add("checked");
+        } else {
+          // Décocher = retirer de la liste
+          selections[categoryKey][itemName] = false;
+          
+          parent.style.opacity = '0';
+          parent.style.transform = 'scale(0.8)';
+          
+          setTimeout(() => {
+            parent.remove();
+            
+            // Si plus d'items dans cette section, la retirer
+            const section = parent.closest('.supermarket-category');
+            if (section && section.querySelectorAll('.supermarket-item').length === 0) {
+              section.remove();
+            }
+            
+            // Si plus d'items du tout, afficher message vide
+            const container = document.getElementById('supermarketContent');
+            if (container.querySelectorAll('.supermarket-item').length === 0) {
+              container.innerHTML = '<div class="empty-state">Votre liste est vide !<br><span style="font-size: 14px; opacity: 0.7;">Tous les articles ont été cochés ✓</span></div>';
+            }
+            
+            // Mettre à jour les badges et sauvegarder
+            renderCategories();
+            saveToAPI();
+            
+            // Mettre à jour la vue shopping si elle est active
+            if (document.getElementById('shoppingView').classList.contains('active')) {
+              renderShoppingList();
+            }
+          }, 300);
+        }
+      }
+      
+      function updateScrollIndicator() {
+        const mode = document.getElementById('supermarketMode');
+        const indicator = document.getElementById('supermarketScrollIndicator');
+        
+        if (!mode || !indicator) return;
+        
+        // Vérifier si on peut scroller vers le haut
+        const scrollTop = mode.scrollTop;
+        const scrollHeight = mode.scrollHeight;
+        const clientHeight = mode.clientHeight;
+        
+        // Cacher l'indicateur si on est tout en haut OU si tout est visible
+        if (scrollTop <= 50 || scrollHeight <= clientHeight + 100) {
+          indicator.classList.add('hidden');
+        } else {
+          indicator.classList.remove('hidden');
+        }
+      }
       
       // ============================================
       // INIT
