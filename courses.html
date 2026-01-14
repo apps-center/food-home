@@ -922,7 +922,7 @@
         right: 0;
         bottom: 0;
         background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        z-index: 10000;
+        z-index: 99999; /* Au-dessus de TOUT */
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
       }
@@ -954,7 +954,7 @@
         align-items: center;
         justify-content: space-between;
         box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-        z-index: 100;
+        z-index: 99999; /* Au top pour rester visible */
       }
 
       .supermarket-header h2 {
@@ -1075,7 +1075,7 @@
         padding: 60px 20px 20px;
         text-align: center;
         pointer-events: none;
-        z-index: 99;
+        z-index: 99998; /* Juste en-dessous du header supermarché */
       }
 
       .supermarket-scroll-indicator.hidden {
