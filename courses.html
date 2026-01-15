@@ -1,26 +1,29 @@
 <!DOCTYPE html>
+<!-- Test de déploiement Git/GitHub/Vercel - 15 janvier 2025 -->
 <html lang="fr">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
 
     <!-- Apple Touch Icon pour iPhone -->
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    
-    <!-- Nom de l'app sur l'écran d'accueil -->
-    <meta name="apple-mobile-web-app-title" content="FOOD HOME">
-    
-    <!-- Mode plein écran (masquer la barre Safari) -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    
-    <!-- Couleur de la barre de statut -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <!-- Favicon standard pour navigateurs -->
-    <link rel="icon" type="image/png" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 
-    
+    <!-- Nom de l'app sur l'écran d'accueil -->
+    <meta name="apple-mobile-web-app-title" content="FOOD HOME" />
+
+    <!-- Mode plein écran (masquer la barre Safari) -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <!-- Couleur de la barre de statut -->
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <!-- Favicon standard pour navigateurs -->
+    <link rel="icon" type="image/png" href="/apple-touch-icon.png" />
+
     <title>FOOD HOME — Listes de courses</title>
     <link rel="stylesheet" href="/css/common.css" />
     <link rel="stylesheet" href="/css/courses.css" />
@@ -131,16 +134,16 @@
         transition: all var(--transition-base);
         animation: slideInUp 0.3s ease-out;
       }
-      
+
       .btn-undo:hover {
         transform: translateY(-4px) scale(1.05);
         box-shadow: 0 12px 32px rgba(139, 92, 246, 0.5);
       }
-      
+
       .btn-undo:active {
         transform: translateY(-2px) scale(1.02);
       }
-      
+
       @keyframes slideInUp {
         from {
           opacity: 0;
@@ -437,7 +440,7 @@
       .shopping-view.active {
         display: block;
       }
-            /* Modal infos nutritionnelles */
+      /* Modal infos nutritionnelles */
       .nutrition-modal {
         display: none;
         position: fixed;
@@ -718,22 +721,27 @@
         background: linear-gradient(to top, white 70%, transparent);
         pointer-events: none;
       }
-      
+
       .drawer-scroll-hint span {
         display: block;
         animation: bounceDrawer 2s ease-in-out infinite;
       }
-      
+
       @keyframes bounceDrawer {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-6px); }
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
       }
-      
+
       .drawer-scroll-hint p {
         margin: 0;
         font-style: italic;
       }
-      
+
       .drawer-body {
         -webkit-overflow-scrolling: touch;
       }
@@ -747,149 +755,159 @@
         opacity: 0.6;
         margin-top: 30px;
       }
-      
+
       .scroll-indicator-shopping span {
         display: block;
         font-size: 28px;
         margin-bottom: 6px;
         animation: bounceShopping 2s ease-in-out infinite;
       }
-      
+
       @keyframes bounceShopping {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-6px); }
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
       }
-      
+
       .scroll-indicator-shopping p {
         margin: 0;
         font-style: italic;
       }
 
       /* Boutons compacts dans le header */
-        .btn-compact {
-          padding: 8px 16px;
-          border: none;
-          border-radius: var(--radius-md);
-          font-size: 13px;
-          font-weight: var(--font-weight-semibold);
-          cursor: pointer;
-          transition: all var(--transition-fast);
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-        }
-        
-        .btn-compact-primary {
-          background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
-          color: white;
-          box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
-        }
-        
-        .btn-compact-primary:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-        }
-        
-        .btn-compact-secondary {
-          background: rgba(255, 255, 255, 0.9);
-          border: 1px solid rgba(0, 0, 0, 0.1);
-          color: var(--text-primary);
-        }
-        
-        .btn-compact-secondary:hover {
-          background: white;
-          border-color: rgba(239, 68, 68, 0.3);
-          color: #dc2626;
-        }
-        
-        /* Ajuster le header pour 2 lignes */
-        .drawer-header {
-          padding: 20px 24px;
-          display: flex;
-          align-items: flex-start;
-          gap: 16px;
-        }
-        
-        .drawer-header > div:first-child {
-          flex: 1;
-        }
-        
-        /* Icône de fermeture plus pro */
-        .drawer-close {
-          background: rgba(0, 0, 0, 0.05);
-          border: none;
-          width: 36px;
-          height: 36px;
-          border-radius: var(--radius-md);
-          cursor: pointer;
-          font-size: 24px;
-          color: var(--text-muted);
-          transition: all var(--transition-fast);
-          flex-shrink: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-        
-        .drawer-close:hover {
-          background: rgba(239, 68, 68, 0.1);
-          color: #dc2626;
-          transform: translateX(-4px);
-        }
+      .btn-compact {
+        padding: 8px 16px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: var(--font-weight-semibold);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
 
-        /* Améliorer empty state */
-        .empty-state {
-          animation: fadeIn 0.5s ease-out;
-        }
-        
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        /* Animation pour les categories */
-        .category-btn {
-          animation: scaleIn 0.3s ease-out;
-        }
-        
-        @keyframes scaleIn {
-          from {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        
-        /* Animation pour shopping items */
-        .shopping-category {
-          animation: slideInUp 0.3s ease-out;
-        }
-        
-        @keyframes slideInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
+      .btn-compact-primary {
+        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        color: white;
+        box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
+      }
 
-        /* Bounce animation pour le scroll indicator */
-        @keyframes bounce {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-4px); }
+      .btn-compact-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      }
+
+      .btn-compact-secondary {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        color: var(--text-primary);
+      }
+
+      .btn-compact-secondary:hover {
+        background: white;
+        border-color: rgba(239, 68, 68, 0.3);
+        color: #dc2626;
+      }
+
+      /* Ajuster le header pour 2 lignes */
+      .drawer-header {
+        padding: 20px 24px;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .drawer-header > div:first-child {
+        flex: 1;
+      }
+
+      /* Icône de fermeture plus pro */
+      .drawer-close {
+        background: rgba(0, 0, 0, 0.05);
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        font-size: 24px;
+        color: var(--text-muted);
+        transition: all var(--transition-fast);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .drawer-close:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        transform: translateX(-4px);
+      }
+
+      /* Améliorer empty state */
+      .empty-state {
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
         }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Animation pour les categories */
+      .category-btn {
+        animation: scaleIn 0.3s ease-out;
+      }
+
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* Animation pour shopping items */
+      .shopping-category {
+        animation: slideInUp 0.3s ease-out;
+      }
+
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Bounce animation pour le scroll indicator */
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-4px);
+        }
+      }
 
       /* Bouton Mode Supermarché */
       .btn-supermarket {
@@ -1071,7 +1089,11 @@
         bottom: 0;
         left: 0;
         right: 0;
-        background: linear-gradient(to top, rgba(255,255,255,0.95) 70%, transparent);
+        background: linear-gradient(
+          to top,
+          rgba(255, 255, 255, 0.95) 70%,
+          transparent
+        );
         padding: 60px 20px 20px;
         text-align: center;
         pointer-events: none;
@@ -1090,8 +1112,13 @@
       }
 
       @keyframes bounceUp {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
       }
 
       .supermarket-scroll-text {
@@ -1113,24 +1140,29 @@
       }
 
       /* Items en stock - Style orange */
-.shopping-item.in-stock {
-  background: linear-gradient(135deg, #fff7ed 0%, #fed7aa 100%) !important;
-  border: 2px solid #fb923c !important;
-  position: relative;
-}
+      .shopping-item.in-stock {
+        background: linear-gradient(
+          135deg,
+          #fff7ed 0%,
+          #fed7aa 100%
+        ) !important;
+        border: 2px solid #fb923c !important;
+        position: relative;
+      }
 
-.shopping-item.in-stock:hover {
-  background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%) !important;
-  border-color: #f97316 !important;
-}
+      .shopping-item.in-stock:hover {
+        background: linear-gradient(
+          135deg,
+          #fed7aa 0%,
+          #fdba74 100%
+        ) !important;
+        border-color: #f97316 !important;
+      }
 
-.shopping-item.in-stock label {
-  color: #ea580c;
-  font-weight: var(--font-weight-semibold);
-}
-
-
-            
+      .shopping-item.in-stock label {
+        color: #ea580c;
+        font-weight: var(--font-weight-semibold);
+      }
     </style>
   </head>
   <body>
@@ -1150,7 +1182,7 @@
             📦 Catégories
           </button>
         </div>
-        
+
         <!-- VUE CATÉGORIES -->
         <div id="categoriesView" class="categories-view">
           <div class="categories-grid" id="categoriesGrid"></div>
@@ -1172,17 +1204,39 @@
           </button>
         </div>
         <!-- Bouton Undo flottant -->
-        <button class="btn-undo" id="undoBtn" onclick="undoLastAction()" style="display: none;">
-          <span style="font-size: 20px;">↩️</span>
+        <button
+          class="btn-undo"
+          id="undoBtn"
+          onclick="undoLastAction()"
+          style="display: none"
+        >
+          <span style="font-size: 20px">↩️</span>
           <span id="undoText">Annuler</span>
         </button>
-        
+
         <!-- ✅ Indicateur scroll pour shopping (SOUS les boutons) -->
-        <div id="scrollHintShopping" style="display: none; text-align: center; padding: 40px 20px; color: #9ca3af; font-size: 28px; opacity: 0.6;">
-          ⋯<br>
-          <small style="display: block; font-size: 12px; margin-top: 8px; font-style: italic;">Faites défiler vers le haut</small>
+        <div
+          id="scrollHintShopping"
+          style="
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            color: #9ca3af;
+            font-size: 28px;
+            opacity: 0.6;
+          "
+        >
+          ⋯<br />
+          <small
+            style="
+              display: block;
+              font-size: 12px;
+              margin-top: 8px;
+              font-style: italic;
+            "
+            >Faites défiler vers le haut</small
+          >
         </div>
-        
       </div>
     </div>
     <!-- Backdrop -->
@@ -1190,14 +1244,20 @@
     <!-- Drawer dynamique - BOUTONS DANS LE HEADER -->
     <div id="drawer" class="drawer">
       <div class="drawer-header">
-        <div style="flex: 1;">
-          <h2 id="drawerTitle" style="margin: 0 0 12px 0;"></h2>
+        <div style="flex: 1">
+          <h2 id="drawerTitle" style="margin: 0 0 12px 0"></h2>
           <!-- ✅ Boutons compacts dans le header -->
-          <div style="display: flex; gap: 8px;">
-            <button class="btn-compact btn-compact-primary" onclick="saveDrawer()">
+          <div style="display: flex; gap: 8px">
+            <button
+              class="btn-compact btn-compact-primary"
+              onclick="saveDrawer()"
+            >
               💾 Sauvegarder
             </button>
-            <button class="btn-compact btn-compact-secondary" onclick="clearDrawer()">
+            <button
+              class="btn-compact btn-compact-secondary"
+              onclick="clearDrawer()"
+            >
               🗑️ Vider
             </button>
           </div>
@@ -1205,10 +1265,10 @@
         <button class="drawer-close" onclick="closeDrawer()">&larr;</button>
       </div>
       <div class="drawer-body" id="drawerBody"></div>
-      
+
       <!-- ✅ Indicateur scroll EN BAS du drawer (surtout pour mobile) -->
       <div class="drawer-scroll-hint">
-        ⋯<br>
+        ⋯<br />
         <small>Faites défiler pour voir tout</small>
       </div>
     </div>
@@ -1218,19 +1278,24 @@
       <div class="nutrition-modal-content">
         <div class="nutrition-modal-header">
           <h2>ℹ️ Pyramide Alimentaire & Nutrition</h2>
-          <button class="drawer-close" onclick="closeNutritionModal()">×</button>
+          <button class="drawer-close" onclick="closeNutritionModal()">
+            ×
+          </button>
         </div>
         <div class="nutrition-modal-body">
-          <p style="color: var(--text-secondary); margin-bottom: 24px;">
-            Une alimentation équilibrée est essentielle pour maintenir une santé optimale. 
-            Voici un guide pour comprendre comment construire des repas équilibrés.
+          <p style="color: var(--text-secondary); margin-bottom: 24px">
+            Une alimentation équilibrée est essentielle pour maintenir une santé
+            optimale. Voici un guide pour comprendre comment construire des
+            repas équilibrés.
           </p>
 
           <!-- Image de la pyramide -->
-          <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect fill='%23f0f9ff' width='800' height='600'/%3E%3Ctext x='400' y='300' text-anchor='middle' font-size='32' fill='%230ea5e9'%3E🍎 Pyramide Alimentaire 🥗%3C/text%3E%3C/svg%3E" 
-               alt="Pyramide Alimentaire" 
-               class="pyramid-image"
-               style="width: 100%; max-width: 100%; height: auto;">
+          <img
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect fill='%23f0f9ff' width='800' height='600'/%3E%3Ctext x='400' y='300' text-anchor='middle' font-size='32' fill='%230ea5e9'%3E🍎 Pyramide Alimentaire 🥗%3C/text%3E%3C/svg%3E"
+            alt="Pyramide Alimentaire"
+            class="pyramid-image"
+            style="width: 100%; max-width: 100%; height: auto"
+          />
 
           <div class="nutrition-section">
             <h3>🌈 Les Groupes Alimentaires</h3>
@@ -1297,35 +1362,101 @@
           <div class="nutrition-tips">
             <h4>💡 Conseils Pratiques</h4>
             <ul>
-              <li><strong>Variété :</strong> Mangez différents aliments chaque jour</li>
-              <li><strong>Équilibre :</strong> Répartissez bien vos repas dans la journée</li>
-              <li><strong>Quantité :</strong> Adaptez les portions à vos besoins</li>
-              <li><strong>Activité :</strong> Combinez alimentation équilibrée et exercice physique</li>
-              <li><strong>Plaisir :</strong> Prenez le temps de savourer vos repas</li>
+              <li>
+                <strong>Variété :</strong> Mangez différents aliments chaque
+                jour
+              </li>
+              <li>
+                <strong>Équilibre :</strong> Répartissez bien vos repas dans la
+                journée
+              </li>
+              <li>
+                <strong>Quantité :</strong> Adaptez les portions à vos besoins
+              </li>
+              <li>
+                <strong>Activité :</strong> Combinez alimentation équilibrée et
+                exercice physique
+              </li>
+              <li>
+                <strong>Plaisir :</strong> Prenez le temps de savourer vos repas
+              </li>
             </ul>
           </div>
 
-          <div class="nutrition-section" style="margin-top: 32px;">
+          <div class="nutrition-section" style="margin-top: 32px">
             <h3>🎨 Code Couleur de vos Catégories</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 16px;">
-              Les catégories de votre liste sont colorées selon leur position dans la pyramide alimentaire :
+            <p style="color: var(--text-secondary); margin-bottom: 16px">
+              Les catégories de votre liste sont colorées selon leur position
+              dans la pyramide alimentaire :
             </p>
             <div class="nutrition-grid">
-              <div class="nutrition-card" style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);">
+              <div
+                class="nutrition-card"
+                style="
+                  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+                "
+              >
                 <h4>🔵 Bleu - Base</h4>
-                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Boissons, céréales : à consommer à chaque repas</p>
+                <p
+                  style="
+                    font-size: 13px;
+                    color: var(--text-secondary);
+                    margin: 0;
+                  "
+                >
+                  Boissons, céréales : à consommer à chaque repas
+                </p>
               </div>
-              <div class="nutrition-card" style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);">
+              <div
+                class="nutrition-card"
+                style="
+                  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+                "
+              >
                 <h4>🟢 Vert - Priorité</h4>
-                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Fruits & légumes : 5 portions/jour minimum</p>
+                <p
+                  style="
+                    font-size: 13px;
+                    color: var(--text-secondary);
+                    margin: 0;
+                  "
+                >
+                  Fruits & légumes : 5 portions/jour minimum
+                </p>
               </div>
-              <div class="nutrition-card" style="background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);">
+              <div
+                class="nutrition-card"
+                style="
+                  background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+                "
+              >
                 <h4>🟠 Orange - Modération</h4>
-                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Laitiers, protéines : quantités mesurées</p>
+                <p
+                  style="
+                    font-size: 13px;
+                    color: var(--text-secondary);
+                    margin: 0;
+                  "
+                >
+                  Laitiers, protéines : quantités mesurées
+                </p>
               </div>
-              <div class="nutrition-card" style="background: linear-gradient(135deg, #fecdd3 0%, #fda4af 100%);">
+              <div
+                class="nutrition-card"
+                style="
+                  background: linear-gradient(135deg, #fecdd3 0%, #fda4af 100%);
+                "
+              >
                 <h4>🔴 Rose - Occasionnel</h4>
-                <p style="font-size: 13px; color: var(--text-secondary); margin: 0;">Graisses, sucres : avec parcimonie</p>
+                <p
+                  style="
+                    font-size: 13px;
+                    color: var(--text-secondary);
+                    margin: 0;
+                  "
+                >
+                  Graisses, sucres : avec parcimonie
+                </p>
               </div>
             </div>
           </div>
@@ -1340,7 +1471,10 @@
         <h3 id="confirmTitle">Confirmation</h3>
         <p id="confirmMessage">Êtes-vous sûr ?</p>
         <div class="confirm-actions">
-          <button class="confirm-btn confirm-btn-secondary" onclick="closeConfirmModal()">
+          <button
+            class="confirm-btn confirm-btn-secondary"
+            onclick="closeConfirmModal()"
+          >
             Annuler
           </button>
           <button class="confirm-btn confirm-btn-primary" id="confirmButton">
@@ -1354,7 +1488,9 @@
     <div id="supermarketMode" class="supermarket-mode">
       <div class="supermarket-header">
         <h2>🛒 Mode Supermarché</h2>
-        <button class="supermarket-close" onclick="closeSupermarketMode()">✕</button>
+        <button class="supermarket-close" onclick="closeSupermarketMode()">
+          ✕
+        </button>
       </div>
       <div class="supermarket-content" id="supermarketContent">
         <!-- Généré dynamiquement -->
@@ -1369,376 +1505,376 @@
     <script>
       // Définition des catégories et produits avec COULEURS NUTRITIONNELLES
       const CATEGORIES = {
-  // 🟦 BASE - BLEU (à consommer abondamment)
-  boissons: {
-    icon: "💧",
-    name: "Boissons",
-    order: 1,
-    color: "blue",
-    nutritionLevel: "🟦 Base - À volonté",
-    items: [
-      "Eau",
-      "Sanpellegrino",
-      "Jus",
-      "Lait",
-      "Thé",
-      "Café",
-      "Tisanes",
-      "Sirop",
-      "Coca / Soda",
-    ],
-  },
-  // 🟧 FÉCULENTS - ORANGE (1 portion/repas)
-  cereales: {
-    icon: "🌾",
-    name: "Céréales & Féculents",
-    order: 2,
-    color: "orange",
-    nutritionLevel: "🟧 1 portion/repas",
-    items: [
-      "Pâtes",
-      "Semoule",
-      "Riz",
-      "Blé",
-      "pain de mie",
-      "krisprolls",
-      "Quinoa",
-      "Boulgour",
-      "Couscous",
-      "Lentilles corail",
-      "Haricots secs",
-      "Pois chiches",
-    ],
-  },
-  // 🟩 PRIORITÉ - VERT (5 portions/jour)
-  fruits: {
-    icon: "🍎",
-    name: "Fruits & Légumes",
-    order: 3,
-    priority: true,
-    color: "green",
-    nutritionLevel: "🟩 5 portions/jour",
-    groups: {
-      Fruits: [
-        "Pommes",
-        "Bananes",
-        "Noix",
-        "Abricots",
-        "Oranges",
-        "Poires",
-        "Raisins",
-        "Fraises",
-        "Kiwis",
-        "Fruits secs",
-        "clémentines",
-        "fraises",
-        "framboises",
-        "myrtilles",
-        "mangue",
-        "fruit de la passion",
-        "litchi",
-        "melon",
-        "pastèque",
-      ],
-      Légumes: [
-        "Tomates",
-        "Betteraves",
-        "Salade",
-        "Carottes",
-        "Courgettes",
-        "Brocolis",
-        "Choux",
-        "Poivrons",
-        "Concombres",
-        "Oignons",
-        "Ail",
-        "haricots verts",
-        "céleri",
-        "aubergine",
-        "potimarron",
-        "avocat",
-        "choux rouge",
-        "chou blanc",
-        "poireaux",
-      ],
-    },
-  },
-  // 🟨 MODÉRATION - JAUNE (1 produit/repas)
-  laitiers: {
-    icon: "🥛",
-    name: "Produits laitiers",
-    order: 4,
-    color: "yellow",
-    nutritionLevel: "🟨 1 produit/repas",
-    items: [
-      "Fromages",
-      "Yaourts",
-      "Fromage blanc",
-      "Fromage râpé",
-      "Skyr",
-      "Lait",
-      "Beurre",
-      "Crème liquide",
-      "Crème fraîche",
-      "Mascarpone",
-      "saint môret",
-      "mascarpone",
-      "Philadelphia",
-      "mozzarella",
-      "burrata",
-      "fêta",
-      "Parmesan",
-      "Emmental",
-    ],
-  },
-  // 🟨 PROTÉINES - JAUNE (2 portions/jour)
-  proteines: {
-    icon: "🍖",
-    name: "Protéines",
-    order: 5,
-    color: "yellow",
-    nutritionLevel: "🟨 2 portions/jour",
-    groups: {
-      Viandes: [
-        "Bœuf",
-        "Porc",
-        "Veau",
-        "Poulet",
-        "Agneau",
-        "Canard",
-        "Steak haché",
-        "lapin",
-      ],
-      Poissons: [
-        "Cabillaud",
-        "Thon",
-        "Truite",
-        "Saumon",
-        "Sardines",
-        "Maquereau",
-        "Crevettes",
-        "Moules",
-      ],
-      Autres: ["Œufs", "Tofu"],
-    },
-  },
-  // 🟥 LIMITÉ - ROSE (consommation occasionnelle)
-  graisses: {
-    icon: "🧈",
-    name: "Matières grasses",
-    order: 6,
-    color: "pink",
-    nutritionLevel: "🟥 À limiter",
-    items: [
-      "Huile olive",
-      "Huile colza",
-      "Beurre",
-      "Margarine",
-      "Huile tournesol",
-      "Huile noix",
-      "Huile coco",
-    ],
-  },
-  sucres: {
-    icon: "🍬",
-    name: "Sucreries",
-    order: 7,
-    color: "pink",
-    nutritionLevel: "🟥 À limiter",
-    items: [
-      "Gâteaux",
-      "Bonbons",
-      "Chocolats",
-      "Nutella",
-      "Confiture",
-      "Miel",
-      "Sirop d'érable",
-      "Biscuits",
-      "Glaces",
-      "Compote",
-    ],
-  },
-  // AUTRES CATÉGORIES - GRIS (hors pyramide)
-  condiments: {
-    icon: "🧂",
-    name: "Condiments",
-    order: 8,
-    color: "gray",
-    items: [
-      "Sel",
-      "Poivre",
-      "Épices",
-      "Ketchup",
-      "pesto vert",
-      "pesto rouge",
-      "Moutarde",
-      "Mayonnaise",
-      "Cornichons",
-      "Vinaigre",
-      "Sauce soja",
-      "Basilic séché",
-      "Thym",
-      "Curry",
-      "Paprika",
-      "Cannelle",
-      "Bouillon cube",
-    ],
-  },
-  transformes: {
-    icon: "🍕",
-    name: "Produits transformés",
-    order: 9,
-    color: "pink",
-    nutritionLevel: "🟥 À limiter",
-    items: [
-      "Pain Harris",
-      "Farritas",
-      "Pizzas",
-      "Lardons",
-      "Saucisses Herta",
-      "Jambon Herta",
-      "Cordons bleus",
-      "Nuggets",
-      "Cordons bleus",
-      "Crèmes desserts",
-      "Corn flakes",
-      "Surgelés légumes",
-      "Raviolis",
-      "Gnocchis",
-      "Quiches",
-      "Tartes salées",
-      "Soupes",
-      "Poissons panés",
-      "Steaks végétaux",
-      "pâte brisée",
-      "pâte feuilletée",
-    ],
-  },
-  apero: {
-    icon: "🍸",
-    name: "Apéro",
-    order: 10,
-    color: "pink",
-    nutritionLevel: "🟥 Occasionnel",
-    groups: {
-      Alcools: [
-        "Gin",
-        "Aperol",
-        "Tonic",
-        "Get 27",
-        "Bailey",
-        "Vin rouge",
-        "Vin blanc",
-        "Bière",
-        "Whisky",
-        "Rhum",
-      ],
-      Grignotage: [
-        "Cacahuètes",
-        "Chips",
-        "Saucisson",
-        "Olives",
-        "Crackers",
-        "Fruits secs",
-        "Tapenades",
-        "Houmous",
-        "Gressin",
-      ],
-    },
-  },
-  hygiene: {
-    icon: "🧴",
-    name: "Hygiène",
-    order: 11,
-    color: "gray",
-    items: [
-      "Savon",
-      "Shampoing",
-      "Cotons-tiges",
-      "Coton démaquillant",
-      "Dentifrice",
-      "Déodorant",
-      "Gel douche",
-      "Brosse à dents",
-      "Rasoirs",
-      "Mousse à raser",
-      "Crème hydratante",
-      "Protection solaire",
-      "Mouchoirs",
-    ],
-  },
-  menage: {
-    icon: "🧹",
-    name: "Produits ménagers",
-    order: 12,
-    color: "gray",
-    items: [
-      "Liquide vaisselle",
-      "Lessives",
-      "Adoucissant",
-      "Litière",
-      "Calgon",
-      "Powerball",
-      "Sac poubelle",
-      "Aluminium",
-      "Papier cuisson",
-      "Cellophane",
-      "Éponges",
-      "Javel",
-      "Dégraissant",
-      "Produit vitre",
-      "Produit sol",
-      "Anti-calcaire",
-      "Essuie-tout",
-    ],
-  },
-  wc: {
-    icon: "🚽",
-    name: "WC",
-    order: 13,
-    color: "gray",
-    items: [
-      "Papier toilette",
-      "Canard WC",
-      "Désodorisant",
-      "Lingettes WC",
-      "Blocs WC",
-    ],
-  },
-  salon: {
-    icon: "🕯️",
-    name: "Salon",
-    order: 14,
-    color: "gray",
-    items: ["Bougies", "Allume-feu", "Allumettes"],
-  },
-  electromenager: {
-    icon: "💡",
-    name: "Électroménager",
-    order: 15,
-    color: "gray",
-    items: [
-      "Ampoules",
-      "Piles",
-      "Piles rechargeables",
-      "Câbles USB",
-      "Adaptateurs",
-      "Chargeurs",
-    ],
-  },
-  autres: {
-    icon: "📦",
-    name: "Autres",
-    order: 16,
-    color: "gray",
-    items: [],
-  },
-};
+        // 🟦 BASE - BLEU (à consommer abondamment)
+        boissons: {
+          icon: "💧",
+          name: "Boissons",
+          order: 1,
+          color: "blue",
+          nutritionLevel: "🟦 Base - À volonté",
+          items: [
+            "Eau",
+            "Sanpellegrino",
+            "Jus",
+            "Lait",
+            "Thé",
+            "Café",
+            "Tisanes",
+            "Sirop",
+            "Coca / Soda",
+          ],
+        },
+        // 🟧 FÉCULENTS - ORANGE (1 portion/repas)
+        cereales: {
+          icon: "🌾",
+          name: "Céréales & Féculents",
+          order: 2,
+          color: "orange",
+          nutritionLevel: "🟧 1 portion/repas",
+          items: [
+            "Pâtes",
+            "Semoule",
+            "Riz",
+            "Blé",
+            "pain de mie",
+            "krisprolls",
+            "Quinoa",
+            "Boulgour",
+            "Couscous",
+            "Lentilles corail",
+            "Haricots secs",
+            "Pois chiches",
+          ],
+        },
+        // 🟩 PRIORITÉ - VERT (5 portions/jour)
+        fruits: {
+          icon: "🍎",
+          name: "Fruits & Légumes",
+          order: 3,
+          priority: true,
+          color: "green",
+          nutritionLevel: "🟩 5 portions/jour",
+          groups: {
+            Fruits: [
+              "Pommes",
+              "Bananes",
+              "Noix",
+              "Abricots",
+              "Oranges",
+              "Poires",
+              "Raisins",
+              "Fraises",
+              "Kiwis",
+              "Fruits secs",
+              "clémentines",
+              "fraises",
+              "framboises",
+              "myrtilles",
+              "mangue",
+              "fruit de la passion",
+              "litchi",
+              "melon",
+              "pastèque",
+            ],
+            Légumes: [
+              "Tomates",
+              "Betteraves",
+              "Salade",
+              "Carottes",
+              "Courgettes",
+              "Brocolis",
+              "Choux",
+              "Poivrons",
+              "Concombres",
+              "Oignons",
+              "Ail",
+              "haricots verts",
+              "céleri",
+              "aubergine",
+              "potimarron",
+              "avocat",
+              "choux rouge",
+              "chou blanc",
+              "poireaux",
+            ],
+          },
+        },
+        // 🟨 MODÉRATION - JAUNE (1 produit/repas)
+        laitiers: {
+          icon: "🥛",
+          name: "Produits laitiers",
+          order: 4,
+          color: "yellow",
+          nutritionLevel: "🟨 1 produit/repas",
+          items: [
+            "Fromages",
+            "Yaourts",
+            "Fromage blanc",
+            "Fromage râpé",
+            "Skyr",
+            "Lait",
+            "Beurre",
+            "Crème liquide",
+            "Crème fraîche",
+            "Mascarpone",
+            "saint môret",
+            "mascarpone",
+            "Philadelphia",
+            "mozzarella",
+            "burrata",
+            "fêta",
+            "Parmesan",
+            "Emmental",
+          ],
+        },
+        // 🟨 PROTÉINES - JAUNE (2 portions/jour)
+        proteines: {
+          icon: "🍖",
+          name: "Protéines",
+          order: 5,
+          color: "yellow",
+          nutritionLevel: "🟨 2 portions/jour",
+          groups: {
+            Viandes: [
+              "Bœuf",
+              "Porc",
+              "Veau",
+              "Poulet",
+              "Agneau",
+              "Canard",
+              "Steak haché",
+              "lapin",
+            ],
+            Poissons: [
+              "Cabillaud",
+              "Thon",
+              "Truite",
+              "Saumon",
+              "Sardines",
+              "Maquereau",
+              "Crevettes",
+              "Moules",
+            ],
+            Autres: ["Œufs", "Tofu"],
+          },
+        },
+        // 🟥 LIMITÉ - ROSE (consommation occasionnelle)
+        graisses: {
+          icon: "🧈",
+          name: "Matières grasses",
+          order: 6,
+          color: "pink",
+          nutritionLevel: "🟥 À limiter",
+          items: [
+            "Huile olive",
+            "Huile colza",
+            "Beurre",
+            "Margarine",
+            "Huile tournesol",
+            "Huile noix",
+            "Huile coco",
+          ],
+        },
+        sucres: {
+          icon: "🍬",
+          name: "Sucreries",
+          order: 7,
+          color: "pink",
+          nutritionLevel: "🟥 À limiter",
+          items: [
+            "Gâteaux",
+            "Bonbons",
+            "Chocolats",
+            "Nutella",
+            "Confiture",
+            "Miel",
+            "Sirop d'érable",
+            "Biscuits",
+            "Glaces",
+            "Compote",
+          ],
+        },
+        // AUTRES CATÉGORIES - GRIS (hors pyramide)
+        condiments: {
+          icon: "🧂",
+          name: "Condiments",
+          order: 8,
+          color: "gray",
+          items: [
+            "Sel",
+            "Poivre",
+            "Épices",
+            "Ketchup",
+            "pesto vert",
+            "pesto rouge",
+            "Moutarde",
+            "Mayonnaise",
+            "Cornichons",
+            "Vinaigre",
+            "Sauce soja",
+            "Basilic séché",
+            "Thym",
+            "Curry",
+            "Paprika",
+            "Cannelle",
+            "Bouillon cube",
+          ],
+        },
+        transformes: {
+          icon: "🍕",
+          name: "Produits transformés",
+          order: 9,
+          color: "pink",
+          nutritionLevel: "🟥 À limiter",
+          items: [
+            "Pain Harris",
+            "Farritas",
+            "Pizzas",
+            "Lardons",
+            "Saucisses Herta",
+            "Jambon Herta",
+            "Cordons bleus",
+            "Nuggets",
+            "Cordons bleus",
+            "Crèmes desserts",
+            "Corn flakes",
+            "Surgelés légumes",
+            "Raviolis",
+            "Gnocchis",
+            "Quiches",
+            "Tartes salées",
+            "Soupes",
+            "Poissons panés",
+            "Steaks végétaux",
+            "pâte brisée",
+            "pâte feuilletée",
+          ],
+        },
+        apero: {
+          icon: "🍸",
+          name: "Apéro",
+          order: 10,
+          color: "pink",
+          nutritionLevel: "🟥 Occasionnel",
+          groups: {
+            Alcools: [
+              "Gin",
+              "Aperol",
+              "Tonic",
+              "Get 27",
+              "Bailey",
+              "Vin rouge",
+              "Vin blanc",
+              "Bière",
+              "Whisky",
+              "Rhum",
+            ],
+            Grignotage: [
+              "Cacahuètes",
+              "Chips",
+              "Saucisson",
+              "Olives",
+              "Crackers",
+              "Fruits secs",
+              "Tapenades",
+              "Houmous",
+              "Gressin",
+            ],
+          },
+        },
+        hygiene: {
+          icon: "🧴",
+          name: "Hygiène",
+          order: 11,
+          color: "gray",
+          items: [
+            "Savon",
+            "Shampoing",
+            "Cotons-tiges",
+            "Coton démaquillant",
+            "Dentifrice",
+            "Déodorant",
+            "Gel douche",
+            "Brosse à dents",
+            "Rasoirs",
+            "Mousse à raser",
+            "Crème hydratante",
+            "Protection solaire",
+            "Mouchoirs",
+          ],
+        },
+        menage: {
+          icon: "🧹",
+          name: "Produits ménagers",
+          order: 12,
+          color: "gray",
+          items: [
+            "Liquide vaisselle",
+            "Lessives",
+            "Adoucissant",
+            "Litière",
+            "Calgon",
+            "Powerball",
+            "Sac poubelle",
+            "Aluminium",
+            "Papier cuisson",
+            "Cellophane",
+            "Éponges",
+            "Javel",
+            "Dégraissant",
+            "Produit vitre",
+            "Produit sol",
+            "Anti-calcaire",
+            "Essuie-tout",
+          ],
+        },
+        wc: {
+          icon: "🚽",
+          name: "WC",
+          order: 13,
+          color: "gray",
+          items: [
+            "Papier toilette",
+            "Canard WC",
+            "Désodorisant",
+            "Lingettes WC",
+            "Blocs WC",
+          ],
+        },
+        salon: {
+          icon: "🕯️",
+          name: "Salon",
+          order: 14,
+          color: "gray",
+          items: ["Bougies", "Allume-feu", "Allumettes"],
+        },
+        electromenager: {
+          icon: "💡",
+          name: "Électroménager",
+          order: 15,
+          color: "gray",
+          items: [
+            "Ampoules",
+            "Piles",
+            "Piles rechargeables",
+            "Câbles USB",
+            "Adaptateurs",
+            "Chargeurs",
+          ],
+        },
+        autres: {
+          icon: "📦",
+          name: "Autres",
+          order: 16,
+          color: "gray",
+          items: [],
+        },
+      };
 
-     // État
+      // État
       let selections = {};
       let currentCategory = null;
-      
+
       // === STOCK DE BASE - LISTE FIXE DES ESSENTIELS ===
       const STOCK_BASE_ITEMS = [
         "Sel",
@@ -1762,7 +1898,7 @@
         "Pâtes",
         "Concentré de tomate",
       ];
-      
+
       let stockBase = {}; // Items qu'on a en stock
       let undoHistory = []; // Historique des suppressions (max 10)
       const MAX_UNDO = 10;
@@ -1785,7 +1921,7 @@
             console.error("Erreur chargement stock:", e);
           }
         }
-        
+
         // Initialiser selections
         Object.keys(CATEGORIES).forEach((key) => {
           selections[key] = {};
@@ -1801,14 +1937,14 @@
 
         renderCategories();
         loadFromAPI();
-        
+
         // 🎯 ÉCOUTER LES MESSAGES de home.html pour switcher automatiquement
-        window.addEventListener('message', (event) => {
-          if (event.data.type === 'SHOW_SHOPPING_LIST') {
-            console.log('📨 Message reçu : afficher Liste courses');
-            switchView('shopping');
-          } else if (event.data.type === 'REFRESH_DATA') {
-            console.log('🔄 Refresh data demandé');
+        window.addEventListener("message", (event) => {
+          if (event.data.type === "SHOW_SHOPPING_LIST") {
+            console.log("📨 Message reçu : afficher Liste courses");
+            switchView("shopping");
+          } else if (event.data.type === "REFRESH_DATA") {
+            console.log("🔄 Refresh data demandé");
             loadFromAPI();
           }
         });
@@ -1826,10 +1962,11 @@
             const count = Object.values(selections[key]).filter(
               (v) => v
             ).length;
-            const colorAttr = cat.color ? `data-color="${cat.color}"` : '';
-            const nutritionLabel = cat.nutritionLevel ? 
-              `<div class="nutrition-indicator">${cat.nutritionLevel}</div>` : '';
-            
+            const colorAttr = cat.color ? `data-color="${cat.color}"` : "";
+            const nutritionLabel = cat.nutritionLevel
+              ? `<div class="nutrition-indicator">${cat.nutritionLevel}</div>`
+              : "";
+
             return `
               <div class="category-btn" ${colorAttr} onclick="openDrawer('${key}')">
                 ${count > 0 ? `<div class="badge">${count}</div>` : ""}
@@ -1915,8 +2052,11 @@
         // Si c'est le drawer du stock de base
         if (currentCategory === null) {
           // Sauvegarder le stock dans localStorage (déjà fait dans toggleStockItem)
-          localStorage.setItem("food_home_stock_base", JSON.stringify(stockBase));
-          
+          localStorage.setItem(
+            "food_home_stock_base",
+            JSON.stringify(stockBase)
+          );
+
           closeDrawer();
 
           // NE PLUS filtrer automatiquement - juste afficher en orange
@@ -1925,10 +2065,11 @@
 
           renderCategories();
           saveToAPI();
-          
-          
-          showToast("✅ Stock de base sauvegardé ! Les items en stock seront affichés en orange.");
-          
+
+          showToast(
+            "✅ Stock de base sauvegardé ! Les items en stock seront affichés en orange."
+          );
+
           return;
         }
 
@@ -1956,11 +2097,11 @@
         document
           .querySelectorAll(".toggle-btn")
           .forEach((btn) => btn.classList.remove("active"));
-        
+
         // Reset toutes les vues
         document.getElementById("categoriesView").classList.remove("active");
         document.getElementById("shoppingView").classList.remove("active");
-        
+
         // Activer la bonne vue et le bon bouton
         if (view === "categories") {
           // Le bouton "Catégories" est maintenant le DEUXIÈME (index 1)
@@ -1972,28 +2113,28 @@
           document.getElementById("shoppingView").classList.add("active");
           renderShoppingList();
         }
-        
+
         // ✅ Gérer l'indicateur de scroll
-        const hint = document.getElementById('scrollHintShopping');
+        const hint = document.getElementById("scrollHintShopping");
         if (hint) {
-          hint.style.display = (view === 'shopping') ? 'block' : 'none';
+          hint.style.display = view === "shopping" ? "block" : "none";
         }
       }
 
       function renderShoppingList() {
         const container = document.getElementById("shoppingList");
-      
+
         // Vérifier si items
         const hasItems = Object.values(selections).some((cat) =>
           Object.values(cat).some((v) => v)
         );
-      
+
         if (!hasItems) {
           container.innerHTML =
             '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
           return;
         }
-      
+
         // Ordre logique de parcours du supermarché
         const supermarketOrder = [
           { keys: ["fruits"], name: "Fruits & Légumes", icon: "🍎" },
@@ -2007,7 +2148,11 @@
             icon: "🍕",
           },
           { keys: ["boissons"], name: "Boissons", icon: "💧" },
-          { keys: ["sucres", "apero"], name: "Snacks & Gourmandises", icon: "🍬" },
+          {
+            keys: ["sucres", "apero"],
+            name: "Snacks & Gourmandises",
+            icon: "🍬",
+          },
           { keys: ["condiments"], name: "Épicerie & Condiments", icon: "🧂" },
           {
             keys: ["hygiene", "menage", "wc"],
@@ -2020,12 +2165,12 @@
             icon: "🏠",
           },
         ];
-      
+
         let html = "";
-      
+
         supermarketOrder.forEach((section) => {
           const sectionItems = [];
-      
+
           section.keys.forEach((key) => {
             const selected = Object.entries(selections[key] || {}).filter(
               ([_, checked]) => checked
@@ -2034,7 +2179,7 @@
               sectionItems.push(item);
             });
           });
-      
+
           if (sectionItems.length > 0) {
             html += `
               <div class="shopping-category">
@@ -2044,13 +2189,12 @@
                 </div>
                 <div class="shopping-items-grid">
                 ${sectionItems
-                  .map(
-                    (item) => {
-                      // 🎯 Vérifier si l'item est dans le stock de base
-                      const isInStock = stockBase[item] === true;
-                      const stockClass = isInStock ? 'in-stock' : '';
-                      
-                      return `
+                  .map((item) => {
+                    // 🎯 Vérifier si l'item est dans le stock de base
+                    const isInStock = stockBase[item] === true;
+                    const stockClass = isInStock ? "in-stock" : "";
+
+                    return `
                         <div class="shopping-item ${stockClass}">
                           <input type="checkbox"
                                  id="shop-${item}"
@@ -2058,15 +2202,14 @@
                           <label for="shop-${item}">${item}</label>
                         </div>
                       `;
-                    }
-                  )
+                  })
                   .join("")}
                 </div>
               </div>
             `;
           }
         });
-      
+
         container.innerHTML = html;
       }
 
@@ -2075,7 +2218,7 @@
         const parent = checkbox.closest(".shopping-item");
         const label = parent.querySelector("label");
         const itemName = label.textContent.trim();
-        
+
         // Trouver dans quelle catégorie est cet item
         let foundCategory = null;
         for (const [catKey, items] of Object.entries(selections)) {
@@ -2084,38 +2227,43 @@
             break;
           }
         }
-        
+
         if (foundCategory) {
           // Inverser la sélection
-          selections[foundCategory][itemName] = !selections[foundCategory][itemName];
-          
+          selections[foundCategory][itemName] =
+            !selections[foundCategory][itemName];
+
           // Si décoché, retirer visuellement
           if (!selections[foundCategory][itemName]) {
             // 💾 SAUVEGARDER dans l'historique avant de supprimer
             addToUndoHistory({
-              action: 'remove',
+              action: "remove",
               item: itemName,
               category: foundCategory,
-              timestamp: Date.now()
+              timestamp: Date.now(),
             });
-            
-            parent.style.opacity = '0';
-            parent.style.transform = 'translateX(-20px)';
+
+            parent.style.opacity = "0";
+            parent.style.transform = "translateX(-20px)";
             setTimeout(() => {
               parent.remove();
-              
+
               // Si plus d'items dans cette section, la retirer
-              const section = parent.closest('.shopping-category');
-              if (section && section.querySelectorAll('.shopping-item').length === 0) {
+              const section = parent.closest(".shopping-category");
+              if (
+                section &&
+                section.querySelectorAll(".shopping-item").length === 0
+              ) {
                 section.remove();
               }
-              
+
               // Si plus d'items du tout, afficher message vide
-              const container = document.getElementById('shoppingList');
-              if (container.querySelectorAll('.shopping-item').length === 0) {
-                container.innerHTML = '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
+              const container = document.getElementById("shoppingList");
+              if (container.querySelectorAll(".shopping-item").length === 0) {
+                container.innerHTML =
+                  '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Coche des produits dans "Catégories"</span></div>';
               }
-              
+
               // Mettre à jour les badges et sauvegarder
               renderCategories();
               saveToAPI();
@@ -2127,68 +2275,67 @@
         }
       }
 
-      
       // ============================================
       // 🔄 SYSTÈME UNDO
       // ============================================
-      
+
       function addToUndoHistory(action) {
         undoHistory.push(action);
-        
+
         // Limiter l'historique à MAX_UNDO items
         if (undoHistory.length > MAX_UNDO) {
           undoHistory.shift(); // Retirer le plus ancien
         }
-        
+
         // Afficher le bouton Undo
         showUndoButton();
       }
-      
+
       function showUndoButton() {
-        const undoBtn = document.getElementById('undoBtn');
-        const undoText = document.getElementById('undoText');
-        
+        const undoBtn = document.getElementById("undoBtn");
+        const undoText = document.getElementById("undoText");
+
         if (undoHistory.length > 0) {
           const lastAction = undoHistory[undoHistory.length - 1];
           undoText.textContent = `Annuler (${lastAction.item})`;
-          undoBtn.style.display = 'flex';
-          
+          undoBtn.style.display = "flex";
+
           // Masquer après 5 secondes d'inactivité
           clearTimeout(undoBtn._hideTimeout);
           undoBtn._hideTimeout = setTimeout(() => {
-            undoBtn.style.opacity = '0';
+            undoBtn.style.opacity = "0";
             setTimeout(() => {
-              undoBtn.style.display = 'none';
-              undoBtn.style.opacity = '1';
+              undoBtn.style.display = "none";
+              undoBtn.style.opacity = "1";
             }, 300);
           }, 5000);
         } else {
-          undoBtn.style.display = 'none';
+          undoBtn.style.display = "none";
         }
       }
-      
+
       function undoLastAction() {
         if (undoHistory.length === 0) return;
-        
+
         const lastAction = undoHistory.pop();
-        
-        if (lastAction.action === 'remove') {
+
+        if (lastAction.action === "remove") {
           // Restaurer l'item
           selections[lastAction.category][lastAction.item] = true;
-          
+
           // Rafraîchir l'affichage
           renderCategories();
           renderShoppingList();
           saveToAPI();
-          
+
           showToast(`✅ "${lastAction.item}" restauré !`);
         }
-        
+
         // Mettre à jour le bouton
         if (undoHistory.length > 0) {
           showUndoButton();
         } else {
-          document.getElementById('undoBtn').style.display = 'none';
+          document.getElementById("undoBtn").style.display = "none";
         }
       }
 
@@ -2226,15 +2373,19 @@
                 selections[cat][item] = false;
               });
             });
-      
+
             renderCategories();
             saveToAPI();
-            
+
             // ✅ AJOUT : Rafraîchir aussi la vue shopping list
-            if (document.getElementById('shoppingView').classList.contains('active')) {
+            if (
+              document
+                .getElementById("shoppingView")
+                .classList.contains("active")
+            ) {
               renderShoppingList();
             }
-            
+
             showToast("Liste effacée");
           }
         );
@@ -2244,9 +2395,9 @@
       // Stock de base - Afficher uniquement les essentiels
       function openStockDrawer() {
         currentCategory = null; // Indiquer que c'est le stock
-        
+
         document.getElementById("drawerTitle").innerHTML = `📦 Stock de base`;
-        
+
         let html = `
           <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">
             Le <strong>stock de base</strong> contient les produits essentiels que vous avez toujours chez vous.
@@ -2254,18 +2405,20 @@
           </p>
           <div class="item-group">
             <div class="item-group-title">🧂 Produits essentiels</div>
-            ${STOCK_BASE_ITEMS.map(item => `
-              <div class="checkbox-item ${stockBase[item] ? 'checked' : ''}">
+            ${STOCK_BASE_ITEMS.map(
+              (item) => `
+              <div class="checkbox-item ${stockBase[item] ? "checked" : ""}">
                 <input type="checkbox"
                        id="stock-${item}"
-                       ${stockBase[item] ? 'checked' : ''}
+                       ${stockBase[item] ? "checked" : ""}
                        onchange="toggleStockItem('${item}')">
                 <label for="stock-${item}">${item}</label>
               </div>
-            `).join('')}
+            `
+            ).join("")}
           </div>
         `;
-        
+
         document.getElementById("drawerBody").innerHTML = html;
         document.getElementById("drawer").classList.add("active");
         document.getElementById("backdrop").classList.add("active");
@@ -2276,7 +2429,7 @@
         const checkbox = document.getElementById(`stock-${item}`);
         const parent = checkbox.closest(".checkbox-item");
         parent.classList.toggle("checked");
-        
+
         // Sauvegarder dans localStorage
         localStorage.setItem("food_home_stock_base", JSON.stringify(stockBase));
       }
@@ -2286,8 +2439,8 @@
       // ============================================
       function findCategoryForItem(itemName) {
         // Normaliser le nom pour la recherche (enlever quantités entre parenthèses)
-        const cleanName = itemName.split('(')[0].trim();
-        
+        const cleanName = itemName.split("(")[0].trim();
+
         // Chercher dans toutes les catégories
         for (const [catKey, cat] of Object.entries(CATEGORIES)) {
           // Vérifier dans les items directs
@@ -2297,11 +2450,16 @@
               return catKey;
             }
             // Recherche partielle (pour items avec quantités)
-            if (cat.items.some(item => item.startsWith(cleanName) || cleanName.startsWith(item))) {
+            if (
+              cat.items.some(
+                (item) =>
+                  item.startsWith(cleanName) || cleanName.startsWith(item)
+              )
+            ) {
               return catKey;
             }
           }
-          
+
           // Vérifier dans les groupes
           if (cat.groups) {
             for (const [groupName, items] of Object.entries(cat.groups)) {
@@ -2310,46 +2468,51 @@
                 return catKey;
               }
               // Recherche partielle
-              if (items.some(item => item.startsWith(cleanName) || cleanName.startsWith(item))) {
+              if (
+                items.some(
+                  (item) =>
+                    item.startsWith(cleanName) || cleanName.startsWith(item)
+                )
+              ) {
                 return catKey;
               }
             }
           }
         }
-        
+
         // Si pas trouvé, retourner "autres"
-        return 'autres';
+        return "autres";
       }
 
-
-           
       // ============================================
       // 💾 STOCKAGE LOCALSTORAGE
       // ============================================
-      
+
       // Load from localStorage
       async function loadFromAPI() {
         try {
           // ✅ CHARGER depuis localStorage
-          const savedList = localStorage.getItem('food_home_shopping_list');
+          const savedList = localStorage.getItem("food_home_shopping_list");
           let itemsFromStorage = [];
-          
+
           if (savedList) {
             try {
               itemsFromStorage = JSON.parse(savedList);
-              console.log(`📥 ${itemsFromStorage.length} items chargés depuis localStorage`);
+              console.log(
+                `📥 ${itemsFromStorage.length} items chargés depuis localStorage`
+              );
             } catch (e) {
               console.error("Erreur parsing localStorage:", e);
             }
           }
-          
+
           // ✅ DISPATCHER dans les bonnes catégories
           itemsFromStorage.forEach((item) => {
             const categoryKey = findCategoryForItem(item);
-            
+
             // S'assurer que la catégorie a un tableau items
             const cat = CATEGORIES[categoryKey];
-            
+
             if (cat.items) {
               // Si la catégorie a déjà un tableau items, ajouter si absent
               if (!cat.items.includes(item)) {
@@ -2367,20 +2530,22 @@
                 CATEGORIES.autres.items.push(item);
               }
             }
-            
+
             // ✅ INITIALISER la sélection si elle n'existe pas
             if (selections[categoryKey][item] === undefined) {
               selections[categoryKey][item] = false;
             }
-            
+
             // Cocher l'item
             selections[categoryKey][item] = true;
           });
-      
+
           renderCategories();
-          
+
           // Si on est sur la vue shopping, rafraîchir
-          if (document.getElementById('shoppingView').classList.contains('active')) {
+          if (
+            document.getElementById("shoppingView").classList.contains("active")
+          ) {
             renderShoppingList();
           }
         } catch (error) {
@@ -2388,31 +2553,37 @@
           renderCategories();
         }
       }
-      
+
       // Save to localStorage
       async function saveToAPI() {
         const allItems = [];
-        
+
         Object.entries(selections).forEach(([cat, items]) => {
           Object.entries(items).forEach(([item, checked]) => {
             if (checked) allItems.push(item);
           });
         });
-        
+
         try {
           // ✅ SAUVEGARDER dans localStorage
-          localStorage.setItem('food_home_shopping_list', JSON.stringify(allItems));
-          console.log("💾 Sauvegarde dans localStorage:", allItems.length, "items");
+          localStorage.setItem(
+            "food_home_shopping_list",
+            JSON.stringify(allItems)
+          );
+          console.log(
+            "💾 Sauvegarde dans localStorage:",
+            allItems.length,
+            "items"
+          );
         } catch (error) {
           console.error("Erreur sauvegarde:", error);
         }
       }
-      
-      
+
       // ============================================
       // TOAST & MODALS
       // ============================================
-      
+
       // Toast notification
       function showToast(message, type = "success") {
         const oldToast = document.querySelector(".toast");
@@ -2423,22 +2594,22 @@
         document.body.appendChild(toast);
         setTimeout(() => toast.remove(), 3000);
       }
-      
+
       // Modal de confirmation réutilisable
       let confirmCallback = null;
-      
+
       function showConfirmModal(title, message, callback) {
         document.getElementById("confirmTitle").textContent = title;
         document.getElementById("confirmMessage").textContent = message;
         confirmCallback = callback;
         document.getElementById("confirmModal").classList.add("active");
       }
-      
+
       function closeConfirmModal() {
         document.getElementById("confirmModal").classList.remove("active");
         confirmCallback = null;
       }
-      
+
       document.getElementById("confirmButton").addEventListener("click", () => {
         if (confirmCallback) {
           confirmCallback();
@@ -2446,67 +2617,69 @@
         }
         closeConfirmModal();
       });
-      
+
       // Fermer les modals en cliquant à l'extérieur
       document.getElementById("confirmModal").addEventListener("click", (e) => {
         if (e.target.id === "confirmModal") {
           closeConfirmModal();
         }
       });
-      
+
       // Modal nutrition
       function openNutritionModal() {
         document.getElementById("nutritionModal").classList.add("active");
       }
-      
+
       function closeNutritionModal() {
         document.getElementById("nutritionModal").classList.remove("active");
       }
-      
-      document.getElementById("nutritionModal").addEventListener("click", (e) => {
-        if (e.target.id === "nutritionModal") {
-          closeNutritionModal();
-        }
-      });
-      
+
+      document
+        .getElementById("nutritionModal")
+        .addEventListener("click", (e) => {
+          if (e.target.id === "nutritionModal") {
+            closeNutritionModal();
+          }
+        });
+
       // ============================================
       // MODE SUPERMARCHÉ
       // ============================================
-      
+
       function openSupermarketMode() {
-        const mode = document.getElementById('supermarketMode');
-        const content = document.getElementById('supermarketContent');
-        
+        const mode = document.getElementById("supermarketMode");
+        const content = document.getElementById("supermarketContent");
+
         // Générer la liste
         renderSupermarketList();
-        
+
         // Afficher le mode
-        mode.classList.add('active');
-        
+        mode.classList.add("active");
+
         // Bloquer le scroll du body
-        document.body.style.overflow = 'hidden';
-        
+        document.body.style.overflow = "hidden";
+
         // Gérer l'indicateur de scroll
         setTimeout(() => {
           updateScrollIndicator();
-          mode.addEventListener('scroll', updateScrollIndicator);
+          mode.addEventListener("scroll", updateScrollIndicator);
         }, 100);
       }
-      
+
       function closeSupermarketMode() {
-        const mode = document.getElementById('supermarketMode');
-        mode.classList.remove('active');
-        
+        const mode = document.getElementById("supermarketMode");
+        mode.classList.remove("active");
+
         // Réactiver le scroll du body
-        document.body.style.overflow = '';
-        
+        document.body.style.overflow = "";
+
         // Retirer l'écouteur de scroll
-        mode.removeEventListener('scroll', updateScrollIndicator);
+        mode.removeEventListener("scroll", updateScrollIndicator);
       }
-      
+
       function renderSupermarketList() {
-        const container = document.getElementById('supermarketContent');
-        
+        const container = document.getElementById("supermarketContent");
+
         // Ordre logique de parcours du supermarché
         const supermarketOrder = [
           { keys: ["fruits"], name: "Fruits & Légumes", icon: "🍎" },
@@ -2514,19 +2687,35 @@
           { keys: ["laitiers"], name: "Produits Laitiers", icon: "🥛" },
           { keys: ["proteines"], name: "Viandes & Poissons", icon: "🍖" },
           { keys: ["graisses"], name: "Huiles & Matières grasses", icon: "🧈" },
-          { keys: ["transformes"], name: "Surgelés & Produits transformés", icon: "🍕" },
+          {
+            keys: ["transformes"],
+            name: "Surgelés & Produits transformés",
+            icon: "🍕",
+          },
           { keys: ["boissons"], name: "Boissons", icon: "💧" },
-          { keys: ["sucres", "apero"], name: "Snacks & Gourmandises", icon: "🍬" },
+          {
+            keys: ["sucres", "apero"],
+            name: "Snacks & Gourmandises",
+            icon: "🍬",
+          },
           { keys: ["condiments"], name: "Épicerie & Condiments", icon: "🧂" },
-          { keys: ["hygiene", "menage", "wc"], name: "Hygiène & Entretien", icon: "🧹" },
-          { keys: ["salon", "electromenager", "autres"], name: "Maison & Autres", icon: "🏠" },
+          {
+            keys: ["hygiene", "menage", "wc"],
+            name: "Hygiène & Entretien",
+            icon: "🧹",
+          },
+          {
+            keys: ["salon", "electromenager", "autres"],
+            name: "Maison & Autres",
+            icon: "🏠",
+          },
         ];
-        
+
         let html = "";
-        
+
         supermarketOrder.forEach((section) => {
           const sectionItems = [];
-          
+
           section.keys.forEach((key) => {
             const selected = Object.entries(selections[key] || {}).filter(
               ([_, checked]) => checked
@@ -2535,7 +2724,7 @@
               sectionItems.push({ item, category: key });
             });
           });
-          
+
           if (sectionItems.length > 0) {
             html += `
               <div class="supermarket-category">
@@ -2545,10 +2734,12 @@
                 </div>
                 <div class="supermarket-items">
                 ${sectionItems
-                  .map(
-                    ({ item, category }) => {
-                      const uniqueId = `super-${category}-${item.replace(/\s/g, '-')}`;
-                      return `
+                  .map(({ item, category }) => {
+                    const uniqueId = `super-${category}-${item.replace(
+                      /\s/g,
+                      "-"
+                    )}`;
+                    return `
                         <div class="supermarket-item" data-item="${item}" data-category="${category}">
                           <input type="checkbox"
                                  id="${uniqueId}"
@@ -2556,87 +2747,93 @@
                           <label for="${uniqueId}">${item}</label>
                         </div>
                       `;
-                    }
-                  )
+                  })
                   .join("")}
                 </div>
               </div>
             `;
           }
         });
-        
+
         if (html === "") {
-          html = '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Ajoutez des produits depuis "Catégories"</span></div>';
+          html =
+            '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Ajoutez des produits depuis "Catégories"</span></div>';
         }
-        
+
         container.innerHTML = html;
       }
-      
+
       function toggleSupermarketItem(checkbox, itemName, categoryKey) {
         const parent = checkbox.closest(".supermarket-item");
-        
+
         if (checkbox.checked) {
           // Cocher = barrer visuellement
           parent.classList.add("checked");
         } else {
           // Décocher = retirer de la liste
           selections[categoryKey][itemName] = false;
-          
-          parent.style.opacity = '0';
-          parent.style.transform = 'scale(0.8)';
-          
+
+          parent.style.opacity = "0";
+          parent.style.transform = "scale(0.8)";
+
           setTimeout(() => {
             parent.remove();
-            
+
             // Si plus d'items dans cette section, la retirer
-            const section = parent.closest('.supermarket-category');
-            if (section && section.querySelectorAll('.supermarket-item').length === 0) {
+            const section = parent.closest(".supermarket-category");
+            if (
+              section &&
+              section.querySelectorAll(".supermarket-item").length === 0
+            ) {
               section.remove();
             }
-            
+
             // Si plus d'items du tout, afficher message vide
-            const container = document.getElementById('supermarketContent');
-            if (container.querySelectorAll('.supermarket-item').length === 0) {
-              container.innerHTML = '<div class="empty-state">Votre liste est vide !<br><span style="font-size: 14px; opacity: 0.7;">Tous les articles ont été cochés ✓</span></div>';
+            const container = document.getElementById("supermarketContent");
+            if (container.querySelectorAll(".supermarket-item").length === 0) {
+              container.innerHTML =
+                '<div class="empty-state">Votre liste est vide !<br><span style="font-size: 14px; opacity: 0.7;">Tous les articles ont été cochés ✓</span></div>';
             }
-            
+
             // Mettre à jour les badges et sauvegarder
             renderCategories();
             saveToAPI();
-            
+
             // Mettre à jour la vue shopping si elle est active
-            if (document.getElementById('shoppingView').classList.contains('active')) {
+            if (
+              document
+                .getElementById("shoppingView")
+                .classList.contains("active")
+            ) {
               renderShoppingList();
             }
           }, 300);
         }
       }
-      
+
       function updateScrollIndicator() {
-        const mode = document.getElementById('supermarketMode');
-        const indicator = document.getElementById('supermarketScrollIndicator');
-        
+        const mode = document.getElementById("supermarketMode");
+        const indicator = document.getElementById("supermarketScrollIndicator");
+
         if (!mode || !indicator) return;
-        
+
         // Vérifier si on peut scroller vers le haut
         const scrollTop = mode.scrollTop;
         const scrollHeight = mode.scrollHeight;
         const clientHeight = mode.clientHeight;
-        
+
         // Cacher l'indicateur si on est tout en haut OU si tout est visible
         if (scrollTop <= 50 || scrollHeight <= clientHeight + 100) {
-          indicator.classList.add('hidden');
+          indicator.classList.add("hidden");
         } else {
-          indicator.classList.remove('hidden');
+          indicator.classList.remove("hidden");
         }
       }
-      
+
       // ============================================
       // INIT
       // ============================================
       window.addEventListener("DOMContentLoaded", init);
-      
     </script>
   </body>
 </html>
-
