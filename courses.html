@@ -1598,6 +1598,7 @@
       const CATEGORIES = {
         // 🟦 BASE - BLEU (à consommer abondamment)
         boissons: {
+          mainCategory: "alimentaire",
           icon: "💧",
           name: "Boissons",
           order: 1,
@@ -1617,6 +1618,7 @@
         },
         // 🟧 FÉCULENTS - ORANGE (1 portion/repas)
         cereales: {
+          mainCategory: "alimentaire",
           icon: "🌾",
           name: "Céréales & Féculents",
           order: 2,
@@ -1639,6 +1641,7 @@
         },
         // 🟩 PRIORITÉ - VERT (5 portions/jour)
         fruits: {
+          mainCategory: "alimentaire",
           icon: "🍎",
           name: "Fruits & Légumes",
           order: 3,
@@ -1692,6 +1695,7 @@
         },
         // 🟨 MODÉRATION - JAUNE (1 produit/repas)
         laitiers: {
+          mainCategory: "alimentaire",
           icon: "🥛",
           name: "Produits laitiers",
           order: 4,
@@ -1720,6 +1724,7 @@
         },
         // 🟨 PROTÉINES - JAUNE (2 portions/jour)
         proteines: {
+          mainCategory: "alimentaire",
           icon: "🍖",
           name: "Protéines",
           order: 5,
@@ -1751,6 +1756,7 @@
         },
         // 🟥 LIMITÉ - ROSE (consommation occasionnelle)
         graisses: {
+          mainCategory: "alimentaire",
           icon: "🧈",
           name: "Matières grasses",
           order: 6,
@@ -1767,6 +1773,7 @@
           ],
         },
         sucres: {
+          mainCategory: "alimentaire",
           icon: "🍬",
           name: "Sucreries",
           order: 7,
@@ -1787,6 +1794,7 @@
         },
         // AUTRES CATÉGORIES - GRIS (hors pyramide)
         condiments: {
+          mainCategory: "alimentaire",
           icon: "🧂",
           name: "Condiments",
           order: 8,
@@ -1812,6 +1820,7 @@
           ],
         },
         transformes: {
+          mainCategory: "alimentaire",
           icon: "🍕",
           name: "Produits transformés",
           order: 9,
@@ -1842,6 +1851,7 @@
           ],
         },
         apero: {
+          mainCategory: "alimentaire",
           icon: "🍸",
           name: "Apéro",
           order: 10,
@@ -1874,6 +1884,7 @@
           },
         },
         hygiene: {
+          mainCategory: "hygiene",
           icon: "🧴",
           name: "Hygiène",
           order: 11,
@@ -1895,6 +1906,7 @@
           ],
         },
         menage: {
+          mainCategory: "menage",
           icon: "🧹",
           name: "Produits ménagers",
           order: 12,
@@ -1920,6 +1932,7 @@
           ],
         },
         wc: {
+          mainCategory: "menage",
           icon: "🚽",
           name: "WC",
           order: 13,
@@ -1933,6 +1946,7 @@
           ],
         },
         salon: {
+          mainCategory: "bricolage",
           icon: "🕯️",
           name: "Salon",
           order: 14,
@@ -1940,6 +1954,7 @@
           items: ["Bougies", "Allume-feu", "Allumettes"],
         },
         electromenager: {
+          mainCategory: "bricolage",
           icon: "💡",
           name: "Électroménager",
           order: 15,
@@ -1978,14 +1993,15 @@
     color: "gray",
     items: ["Stylos", "Cahiers", "Papier", "Enveloppes", "Crayons", "Feutres"],
   },
-    autres: {
-          icon: "📦",
-          name: "Autres",
-          order: 99,
-          color: "gray",
-          items: [],
-        },
-      };
+  autres: {
+    mainCategory: "alimentaire",
+    icon: "📦",
+    name: "Autres",
+    order: 99,
+    color: "gray",
+    items: [],
+  },
+};
 
       // État
       let selections = {};
