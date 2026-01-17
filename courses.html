@@ -952,20 +952,20 @@
         <p class="subtitle">Sélectionne tes catégories et coche tes produits</p>
       </div>
       <div class="card">
-        <!-- 🔄 Toggle vues INVERSÉ : Liste courses à GAUCHE, Catégories à DROITE -->
+        <!-- 🔄 Toggle vues : Catégories à GAUCHE (défaut), Vue Supermarché à DROITE -->
         <div class="view-toggle">
-          <button class="toggle-btn active" onclick="switchView('shopping')">
-            🛒 Liste courses
-          </button>
-          <button class="toggle-btn" onclick="switchView('categories')">
+          <button class="toggle-btn active" onclick="switchView('categories')">
             📦 Catégories
           </button>
+          <button class="toggle-btn" onclick="switchView('shopping')">
+            🛒 Vue Supermarché
+          </button>
         </div>
-        <!-- VUE CATÉGORIES -->
-        <div id="categoriesView" class="categories-view">
+        <!-- VUE CATÉGORIES - AFFICHÉE PAR DÉFAUT -->
+        <div id="categoriesView" class="categories-view active">
           <!-- ✅ GRANDES CATÉGORIES -->
           <div class="main-categories">
-            <button class="main-category-btn active" onclick="switchMainCategory('alimentaire')">
+            <button class="main-category-btn" onclick="switchMainCategory('alimentaire')">
               🍎 Alimentaire
             </button>
             <button class="main-category-btn" onclick="switchMainCategory('hygiene')">
@@ -982,8 +982,8 @@
             </button>
           </div>
 
-          <!-- Sous-catégories ALIMENTAIRE (affichée par défaut) -->
-          <div id="subcategory-alimentaire" class="subcategories-container active">
+          <!-- Sous-catégories ALIMENTAIRE (cachée par défaut) -->
+          <div id="subcategory-alimentaire" class="subcategories-container">
             <div class="categories-grid" id="categoriesGrid-alimentaire"></div>
           </div>
 
@@ -1007,8 +1007,8 @@
             <div class="categories-grid" id="categoriesGrid-culture"></div>
           </div>
         </div>
-        <!-- VUE LISTE COURSES (format supermarché) - AFFICHÉE PAR DÉFAUT -->
-        <div id="shoppingView" class="shopping-view active">
+        <!-- VUE LISTE COURSES (format supermarché) -->
+        <div id="shoppingView" class="shopping-view">
           <div id="shoppingList"></div>
         </div>
         <!-- Actions -->
@@ -1615,7 +1615,7 @@
      // État
       let selections = {};
       let currentCategory = null;
-      let currentMainCategory = 'alimentaire'; // Grande catégorie active par défaut
+      let currentMainCategory = null; // Aucune grande catégorie active par défaut
       
       // === STOCK DE BASE - LISTE FIXE DES ESSENTIELS ===
       const STOCK_BASE_ITEMS = [
@@ -1697,18 +1697,34 @@
       // ============================================
       
       function switchMainCategory(mainCat) {
+        const clickedBtn = event.target;
+        const wasActive = clickedBtn.classList.contains('active');
+        
+        // Si le bouton était déjà actif, on le désactive et on cache les sous-catégories
+        if (wasActive) {
+          clickedBtn.classList.remove('active');
+          document.getElementById(`subcategory-${mainCat}`).classList.remove('active');
+          currentMainCategory = null;
+          return;
+        }
+        
+        // Sinon, on active ce bouton et on affiche ses sous-catégories
         currentMainCategory = mainCat;
         
-        // Mettre à jour les boutons
+        // Désactiver tous les boutons
         document.querySelectorAll('.main-category-btn').forEach(btn => {
           btn.classList.remove('active');
         });
-        event.target.classList.add('active');
         
-        // Afficher les bonnes sous-catégories
+        // Activer le bouton cliqué
+        clickedBtn.classList.add('active');
+        
+        // Masquer toutes les sous-catégories
         document.querySelectorAll('.subcategories-container').forEach(container => {
           container.classList.remove('active');
         });
+        
+        // Afficher les sous-catégories correspondantes
         document.getElementById(`subcategory-${mainCat}`).classList.add('active');
       }
 
@@ -1870,12 +1886,12 @@
         
         // Activer la bonne vue et le bon bouton
         if (view === "categories") {
-          // Le bouton "Catégories" est maintenant le DEUXIÈME (index 1)
-          document.querySelectorAll(".toggle-btn")[1].classList.add("active");
+          // Le bouton "Catégories" est maintenant le PREMIER (index 0)
+          document.querySelectorAll(".toggle-btn")[0].classList.add("active");
           document.getElementById("categoriesView").classList.add("active");
         } else if (view === "shopping") {
-          // Le bouton "Liste courses" est maintenant le PREMIER (index 0)
-          document.querySelectorAll(".toggle-btn")[0].classList.add("active");
+          // Le bouton "Vue Supermarché" est maintenant le DEUXIÈME (index 1)
+          document.querySelectorAll(".toggle-btn")[1].classList.add("active");
           document.getElementById("shoppingView").classList.add("active");
           renderShoppingList();
         }
