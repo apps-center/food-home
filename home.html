@@ -23,15 +23,64 @@
     <title>FOOD HOME - Application</title>
     <link rel="stylesheet" href="/css/common.css" />
     <link rel="stylesheet" href="/css/home.css" />
+    <style>
+      /* Style supplémentaire pour le bouton Vue Supermarché */
+      .navbar-controls {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .supermarket-btn {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: none;
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+      }
+
+      .supermarket-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+      }
+
+      .supermarket-btn:active {
+        transform: translateY(0);
+      }
+
+      @media (max-width: 768px) {
+        .supermarket-btn {
+          font-size: 12px;
+          padding: 6px 12px;
+        }
+        .supermarket-btn span:last-child {
+          display: none;
+        }
+      }
+    </style>
   </head>
   <body>
     <!-- Navigation Bar -->
     <div class="navbar">
       <div class="navbar-brand">
-        <span>🏠</span>
+        <span>🍽</span>
         <span>FOOD HOME</span>
       </div>
       <div class="navbar-controls">
+        <!-- ✅ NOUVEAU : Bouton Vue Supermarché -->
+        <button class="supermarket-btn" id="supermarketBtn" onclick="switchToSupermarketView()">
+          <span>🛒</span>
+          <span>Vue Supermarché</span>
+        </button>
+        
         <button class="toggle-btn" id="toggleBtn">
           <span id="toggleIcon">🔄</span>
           <span id="toggleText">Basculer</span>
@@ -93,7 +142,7 @@ window.addEventListener("message", (event) => {
   switch (type) {
     case "SHOPPING_LIST_UPDATED":
       // Eat a ajouté des items → notifier Courses de rafraîchir
-      console.log("📥 Shopping list updated, notifying courses iframe...");
+      console.log("🔥 Shopping list updated, notifying courses iframe...");
       try {
         coursesFrame.contentWindow.postMessage({ type: "REFRESH_DATA" }, "*");
       } catch (e) {
@@ -112,27 +161,45 @@ window.addEventListener("message", (event) => {
   }
 });
 
+// ✅ NOUVELLE FONCTION : Basculer vers Courses ET afficher la vue supermarché
+function switchToSupermarketView() {
+  // Si on n'est pas déjà sur Courses, basculer
+  if (!appFlipper.classList.contains("flipped")) {
+    appFlipper.classList.add("flipped");
+    localStorage.setItem('active_app', 'courses');
+    updateToggleButton('courses');
+  }
+  
+  // Envoyer le message pour afficher la vue shopping
+  setTimeout(() => {
+    try {
+      coursesFrame.contentWindow.postMessage({ type: "SHOW_SHOPPING_LIST" }, "*");
+      console.log("📨 Message envoyé : afficher Vue Supermarché");
+    } catch (e) {
+      console.error("Error sending message to courses iframe:", e);
+    }
+  }, 200);
+}
+
 // Toggle between apps
 toggleBtn.addEventListener("click", () => {
   toggleBtn.disabled = true;
   appFlipper.classList.toggle("flipped");
   const newApp = appFlipper.classList.contains("flipped") ? "courses" : "eat";
-  localStorage.setItem('active_app', newApp); // Stocke en local
+  localStorage.setItem('active_app', newApp);
   updateToggleButton(newApp);
  
-  // 🎯 NOUVELLE FONCTIONNALITÉ : Quand on bascule vers courses, envoyer un message pour afficher la Liste courses
+  // Quand on bascule vers courses, recharger l'iframe
   if (newApp === "courses") {
     setTimeout(() => {
       try {
-        // Recharger l'iframe pour refresh les données
         coursesFrame.src = coursesFrame.src;
         console.log("✅ Iframe courses rechargée pour refresh");
         
-        // Attendre que l'iframe soit chargée, puis envoyer le message
         coursesFrame.onload = () => {
           try {
-            coursesFrame.contentWindow.postMessage({ type: "SHOW_SHOPPING_LIST" }, "*");
-            console.log("📨 Message envoyé : afficher Liste courses");
+            coursesFrame.contentWindow.postMessage({ type: "REFRESH_DATA" }, "*");
+            console.log("🔨 Message envoyé : refresh data");
           } catch (e) {
             console.error("Error sending message to courses iframe:", e);
           }
