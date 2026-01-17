@@ -100,14 +100,8 @@
         color: white;
         border-color: transparent;
       }
-      /* Grandes catégories */
-      .main-categories {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 24px;
-        flex-wrap: wrap;
-        justify-content: center;
-      }
+
+      /* === GRANDES CATÉGORIES === */
       .main-category-btn {
         padding: 14px 24px;
         background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
@@ -121,27 +115,46 @@
         align-items: center;
         gap: 8px;
       }
+      
       .main-category-btn:hover {
         background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
       }
+      
       .main-category-btn.active {
         background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
         color: white;
         border-color: transparent;
         box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
       }
+
+      .main-categories {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
       .subcategories-container {
         display: none;
+        animation: fadeInCategories 0.3s ease-out;
       }
+      
       .subcategories-container.active {
         display: block;
-        animation: fadeIn 0.3s ease-out;
       }
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+      
+      @keyframes fadeInCategories {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
 
 
@@ -1217,7 +1230,7 @@
         <p class="subtitle">Sélectionne tes catégories et coche tes produits</p>
       </div>
       <div class="card">
-        <!-- 🔄 Toggle vues -->
+        <!-- 🔄 Toggle vues : Catégories (défaut) et Vue Supermarché -->
         <div class="view-toggle">
           <button class="toggle-btn active" onclick="switchView('categories')">
             📦 Catégories
@@ -1229,18 +1242,41 @@
 
         <!-- VUE CATÉGORIES - ACTIVE PAR DÉFAUT -->
         <div id="categoriesView" class="categories-view active">
+          <!-- ✅ GRANDES CATÉGORIES -->
           <div class="main-categories">
-            <button class="main-category-btn" onclick="switchMainCategory('alimentaire')">🍎 Alimentaire</button>
-            <button class="main-category-btn" onclick="switchMainCategory('hygiene')">🧴 Hygiène</button>
-            <button class="main-category-btn" onclick="switchMainCategory('menage')">🧹 Produits ménagers</button>
-            <button class="main-category-btn" onclick="switchMainCategory('bricolage')">🔧 Bricolage</button>
-            <button class="main-category-btn" onclick="switchMainCategory('culture')">📚 Culture</button>
+            <button class="main-category-btn" onclick="switchMainCategory('alimentaire')">
+              🍎 Alimentaire
+            </button>
+            <button class="main-category-btn" onclick="switchMainCategory('hygiene')">
+              🧴 Hygiène
+            </button>
+            <button class="main-category-btn" onclick="switchMainCategory('menage')">
+              🧹 Produits ménagers
+            </button>
+            <button class="main-category-btn" onclick="switchMainCategory('bricolage')">
+              🔧 Bricolage
+            </button>
+            <button class="main-category-btn" onclick="switchMainCategory('culture')">
+              📚 Culture
+            </button>
           </div>
-          <div id="subcategory-alimentaire" class="subcategories-container"><div class="categories-grid" id="categoriesGrid-alimentaire"></div></div>
-          <div id="subcategory-hygiene" class="subcategories-container"><div class="categories-grid" id="categoriesGrid-hygiene"></div></div>
-          <div id="subcategory-menage" class="subcategories-container"><div class="categories-grid" id="categoriesGrid-menage"></div></div>
-          <div id="subcategory-bricolage" class="subcategories-container"><div class="categories-grid" id="categoriesGrid-bricolage"></div></div>
-          <div id="subcategory-culture" class="subcategories-container"><div class="categories-grid" id="categoriesGrid-culture"></div></div>
+
+          <!-- Sous-catégories -->
+          <div id="subcategory-alimentaire" class="subcategories-container">
+            <div class="categories-grid" id="categoriesGrid-alimentaire"></div>
+          </div>
+          <div id="subcategory-hygiene" class="subcategories-container">
+            <div class="categories-grid" id="categoriesGrid-hygiene"></div>
+          </div>
+          <div id="subcategory-menage" class="subcategories-container">
+            <div class="categories-grid" id="categoriesGrid-menage"></div>
+          </div>
+          <div id="subcategory-bricolage" class="subcategories-container">
+            <div class="categories-grid" id="categoriesGrid-bricolage"></div>
+          </div>
+          <div id="subcategory-culture" class="subcategories-container">
+            <div class="categories-grid" id="categoriesGrid-culture"></div>
+          </div>
         </div>
         <!-- VUE LISTE COURSES (format supermarché) -->
         <div id="shoppingView" class="shopping-view">
@@ -1917,13 +1953,14 @@
             "Chargeurs",
           ],
         },
-        culture_livres: {
+        // === CULTURE ===
+  culture_livres: {
     mainCategory: "culture",
     icon: "📚",
     name: "Livres",
     order: 16,
     color: "gray",
-    items: ["Romans", "BD", "Magazines"],
+    items: ["Romans", "BD", "Magazines", "Livres de cuisine", "Guides"],
   },
   culture_multimedia: {
     mainCategory: "culture",
@@ -1931,7 +1968,7 @@
     name: "Multimédia",
     order: 17,
     color: "gray",
-    items: ["DVD", "Blu-ray", "Jeux vidéo"],
+    items: ["DVD", "Blu-ray", "Jeux vidéo", "Abonnements streaming"],
   },
   culture_papeterie: {
     mainCategory: "culture",
@@ -1939,7 +1976,7 @@
     name: "Papeterie",
     order: 18,
     color: "gray",
-    items: ["Stylos", "Cahiers", "Papier"],
+    items: ["Stylos", "Cahiers", "Papier", "Enveloppes", "Crayons", "Feutres"],
   },
     autres: {
           icon: "📦",
@@ -2029,54 +2066,79 @@
         });
       }
 
+      // Render grille catégories avec couleurs
+      // ============================================
+      // FONCTIONS NAVIGATION GRANDES CATÉGORIES
+      // ============================================
       
-      // Navigation grandes catégories
       let currentMainCategory = null;
       
       function switchMainCategory(mainCat) {
-        const btn = event.target;
-        const wasActive = btn.classList.contains('active');
+        const clickedBtn = event.target;
+        const wasActive = clickedBtn.classList.contains('active');
         
-        // Désactiver tous les boutons et masquer toutes les sous-catégories
-        document.querySelectorAll('.main-category-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.subcategories-container').forEach(c => c.classList.remove('active'));
-        
-        // Si le bouton n'était pas actif, l'activer et montrer ses sous-catégories
-        if (!wasActive) {
-          btn.classList.add('active');
-          document.getElementById('subcategory-' + mainCat).classList.add('active');
-          currentMainCategory = mainCat;
-        } else {
+        // Si le bouton était déjà actif, on le désactive et on cache les sous-catégories
+        if (wasActive) {
+          clickedBtn.classList.remove('active');
+          document.getElementById(`subcategory-${mainCat}`).classList.remove('active');
           currentMainCategory = null;
+          return;
         }
+        
+        // Sinon, on active ce bouton et on affiche ses sous-catégories
+        currentMainCategory = mainCat;
+        
+        // Désactiver tous les boutons
+        document.querySelectorAll('.main-category-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        // Activer le bouton cliqué
+        clickedBtn.classList.add('active');
+        
+        // Masquer toutes les sous-catégories
+        document.querySelectorAll('.subcategories-container').forEach(container => {
+          container.classList.remove('active');
+        });
+        
+        // Afficher les sous-catégories correspondantes
+        document.getElementById(`subcategory-${mainCat}`).classList.add('active');
       }
 
-      // Render grille catégories par grande catégorie
+      // Render toutes les grilles de catégories
       function renderCategories() {
+        // Grouper les catégories par mainCategory
         const categoriesByMain = {};
         Object.entries(CATEGORIES).forEach(([key, cat]) => {
           const mainCat = cat.mainCategory || 'alimentaire';
-          if (!categoriesByMain[mainCat]) categoriesByMain[mainCat] = [];
+          if (!categoriesByMain[mainCat]) {
+            categoriesByMain[mainCat] = [];
+          }
           categoriesByMain[mainCat].push([key, cat]);
         });
 
+        // Render chaque groupe dans son grid
         Object.entries(categoriesByMain).forEach(([mainCat, cats]) => {
-          const grid = document.getElementById('categoriesGrid-' + mainCat);
+          const grid = document.getElementById(`categoriesGrid-${mainCat}`);
           if (!grid) return;
 
           const sorted = cats.sort((a, b) => a[1].order - b[1].order);
+          
           grid.innerHTML = sorted.map(([key, cat]) => {
             const count = Object.values(selections[key]).filter(v => v).length;
-            const colorAttr = cat.color ? 'data-color="' + cat.color + '"' : '';
-            const nutritionLabel = cat.nutritionLevel ? '<div class="nutrition-indicator">' + cat.nutritionLevel + '</div>' : '';
+            const colorAttr = cat.color ? `data-color="${cat.color}"` : '';
+            const nutritionLabel = cat.nutritionLevel ? 
+              `<div class="nutrition-indicator">${cat.nutritionLevel}</div>` : '';
             
-            return '<div class="category-btn" ' + colorAttr + ' onclick="openDrawer('' + key + '')">' +
-              (count > 0 ? '<div class="badge">' + count + '</div>' : '') +
-              '<span class="icon">' + cat.icon + '</span>' +
-              '<span class="name">' + cat.name + '</span>' +
-              nutritionLabel +
-              '</div>';
-          }).join('');
+            return `
+              <div class="category-btn" ${colorAttr} onclick="openDrawer('${key}')">
+                ${count > 0 ? `<div class="badge">${count}</div>` : ""}
+                <span class="icon">${cat.icon}</span>
+                <span class="name">${cat.name}</span>
+                ${nutritionLabel}
+              </div>
+            `;
+          }).join("");
         });
       }
 
@@ -2205,16 +2267,12 @@
 
         // Activer la bonne vue et le bon bouton
         if (view === "categories") {
-          // Le bouton "Catégories" est maintenant le PREMIER (index 0)
-          document.querySelectorAll(".toggle-btn")[0].classList.add("active");
-          document.getElementById("categoriesView").classList.add("active");
-          // Réinitialiser les grandes catégories
-          document.querySelectorAll('.main-category-btn').forEach(b => b.classList.remove('active'));
-          document.querySelectorAll('.subcategories-container').forEach(c => c.classList.remove('active'));
-          currentMainCategory = null;
-        } else if (view === "shopping") {
-          // Le bouton "Vue Supermarché" est maintenant le DEUXIÈME (index 1)
+          // Le bouton "Catégories" est maintenant le DEUXIÈME (index 1)
           document.querySelectorAll(".toggle-btn")[1].classList.add("active");
+          document.getElementById("categoriesView").classList.add("active");
+        } else if (view === "shopping") {
+          // Le bouton "Liste courses" est maintenant le PREMIER (index 0)
+          document.querySelectorAll(".toggle-btn")[0].classList.add("active");
           document.getElementById("shoppingView").classList.add("active");
           renderShoppingList();
         }
@@ -2247,15 +2305,38 @@
           { keys: ["laitiers"], name: "Produits Laitiers", icon: "🥛" },
           { keys: ["proteines"], name: "Viandes & Poissons", icon: "🍖" },
           { keys: ["graisses"], name: "Huiles & Matières grasses", icon: "🧈" },
-          { keys: ["transformes"], name: "Surgelés & Produits transformés", icon: "🍕" },
+          {
+            keys: ["transformes"],
+            name: "Surgelés & Produits transformés",
+            icon: "🍕",
+          },
           { keys: ["boissons"], name: "Boissons", icon: "💧" },
-          { keys: ["sucres", "apero"], name: "Snacks & Gourmandises", icon: "🍬" },
+          {
+            keys: ["sucres", "apero"],
+            name: "Snacks & Gourmandises",
+            icon: "🍬",
+          },
           { keys: ["condiments"], name: "Épicerie & Condiments", icon: "🧂" },
-          { keys: ["hygiene_corps", "hygiene_bucco", "hygiene_accessoires"], name: "Hygiène", icon: "🧴" },
-          { keys: ["menage_vaisselle", "menage_linge", "menage_nettoyage", "menage_accessoires", "menage_animaux", "wc"], name: "Produits ménagers", icon: "🧹" },
-          { keys: ["bricolage_electricite", "bricolage_maison"], name: "Bricolage", icon: "🔧" },
-          { keys: ["culture_livres", "culture_multimedia", "culture_papeterie"], name: "Culture", icon: "📚" },
-          { keys: ["autres"], name: "Autres", icon: "📦" }
+          {
+            keys: ["hygiene", "menage", "wc"],
+            name: "Hygiène & Entretien",
+            icon: "🧹",
+          },
+          {
+            keys: ["salon", "electromenager"],
+            name: "Bricolage & Maison",
+            icon: "🔧",
+          },
+          {
+            keys: ["culture_livres", "culture_multimedia", "culture_papeterie"],
+            name: "Culture & Loisirs",
+            icon: "📚",
+          },
+          {
+            keys: ["autres"],
+            name: "Autres",
+            icon: "📦",
+          },
         ];
 
         let html = "";
@@ -2779,15 +2860,38 @@
           { keys: ["laitiers"], name: "Produits Laitiers", icon: "🥛" },
           { keys: ["proteines"], name: "Viandes & Poissons", icon: "🍖" },
           { keys: ["graisses"], name: "Huiles & Matières grasses", icon: "🧈" },
-          { keys: ["transformes"], name: "Surgelés & Produits transformés", icon: "🍕" },
+          {
+            keys: ["transformes"],
+            name: "Surgelés & Produits transformés",
+            icon: "🍕",
+          },
           { keys: ["boissons"], name: "Boissons", icon: "💧" },
-          { keys: ["sucres", "apero"], name: "Snacks & Gourmandises", icon: "🍬" },
+          {
+            keys: ["sucres", "apero"],
+            name: "Snacks & Gourmandises",
+            icon: "🍬",
+          },
           { keys: ["condiments"], name: "Épicerie & Condiments", icon: "🧂" },
-          { keys: ["hygiene_corps", "hygiene_bucco", "hygiene_accessoires"], name: "Hygiène", icon: "🧴" },
-          { keys: ["menage_vaisselle", "menage_linge", "menage_nettoyage", "menage_accessoires", "menage_animaux", "wc"], name: "Produits ménagers", icon: "🧹" },
-          { keys: ["bricolage_electricite", "bricolage_maison"], name: "Bricolage", icon: "🔧" },
-          { keys: ["culture_livres", "culture_multimedia", "culture_papeterie"], name: "Culture", icon: "📚" },
-          { keys: ["autres"], name: "Autres", icon: "📦" }
+          {
+            keys: ["hygiene", "menage", "wc"],
+            name: "Hygiène & Entretien",
+            icon: "🧹",
+          },
+          {
+            keys: ["salon", "electromenager"],
+            name: "Bricolage & Maison",
+            icon: "🔧",
+          },
+          {
+            keys: ["culture_livres", "culture_multimedia", "culture_papeterie"],
+            name: "Culture & Loisirs",
+            icon: "📚",
+          },
+          {
+            keys: ["autres"],
+            name: "Autres",
+            icon: "📦",
+          },
         ];
 
         let html = "";
