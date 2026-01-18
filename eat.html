@@ -20,6 +20,7 @@
     <!-- Favicon standard pour navigateurs -->
     <link rel="icon" type="image/png" href="/apple-touch-icon.png">
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <title>Quel plat ce soir ?</title>
     <!-- 🎨 CSS EXTERNES -->
@@ -324,6 +325,15 @@
       </div>
     </div>
     <script>
+
+      // ============================================
+      // CONFIGURATION SUPABASE
+      // ============================================
+      const SUPABASE_URL = 'https://jjqachkaouvcrdxreuza.supabase.co'
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqcWFjaGthb3V2Y3JkeHJldXphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2OTQ3NzQsImV4cCI6MjA4NDI3MDc3NH0.FVGtd99ES_ByhXKkIsxk5SV4ampFHNBeIGuMMOg2qMg'
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+      
       // ============================================
       // VARIABLES GLOBALES
       // ============================================
