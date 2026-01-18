@@ -603,31 +603,36 @@
         }
         
         try {
-          // 🔥 CHARGER la liste depuis Supabase
+          // 🔥 CHARGER depuis Supabase ET localStorage puis FUSIONNER
           const { data, error } = await window.mySupabase
             .from('shopping_list')
             .select('items')
             .eq('user_id', 'default_user')
             .single();
           
-          let currentList = [];
+          let supabaseItems = [];
           if (error && error.code !== 'PGRST116') {
             console.error('⚠️ Erreur Supabase:', error);
-            // Fallback localStorage
-            currentList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
-          } else {
-            currentList = data?.items || [];
+          } else if (data?.items && Array.isArray(data.items)) {
+            supabaseItems = data.items;
           }
           
-          const newItems = Array.from(allIngredients).filter(item => !currentList.includes(item));
-          currentList = [...currentList, ...newItems];
+          // Toujours charger localStorage aussi
+          const localItems = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
+          
+          // FUSIONNER Supabase + localStorage (dédupliquer)
+          const allExistingItems = [...new Set([...supabaseItems, ...localItems])];
+          console.log(`📥 Fusion: ${supabaseItems.length} Supabase + ${localItems.length} localStorage = ${allExistingItems.length} items`);
+          
+          const newItems = Array.from(allIngredients).filter(item => !allExistingItems.includes(item));
+          const finalList = [...allExistingItems, ...newItems];
           
           // 🔥 SAUVEGARDER dans Supabase
           const { error: upsertError } = await window.mySupabase
             .from('shopping_list')
             .upsert({
               user_id: 'default_user',
-              items: currentList
+              items: finalList
             }, {
               onConflict: 'user_id'
             });
@@ -637,7 +642,7 @@
           }
           
           // Aussi sauvegarder en localStorage
-          localStorage.setItem('food_home_shopping_list', JSON.stringify(currentList));
+          localStorage.setItem('food_home_shopping_list', JSON.stringify(finalList));
           
           // Notifier le parent pour refresh
           window.parent.postMessage({
@@ -752,31 +757,36 @@
         ingredients = expandedIngredients;
       
         try {
-          // 🔥 CHARGER la liste depuis Supabase
+          // 🔥 CHARGER depuis Supabase ET localStorage puis FUSIONNER
           const { data, error } = await window.mySupabase
             .from('shopping_list')
             .select('items')
             .eq('user_id', 'default_user')
             .single();
           
-          let currentList = [];
+          let supabaseItems = [];
           if (error && error.code !== 'PGRST116') {
             console.error('⚠️ Erreur Supabase:', error);
-            // Fallback localStorage
-            currentList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
-          } else {
-            currentList = data?.items || [];
+          } else if (data?.items && Array.isArray(data.items)) {
+            supabaseItems = data.items;
           }
           
-          const newItems = ingredients.filter(item => !currentList.includes(item));
-          currentList = [...currentList, ...newItems];
+          // Toujours charger localStorage aussi
+          const localItems = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
+          
+          // FUSIONNER Supabase + localStorage (dédupliquer)
+          const allExistingItems = [...new Set([...supabaseItems, ...localItems])];
+          console.log(`📥 Fusion: ${supabaseItems.length} Supabase + ${localItems.length} localStorage = ${allExistingItems.length} items`);
+          
+          const newItems = ingredients.filter(item => !allExistingItems.includes(item));
+          const finalList = [...allExistingItems, ...newItems];
           
           // 🔥 SAUVEGARDER dans Supabase
           const { error: upsertError } = await window.mySupabase
             .from('shopping_list')
             .upsert({
               user_id: 'default_user',
-              items: currentList
+              items: finalList
             }, {
               onConflict: 'user_id'
             });
@@ -786,7 +796,7 @@
           }
           
           // Aussi sauvegarder en localStorage
-          localStorage.setItem('food_home_shopping_list', JSON.stringify(currentList));
+          localStorage.setItem('food_home_shopping_list', JSON.stringify(finalList));
           
           // Notifier le parent pour refresh
           window.parent.postMessage({
