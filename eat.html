@@ -585,7 +585,7 @@
           weekGrid.appendChild(dayCard);
         });
       }
-      function exportPlanningToShoppingList() {
+      async function exportPlanningToShoppingList() {
         const allIngredients = new Set();
         DAYS.forEach((day) => {
           ["dejeuner", "diner"].forEach((meal) => {
@@ -601,18 +601,54 @@
           showToast("Aucun ingrédient à exporter");
           return;
         }
-        // Sauvegarder dans localStorage
-        let currentList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
-        const newItems = Array.from(allIngredients).filter(item => !currentList.includes(item));
-        currentList = [...currentList, ...newItems];
-        localStorage.setItem('food_home_shopping_list', JSON.stringify(currentList));
         
-        // Notifier le parent pour refresh
-        window.parent.postMessage({
-          type: 'SHOPPING_LIST_UPDATED'
-        }, '*');
-        
-        showToast(`✅ ${newItems.length} ingrédient(s) ajouté(s) à la liste de courses !`);
+        try {
+          // 🔥 CHARGER la liste depuis Supabase
+          const { data, error } = await window.mySupabase
+            .from('shopping_list')
+            .select('items')
+            .eq('user_id', 'default_user')
+            .single();
+          
+          let currentList = [];
+          if (error && error.code !== 'PGRST116') {
+            console.error('⚠️ Erreur Supabase:', error);
+            // Fallback localStorage
+            currentList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
+          } else {
+            currentList = data?.items || [];
+          }
+          
+          const newItems = Array.from(allIngredients).filter(item => !currentList.includes(item));
+          currentList = [...currentList, ...newItems];
+          
+          // 🔥 SAUVEGARDER dans Supabase
+          const { error: upsertError } = await window.mySupabase
+            .from('shopping_list')
+            .upsert({
+              user_id: 'default_user',
+              items: currentList
+            }, {
+              onConflict: 'user_id'
+            });
+          
+          if (upsertError) {
+            console.error('⚠️ Erreur sauvegarde Supabase:', upsertError);
+          }
+          
+          // Aussi sauvegarder en localStorage
+          localStorage.setItem('food_home_shopping_list', JSON.stringify(currentList));
+          
+          // Notifier le parent pour refresh
+          window.parent.postMessage({
+            type: 'SHOPPING_LIST_UPDATED'
+          }, '*');
+          
+          showToast(`✅ ${newItems.length} ingrédient(s) ajouté(s) à la liste de courses !`);
+        } catch (error) {
+          console.error('❌ Erreur:', error);
+          showToast(`❌ Erreur: ${error.message}`, 'error');
+        }
       }
       // ============================================
       // MODAL RECETTE
@@ -694,7 +730,7 @@
       // ============================================
       // AJOUT À LA LISTE DE COURSES
       // ============================================
-      function addToShoppingList() {
+      async function addToShoppingList() {
         if (!currentRecipe) return;
         
         // Splitter et nettoyer les ingrédients
@@ -715,18 +751,53 @@
         });
         ingredients = expandedIngredients;
       
-        // Sauvegarder dans localStorage
-        let currentList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
-        const newItems = ingredients.filter(item => !currentList.includes(item));
-        currentList = [...currentList, ...newItems];
-        localStorage.setItem('food_home_shopping_list', JSON.stringify(currentList));
-        
-        // Notifier le parent pour refresh
-        window.parent.postMessage({
-          type: 'SHOPPING_LIST_UPDATED'
-        }, '*');
-        
-        showToast(`✅ ${newItems.length} ingrédient(s) ajouté(s) !`);
+        try {
+          // 🔥 CHARGER la liste depuis Supabase
+          const { data, error } = await window.mySupabase
+            .from('shopping_list')
+            .select('items')
+            .eq('user_id', 'default_user')
+            .single();
+          
+          let currentList = [];
+          if (error && error.code !== 'PGRST116') {
+            console.error('⚠️ Erreur Supabase:', error);
+            // Fallback localStorage
+            currentList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
+          } else {
+            currentList = data?.items || [];
+          }
+          
+          const newItems = ingredients.filter(item => !currentList.includes(item));
+          currentList = [...currentList, ...newItems];
+          
+          // 🔥 SAUVEGARDER dans Supabase
+          const { error: upsertError } = await window.mySupabase
+            .from('shopping_list')
+            .upsert({
+              user_id: 'default_user',
+              items: currentList
+            }, {
+              onConflict: 'user_id'
+            });
+          
+          if (upsertError) {
+            console.error('⚠️ Erreur sauvegarde Supabase:', upsertError);
+          }
+          
+          // Aussi sauvegarder en localStorage
+          localStorage.setItem('food_home_shopping_list', JSON.stringify(currentList));
+          
+          // Notifier le parent pour refresh
+          window.parent.postMessage({
+            type: 'SHOPPING_LIST_UPDATED'
+          }, '*');
+          
+          showToast(`✅ ${newItems.length} ingrédient(s) ajouté(s) !`);
+        } catch (error) {
+          console.error('❌ Erreur:', error);
+          showToast(`❌ Erreur: ${error.message}`, 'error');
+        }
       }
       
       // ============================================
