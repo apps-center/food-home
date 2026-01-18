@@ -20,7 +20,6 @@
     <!-- Favicon standard pour navigateurs -->
     <link rel="icon" type="image/png" href="/apple-touch-icon.png">
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <title>Quel plat ce soir ?</title>
     <!-- 🎨 CSS EXTERNES -->
@@ -325,15 +324,6 @@
       </div>
     </div>
     <script>
-
-      // ============================================
-      // CONFIGURATION SUPABASE
-      // ============================================
-      const SUPABASE_URL = 'https://jjqachkaouvcrdxreuza.supabase.co'
-      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqcWFjaGthb3V2Y3JkeHJldXphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2OTQ3NzQsImV4cCI6MjA4NDI3MDc3NH0.FVGtd99ES_ByhXKkIsxk5SV4ampFHNBeIGuMMOg2qMg'
-      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-
-      
       // ============================================
       // VARIABLES GLOBALES
       // ============================================
@@ -361,54 +351,27 @@
       const btnRegenerate = document.getElementById("btn-regenerate");
       const weekGrid = document.getElementById("weekGrid");
       // ============================================
-      // CHARGEMENT DES RECETTES DEPUIS SUPABASE
+      // CHARGEMENT DES RECETTES
       // ============================================
-      async function loadRecipes() {
-        resultsDiv.innerHTML = '<div class="loading">Chargement des recettes depuis Supabase...</div>';
-        
-        try {
-          // 🔥 CHARGER depuis Supabase
-          const { data, error } = await supabase
-            .from('recipes')
-            .select('*')
-            .order('name', { ascending: true });
-          
-          if (error) {
-            console.error('Erreur Supabase:', error);
-            throw error;
-          }
-          
-          console.log('✅ Recettes chargées depuis Supabase:', data.length);
-          
-          // 🔄 MAPPER les données Supabase vers le format attendu
-          allRecipes = data.map(recipe => ({
-            id: recipe.id,
-            nom: recipe.name,
-            type_repas: recipe.category,
-            saisons: recipe.season || 'toute',
-            diets: recipe.diet || '',
-            proteine: recipe.protein || '',
-            kidsFriendly: recipe.difficulty === 'Facile' ? 'Oui' : 'Non',
-            temps: recipe.preparation_time || 0,
-            ingredients: Array.isArray(recipe.ingredients) 
-              ? recipe.ingredients.join('|')
-              : (typeof recipe.ingredients === 'string' ? recipe.ingredients : ''),
-            instructions: recipe.instructions || ''
-          }));
-          
-          console.log('✅ Recettes mappées:', allRecipes.length);
-          filterAndRender();
-          
-        } catch (error) {
-          console.error('Erreur chargement recettes:', error);
-          resultsDiv.innerHTML = `
-            <div class="empty">
-              ❌ Erreur de chargement des recettes<br>
-              <small>${error.message}</small><br><br>
-              <button class="btn btn-primary" onclick="loadRecipes()">🔄 Réessayer</button>
-            </div>
-          `;
-        }
+      function loadRecipes() {
+        resultsDiv.innerHTML = '<div class="loading">Chargement des recettes...</div>';
+        fetch('/recipes.json')
+          .then(response => {
+            console.log('Fetch status:', response.status);
+            if (!response.ok) {
+              throw new Error('Fetch failed with status ' + response.status);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log('Recipes loaded:', data.length);
+            allRecipes = data;
+            filterAndRender();
+          })
+          .catch(error => {
+            console.error('Erreur chargement recettes:', error);
+            showError('Erreur de chargement des recettes. Veuillez réessayer.');
+          });
       }
       // ============================================
       // FILTRAGE
@@ -585,7 +548,7 @@
           weekGrid.appendChild(dayCard);
         });
       }
-      async function exportPlanningToShoppingList() {
+      function exportPlanningToShoppingList() {
         const allIngredients = new Set();
         DAYS.forEach((day) => {
           ["dejeuner", "diner"].forEach((meal) => {
@@ -601,49 +564,18 @@
           showToast("Aucun ingrédient à exporter");
           return;
         }
+        // Sauvegarder dans localStorage
+        let currentList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
+        const newItems = Array.from(allIngredients).filter(item => !currentList.includes(item));
+        currentList = [...currentList, ...newItems];
+        localStorage.setItem('food_home_shopping_list', JSON.stringify(currentList));
         
-        try {
-          // 🔥 CHARGER la liste actuelle depuis Supabase
-          const { data: existingData, error: fetchError } = await supabase
-            .from('shopping_list')
-            .select('items')
-            .eq('user_id', 'default_user')
-            .single();
-          
-          if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = not found
-            throw fetchError;
-          }
-          
-          let currentList = existingData?.items || [];
-          const newItems = Array.from(allIngredients).filter(item => !currentList.includes(item));
-          currentList = [...currentList, ...newItems];
-          
-          // 🔥 SAUVEGARDER dans Supabase
-          const { error: upsertError } = await supabase
-            .from('shopping_list')
-            .upsert({
-              user_id: 'default_user',
-              items: currentList
-            }, {
-              onConflict: 'user_id'
-            });
-          
-          if (upsertError) throw upsertError;
-          
-          // 💾 Aussi sauvegarder en localStorage pour compatibilité
-          localStorage.setItem('food_home_shopping_list', JSON.stringify(currentList));
-          
-          // Notifier le parent pour refresh
-          window.parent.postMessage({
-            type: 'SHOPPING_LIST_UPDATED'
-          }, '*');
-          
-          showToast(`✅ ${newItems.length} ingrédient(s) ajouté(s) à la liste de courses !`);
-          
-        } catch (error) {
-          console.error('Erreur sauvegarde shopping list:', error);
-          showToast(`❌ Erreur: ${error.message}`, 'error');
-        }
+        // Notifier le parent pour refresh
+        window.parent.postMessage({
+          type: 'SHOPPING_LIST_UPDATED'
+        }, '*');
+        
+        showToast(`✅ ${newItems.length} ingrédient(s) ajouté(s) à la liste de courses !`);
       }
       // ============================================
       // MODAL RECETTE
@@ -725,7 +657,7 @@
       // ============================================
       // AJOUT À LA LISTE DE COURSES
       // ============================================
-      async function addToShoppingList() {
+      function addToShoppingList() {
         if (!currentRecipe) return;
         
         // Splitter et nettoyer les ingrédients
@@ -746,48 +678,18 @@
         });
         ingredients = expandedIngredients;
       
-        try {
-          // 🔥 CHARGER la liste actuelle depuis Supabase
-          const { data: existingData, error: fetchError } = await supabase
-            .from('shopping_list')
-            .select('items')
-            .eq('user_id', 'default_user')
-            .single();
-          
-          if (fetchError && fetchError.code !== 'PGRST116') { // PGRST116 = not found
-            throw fetchError;
-          }
-          
-          let currentList = existingData?.items || [];
-          const newItems = ingredients.filter(item => !currentList.includes(item));
-          currentList = [...currentList, ...newItems];
-          
-          // 🔥 SAUVEGARDER dans Supabase
-          const { error: upsertError } = await supabase
-            .from('shopping_list')
-            .upsert({
-              user_id: 'default_user',
-              items: currentList
-            }, {
-              onConflict: 'user_id'
-            });
-          
-          if (upsertError) throw upsertError;
-          
-          // 💾 Aussi sauvegarder en localStorage pour compatibilité
-          localStorage.setItem('food_home_shopping_list', JSON.stringify(currentList));
-          
-          // Notifier le parent pour refresh
-          window.parent.postMessage({
-            type: 'SHOPPING_LIST_UPDATED'
-          }, '*');
-          
-          showToast(`✅ ${newItems.length} ingrédient(s) ajouté(s) !`);
-          
-        } catch (error) {
-          console.error('Erreur ajout shopping list:', error);
-          showToast(`❌ Erreur: ${error.message}`, 'error');
-        }
+        // Sauvegarder dans localStorage
+        let currentList = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
+        const newItems = ingredients.filter(item => !currentList.includes(item));
+        currentList = [...currentList, ...newItems];
+        localStorage.setItem('food_home_shopping_list', JSON.stringify(currentList));
+        
+        // Notifier le parent pour refresh
+        window.parent.postMessage({
+          type: 'SHOPPING_LIST_UPDATED'
+        }, '*');
+        
+        showToast(`✅ ${newItems.length} ingrédient(s) ajouté(s) !`);
       }
       
       // ============================================
