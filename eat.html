@@ -20,9 +20,8 @@
     <!-- Favicon standard pour navigateurs -->
     <link rel="icon" type="image/png" href="/apple-touch-icon.png">
 
-    <!-- Supabase Client -->
+    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     
     <title>Quel plat ce soir ?</title>
     <!-- 🎨 CSS EXTERNES -->
@@ -367,6 +366,8 @@
         resultsDiv.innerHTML = '<div class="loading">Chargement des recettes depuis Supabase...</div>';
         
         try {
+          console.log('🔄 Chargement depuis Supabase...');
+          
           // Charger depuis Supabase
           const { data, error } = await supabase
             .from('recipes')
@@ -374,13 +375,13 @@
             .order('name', { ascending: true });
           
           if (error) {
-            console.error('Erreur Supabase:', error);
+            console.error('❌ Erreur Supabase:', error);
             throw error;
           }
           
           console.log('✅ Recettes chargées depuis Supabase:', data.length);
           
-          // Mapper les données Supabase vers le format attendu
+          // Mapper les données Supabase vers le format attendu par l'app
           allRecipes = data.map(recipe => ({
             id: recipe.id,
             nom: recipe.name,
