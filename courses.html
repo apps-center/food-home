@@ -2509,6 +2509,10 @@
         try {
           let itemsFromStorage = [];
           
+          // Charger TOUJOURS localStorage d'abord
+          const savedList = localStorage.getItem("food_home_shopping_list");
+          const localItems = savedList ? JSON.parse(savedList) : [];
+          
           // 🔥 CHARGER depuis Supabase
           const { data, error } = await window.mySupabase
             .from('shopping_list')
@@ -2518,21 +2522,51 @@
           
           if (error) {
             if (error.code === 'PGRST116') {
-              console.log('📭 Aucune liste dans Supabase, fallback localStorage');
+              console.log('📭 Aucune liste dans Supabase');
             } else {
               console.error('⚠️ Erreur Supabase:', error);
             }
-            // Fallback vers localStorage
-            const savedList = localStorage.getItem("food_home_shopping_list");
-            if (savedList) {
-              itemsFromStorage = JSON.parse(savedList);
-              console.log(`📥 ${itemsFromStorage.length} items depuis localStorage`);
+            // Utiliser localStorage
+            itemsFromStorage = localItems;
+            console.log(`📥 ${itemsFromStorage.length} items depuis localStorage`);
+            
+            // Si localStorage a des items, les sauvegarder dans Supabase
+            if (itemsFromStorage.length > 0) {
+              await window.mySupabase
+                .from('shopping_list')
+                .upsert({
+                  user_id: 'default_user',
+                  items: itemsFromStorage
+                }, {
+                  onConflict: 'user_id'
+                });
+              console.log('💾 Sync localStorage → Supabase');
             }
           } else {
-            itemsFromStorage = data?.items || [];
-            console.log(`📥 ${itemsFromStorage.length} items depuis Supabase`);
-            // Sauvegarder aussi en localStorage
-            localStorage.setItem("food_home_shopping_list", JSON.stringify(itemsFromStorage));
+            const supabaseItems = data?.items || [];
+            
+            // Si Supabase est vide MAIS localStorage a des items → utiliser localStorage
+            if (supabaseItems.length === 0 && localItems.length > 0) {
+              itemsFromStorage = localItems;
+              console.log(`📥 ${itemsFromStorage.length} items depuis localStorage (Supabase vide)`);
+              
+              // Sauvegarder dans Supabase
+              await window.mySupabase
+                .from('shopping_list')
+                .upsert({
+                  user_id: 'default_user',
+                  items: itemsFromStorage
+                }, {
+                  onConflict: 'user_id'
+                });
+              console.log('💾 Sync localStorage → Supabase');
+            } else {
+              // Sinon utiliser Supabase
+              itemsFromStorage = supabaseItems;
+              console.log(`📥 ${itemsFromStorage.length} items depuis Supabase`);
+              // Sauvegarder aussi en localStorage
+              localStorage.setItem("food_home_shopping_list", JSON.stringify(itemsFromStorage));
+            }
           }
 
           // ✅ DISPATCHER dans les bonnes catégories
