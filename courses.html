@@ -1222,6 +1222,137 @@
         color: #ea580c;
         font-weight: var(--font-weight-semibold);
       }
+
+      /* ========================================= */
+      /* VUE PLEIN ÉCRAN SOUS-CATÉGORIES */
+      /* ========================================= */
+      .subcategory-fullscreen {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        z-index: 10002;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .subcategory-fullscreen.active {
+        display: block;
+        animation: slideInFromRight 0.3s ease-out;
+      }
+
+      @keyframes slideInFromRight {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+
+      .subcategory-fullscreen-header {
+        position: sticky;
+        top: 0;
+        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 100;
+      }
+
+      .subcategory-fullscreen-header h2 {
+        color: white;
+        margin: 0;
+        font-size: 22px;
+        font-weight: var(--font-weight-bold);
+      }
+
+      .subcategory-fullscreen-close {
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        font-size: 24px;
+        cursor: pointer;
+        transition: all var(--transition-base);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+
+      .subcategory-fullscreen-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      .subcategory-fullscreen-content {
+        padding: 20px 16px 120px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .subcategory-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: all var(--transition-base);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .subcategory-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      }
+
+      .subcategory-card-icon {
+        font-size: 40px;
+        flex-shrink: 0;
+      }
+
+      .subcategory-card-content {
+        flex: 1;
+      }
+
+      .subcategory-card-title {
+        font-size: 18px;
+        font-weight: var(--font-weight-bold);
+        color: var(--text-primary);
+        margin-bottom: 8px;
+      }
+
+      .subcategory-card-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .subcategory-card-item {
+        background: var(--bg-secondary);
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+
+      .subcategory-card-arrow {
+        font-size: 24px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
     </style>
   </head>
   <body>
@@ -1593,6 +1724,19 @@
       <div id="supermarketScrollIndicator" class="supermarket-scroll-indicator">
         <div class="supermarket-scroll-arrow">↑</div>
         <div class="supermarket-scroll-text">Plus d'articles ci-dessus</div>
+      </div>
+    </div>
+
+    <!-- Vue Plein Écran Sous-Catégories -->
+    <div id="subcategoryView" class="subcategory-fullscreen">
+      <div class="subcategory-fullscreen-header">
+        <h2 id="subcategoryFullscreenTitle">Catégories</h2>
+        <button class="subcategory-fullscreen-close" onclick="closeSubcategoryFullscreen()">
+          ←
+        </button>
+      </div>
+      <div class="subcategory-fullscreen-content" id="subcategoryFullscreenContent">
+        <!-- Généré dynamiquement -->
       </div>
     </div>
 
@@ -2104,35 +2248,127 @@
       let currentMainCategory = null;
       
       function switchMainCategory(mainCat) {
-        const clickedBtn = event.target;
-        const wasActive = clickedBtn.classList.contains('active');
+        openSubcategoryFullscreen(mainCat);
+      }
+
+      // Ouvrir la vue plein écran des sous-catégories
+      function openSubcategoryFullscreen(mainCat) {
+        const view = document.getElementById('subcategoryView');
+        const title = document.getElementById('subcategoryFullscreenTitle');
+        const content = document.getElementById('subcategoryFullscreenContent');
         
-        // Si le bouton était déjà actif, on le désactive et on cache les sous-catégories
-        if (wasActive) {
-          clickedBtn.classList.remove('active');
-          document.getElementById(`subcategory-${mainCat}`).classList.remove('active');
-          currentMainCategory = null;
-          return;
-        }
+        // Définir le titre selon la catégorie
+        const titles = {
+          'alimentaire': '🍽️ Alimentaire',
+          'hygiene': '🧴 Hygiène',
+          'menage': '🧹 Ménage',
+          'bricolage': '🔧 Bricolage',
+          'culture': '📚 Culture'
+        };
+        title.textContent = titles[mainCat] || 'Catégories';
         
-        // Sinon, on active ce bouton et on affiche ses sous-catégories
-        currentMainCategory = mainCat;
-        
-        // Désactiver tous les boutons
-        document.querySelectorAll('.main-category-btn').forEach(btn => {
-          btn.classList.remove('active');
+        // Générer les cards des sous-catégories
+        const categoriesByMain = {};
+        Object.entries(CATEGORIES).forEach(([key, cat]) => {
+          const catMainCategory = cat.mainCategory || 'alimentaire';
+          if (catMainCategory === mainCat) {
+            categoriesByMain[key] = cat;
+          }
         });
         
-        // Activer le bouton cliqué
-        clickedBtn.classList.add('active');
-        
-        // Masquer toutes les sous-catégories
-        document.querySelectorAll('.subcategories-container').forEach(container => {
-          container.classList.remove('active');
+        let html = '';
+        Object.entries(categoriesByMain).forEach(([key, cat]) => {
+          // Compter les items sélectionnés
+          const selectedCount = Object.values(selections[key] || {}).filter(Boolean).length;
+          const badge = selectedCount > 0 ? `<span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; margin-left: 8px;">${selectedCount}</span>` : '';
+          
+          // Récupérer quelques items pour preview
+          let previewItems = [];
+          if (cat.items) {
+            previewItems = cat.items.slice(0, 5);
+          } else if (cat.groups) {
+            Object.values(cat.groups).forEach(group => {
+              if (group.items) {
+                previewItems.push(...group.items.slice(0, 3));
+              }
+            });
+            previewItems = previewItems.slice(0, 5);
+          }
+          
+          html += `
+            <div class="subcategory-card" onclick="openCategory('${key}')">
+              <div class="subcategory-card-icon">${cat.icon}</div>
+              <div class="subcategory-card-content">
+                <div class="subcategory-card-title">${cat.name}${badge}</div>
+                <div class="subcategory-card-items">
+                  ${previewItems.map(item => `<div class="subcategory-card-item">${item}</div>`).join('')}
+                  ${previewItems.length >= 5 ? '<div class="subcategory-card-item">...</div>' : ''}
+                </div>
+              </div>
+              <div class="subcategory-card-arrow">→</div>
+            </div>
+          `;
         });
         
-        // Afficher les sous-catégories correspondantes
-        document.getElementById(`subcategory-${mainCat}`).classList.add('active');
+        content.innerHTML = html;
+        
+        // Afficher la vue avec animation
+        view.classList.add('active');
+        
+        // Gérer le swipe down pour fermer
+        setupSwipeDown(view);
+      }
+      
+      // Fermer la vue plein écran
+      function closeSubcategoryFullscreen() {
+        const view = document.getElementById('subcategoryView');
+        view.classList.remove('active');
+      }
+      
+      // Ouvrir une catégorie depuis la vue plein écran
+      function openCategory(categoryKey) {
+        // Fermer la vue plein écran
+        closeSubcategoryFullscreen();
+        
+        // Scroller vers la catégorie
+        setTimeout(() => {
+          const categoryElement = document.querySelector(`[data-category="${categoryKey}"]`);
+          if (categoryElement) {
+            categoryElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }, 300);
+      }
+      
+      // Gérer le swipe down pour fermer
+      function setupSwipeDown(element) {
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
+        
+        element.addEventListener('touchstart', (e) => {
+          // Seulement si on est en haut de la page
+          if (element.scrollTop === 0) {
+            startY = e.touches[0].clientY;
+            isDragging = true;
+          }
+        });
+        
+        element.addEventListener('touchmove', (e) => {
+          if (!isDragging) return;
+          
+          currentY = e.touches[0].clientY;
+          const diff = currentY - startY;
+          
+          // Si swipe vers le bas de plus de 100px
+          if (diff > 100) {
+            closeSubcategoryFullscreen();
+            isDragging = false;
+          }
+        });
+        
+        element.addEventListener('touchend', () => {
+          isDragging = false;
+        });
       }
 
       // Render toutes les grilles de catégories
