@@ -24,6 +24,9 @@
     <!-- Favicon standard pour navigateurs -->
     <link rel="icon" type="image/png" href="/apple-touch-icon.png" />
 
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <title>FOOD HOME — Listes de courses</title>
     <link rel="stylesheet" href="/css/common.css" />
     <link rel="stylesheet" href="/css/courses.css" />
@@ -1590,6 +1593,13 @@
     </div>
 
     <script>
+      // ============================================
+      // CONFIGURATION SUPABASE
+      // ============================================
+      const SUPABASE_URL = 'https://jjqachkaouvcrdxreuza.supabase.co'
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqcWFjaGthb3V2Y3JkeHJldXphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2OTQ3NzQsImV4cCI6MjA4NDI3MDc3NH0.FVGtd99ES_ByhXKkIsxk5SV4ampFHNBeIGuMMOg2qMg'
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
       // Définition des catégories et produits avec COULEURS NUTRITIONNELLES
       const CATEGORIES = {
         // 🟦 BASE - BLEU (à consommer abondamment)
@@ -2491,25 +2501,39 @@
       }
 
       // ============================================
-      // 💾 STOCKAGE LOCALSTORAGE
+      // 💾 STOCKAGE SUPABASE + LOCALSTORAGE (FALLBACK)
       // ============================================
 
-      // Load from localStorage
+      // Load from Supabase
       async function loadFromAPI() {
         try {
-          // ✅ CHARGER depuis localStorage
-          const savedList = localStorage.getItem("food_home_shopping_list");
+          // 🔥 CHARGER depuis Supabase
+          const { data, error } = await supabase
+            .from('shopping_list')
+            .select('items')
+            .eq('user_id', 'default_user')
+            .single();
+          
           let itemsFromStorage = [];
-
-          if (savedList) {
-            try {
-              itemsFromStorage = JSON.parse(savedList);
-              console.log(
-                `📥 ${itemsFromStorage.length} items chargés depuis localStorage`
-              );
-            } catch (e) {
-              console.error("Erreur parsing localStorage:", e);
+          
+          if (error) {
+            if (error.code === 'PGRST116') {
+              // Pas de données, c'est normal pour la première fois
+              console.log('📭 Aucune liste trouvée dans Supabase');
+            } else {
+              console.error('⚠️ Erreur Supabase, fallback vers localStorage:', error);
+              // Fallback vers localStorage en cas d'erreur
+              const savedList = localStorage.getItem("food_home_shopping_list");
+              if (savedList) {
+                itemsFromStorage = JSON.parse(savedList);
+              }
             }
+          } else {
+            itemsFromStorage = data?.items || [];
+            console.log(`📥 ${itemsFromStorage.length} items chargés depuis Supabase`);
+            
+            // Aussi sauvegarder en localStorage pour fallback
+            localStorage.setItem("food_home_shopping_list", JSON.stringify(itemsFromStorage));
           }
 
           // ✅ DISPATCHER dans les bonnes catégories
@@ -2559,7 +2583,7 @@
         }
       }
 
-      // Save to localStorage
+      // Save to Supabase
       async function saveToAPI() {
         const allItems = [];
 
@@ -2570,18 +2594,30 @@
         });
 
         try {
-          // ✅ SAUVEGARDER dans localStorage
-          localStorage.setItem(
-            "food_home_shopping_list",
-            JSON.stringify(allItems)
-          );
-          console.log(
-            "💾 Sauvegarde dans localStorage:",
-            allItems.length,
-            "items"
-          );
+          // 🔥 SAUVEGARDER dans Supabase
+          const { error } = await supabase
+            .from('shopping_list')
+            .upsert({
+              user_id: 'default_user',
+              items: allItems
+            }, {
+              onConflict: 'user_id'
+            });
+          
+          if (error) {
+            console.error('⚠️ Erreur sauvegarde Supabase:', error);
+            // Fallback vers localStorage en cas d'erreur
+            localStorage.setItem("food_home_shopping_list", JSON.stringify(allItems));
+            console.log("💾 Fallback: Sauvegarde dans localStorage:", allItems.length, "items");
+          } else {
+            console.log("💾 Sauvegarde dans Supabase:", allItems.length, "items");
+            // Aussi sauvegarder en localStorage pour fallback
+            localStorage.setItem("food_home_shopping_list", JSON.stringify(allItems));
+          }
         } catch (error) {
           console.error("Erreur sauvegarde:", error);
+          // Fallback vers localStorage en cas d'exception
+          localStorage.setItem("food_home_shopping_list", JSON.stringify(allItems));
         }
       }
 
