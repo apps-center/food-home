@@ -1576,15 +1576,15 @@
     <!-- Mode Supermarché Plein Écran -->
     <div id="supermarketMode" class="supermarket-mode">
       <div class="supermarket-header">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <h2 style="margin: 0;">🛒 Mode Supermarché</h2>
+        <h2>🛒 Mode Supermarché</h2>
+        <div style="display: flex; gap: 24px; align-items: center;">
+          <button class="btn btn-secondary" onclick="clearAllFromSupermarket()" style="padding: 8px 16px; font-size: 14px;">
+            🗑️ Tout effacer
+          </button>
           <button class="supermarket-close" onclick="closeSupermarketMode()">
             ✕
           </button>
         </div>
-        <button class="btn btn-secondary" onclick="clearAllFromSupermarket()" style="width: 100%; margin-top: 12px; padding: 10px 20px; font-size: 14px;">
-          🗑️ Tout effacer
-        </button>
       </div>
       <div class="supermarket-content" id="supermarketContent">
         <!-- Généré dynamiquement -->
