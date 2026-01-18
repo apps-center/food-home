@@ -20,7 +20,6 @@
     <!-- Favicon standard pour navigateurs -->
     <link rel="icon" type="image/png" href="/apple-touch-icon.png">
 
-    <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <title>Quel plat ce soir ?</title>
@@ -329,10 +328,12 @@
       // ============================================
       // CONFIGURATION SUPABASE
       // ============================================
-      const SUPABASE_URL = 'https://jjqachkaouvcrdxreuza.supabase.co';
-      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqcWFjaGthb3V2Y3JkeHJldXphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2OTQ3NzQsImV4cCI6MjA4NDI3MDc3NH0.FVGtd99ES_ByhXKkIsxk5SV4ampFHNBeIGuMMOg2qMg';
-      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+      // Utiliser window.mySupabase pour éviter les conflits
+      window.mySupabase = window.supabase.createClient(
+        'https://jjqachkaouvcrdxreuza.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqcWFjaGthb3V2Y3JkeHJldXphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2OTQ3NzQsImV4cCI6MjA4NDI3MDc3NH0.FVGtd99ES_ByhXKkIsxk5SV4ampFHNBeIGuMMOg2qMg'
+      );
+      
       // ============================================
       // VARIABLES GLOBALES
       // ============================================
@@ -363,13 +364,12 @@
       // CHARGEMENT DES RECETTES DEPUIS SUPABASE
       // ============================================
       async function loadRecipes() {
-        resultsDiv.innerHTML = '<div class="loading">Chargement des recettes depuis Supabase...</div>';
+        resultsDiv.innerHTML = '<div class="loading">Chargement des recettes...</div>';
         
         try {
           console.log('🔄 Chargement depuis Supabase...');
           
-          // Charger depuis Supabase
-          const { data, error } = await supabase
+          const { data, error } = await window.mySupabase
             .from('recipes')
             .select('*')
             .order('name', { ascending: true });
@@ -379,9 +379,8 @@
             throw error;
           }
           
-          console.log('✅ Recettes chargées depuis Supabase:', data.length);
+          console.log('✅ Recettes chargées:', data.length);
           
-          // Mapper les données Supabase vers le format attendu par l'app
           allRecipes = data.map(recipe => ({
             id: recipe.id,
             nom: recipe.name,
@@ -397,14 +396,14 @@
             instructions: recipe.instructions || ''
           }));
           
-          console.log('✅ Recettes mappées:', allRecipes.length);
+          console.log('✅ Mappé:', allRecipes.length, 'recettes');
           filterAndRender();
           
         } catch (error) {
-          console.error('❌ Erreur chargement recettes:', error);
+          console.error('❌ Erreur:', error);
           resultsDiv.innerHTML = `
             <div class="empty">
-              ❌ Erreur de chargement des recettes<br>
+              ❌ Erreur de chargement<br>
               <small>${error.message}</small><br><br>
               <button class="btn btn-primary" onclick="loadRecipes()">🔄 Réessayer</button>
             </div>
