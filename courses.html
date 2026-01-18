@@ -2327,13 +2327,16 @@
       
       // Ouvrir une catégorie depuis la vue plein écran
       function openCategory(categoryKey) {
-        // Fermer la vue plein écran
-        closeSubcategoryFullscreen();
+        // S'assurer qu'on est dans la vue catégories
+        switchView('categories');
         
-        // Ouvrir le tiroir de la catégorie
+        // Ouvrir le tiroir d'abord
+        openDrawer(categoryKey);
+        
+        // Fermer la vue plein écran juste après (overlay au-dessus)
         setTimeout(() => {
-          openDrawer(categoryKey);
-        }, 300);
+          closeSubcategoryFullscreen();
+        }, 10);
       }
       
       // Gérer le swipe down pour fermer
