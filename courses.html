@@ -2330,12 +2330,9 @@
         // Fermer la vue plein écran
         closeSubcategoryFullscreen();
         
-        // Scroller vers la catégorie
+        // Ouvrir le tiroir de la catégorie
         setTimeout(() => {
-          const categoryElement = document.querySelector(`[data-category="${categoryKey}"]`);
-          if (categoryElement) {
-            categoryElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          openDrawer(categoryKey);
         }, 300);
       }
       
