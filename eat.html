@@ -20,6 +20,9 @@
     <!-- Favicon standard pour navigateurs -->
     <link rel="icon" type="image/png" href="/apple-touch-icon.png">
 
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     
     <title>Quel plat ce soir ?</title>
     <!-- 🎨 CSS EXTERNES -->
@@ -325,6 +328,13 @@
     </div>
     <script>
       // ============================================
+      // CONFIGURATION SUPABASE
+      // ============================================
+      const SUPABASE_URL = 'https://jjqachkaouvcrdxreuza.supabase.co';
+      const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqcWFjaGthb3V2Y3JkeHJldXphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2OTQ3NzQsImV4cCI6MjA4NDI3MDc3NH0.FVGtd99ES_ByhXKkIsxk5SV4ampFHNBeIGuMMOg2qMg';
+      const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      // ============================================
       // VARIABLES GLOBALES
       // ============================================
       let allRecipes = [];
@@ -351,27 +361,54 @@
       const btnRegenerate = document.getElementById("btn-regenerate");
       const weekGrid = document.getElementById("weekGrid");
       // ============================================
-      // CHARGEMENT DES RECETTES
+      // CHARGEMENT DES RECETTES DEPUIS SUPABASE
       // ============================================
-      function loadRecipes() {
-        resultsDiv.innerHTML = '<div class="loading">Chargement des recettes...</div>';
-        fetch('/recipes.json')
-          .then(response => {
-            console.log('Fetch status:', response.status);
-            if (!response.ok) {
-              throw new Error('Fetch failed with status ' + response.status);
-            }
-            return response.json();
-          })
-          .then(data => {
-            console.log('Recipes loaded:', data.length);
-            allRecipes = data;
-            filterAndRender();
-          })
-          .catch(error => {
-            console.error('Erreur chargement recettes:', error);
-            showError('Erreur de chargement des recettes. Veuillez réessayer.');
-          });
+      async function loadRecipes() {
+        resultsDiv.innerHTML = '<div class="loading">Chargement des recettes depuis Supabase...</div>';
+        
+        try {
+          // Charger depuis Supabase
+          const { data, error } = await supabase
+            .from('recipes')
+            .select('*')
+            .order('name', { ascending: true });
+          
+          if (error) {
+            console.error('Erreur Supabase:', error);
+            throw error;
+          }
+          
+          console.log('✅ Recettes chargées depuis Supabase:', data.length);
+          
+          // Mapper les données Supabase vers le format attendu
+          allRecipes = data.map(recipe => ({
+            id: recipe.id,
+            nom: recipe.name,
+            type_repas: recipe.category,
+            saisons: recipe.season || 'toute',
+            diets: recipe.diet || '',
+            proteine: recipe.protein || '',
+            kidsFriendly: recipe.difficulty === 'Facile' ? 'Oui' : 'Non',
+            temps: recipe.preparation_time || 0,
+            ingredients: Array.isArray(recipe.ingredients) 
+              ? recipe.ingredients.join('|')
+              : '',
+            instructions: recipe.instructions || ''
+          }));
+          
+          console.log('✅ Recettes mappées:', allRecipes.length);
+          filterAndRender();
+          
+        } catch (error) {
+          console.error('❌ Erreur chargement recettes:', error);
+          resultsDiv.innerHTML = `
+            <div class="empty">
+              ❌ Erreur de chargement des recettes<br>
+              <small>${error.message}</small><br><br>
+              <button class="btn btn-primary" onclick="loadRecipes()">🔄 Réessayer</button>
+            </div>
+          `;
+        }
       }
       // ============================================
       // FILTRAGE
