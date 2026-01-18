@@ -24,6 +24,8 @@
     <!-- Favicon standard pour navigateurs -->
     <link rel="icon" type="image/png" href="/apple-touch-icon.png" />
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <title>FOOD HOME — Listes de courses</title>
     <link rel="stylesheet" href="/css/common.css" />
     <link rel="stylesheet" href="/css/courses.css" />
@@ -1590,6 +1592,14 @@
     </div>
 
     <script>
+      // ============================================
+      // CONFIGURATION SUPABASE
+      // ============================================
+      window.mySupabase = window.supabase.createClient(
+        'https://jjqachkaouvcrdxreuza.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqcWFjaGthb3V2Y3JkeHJldXphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2OTQ3NzQsImV4cCI6MjA4NDI3MDc3NH0.FVGtd99ES_ByhXKkIsxk5SV4ampFHNBeIGuMMOg2qMg'
+      );
+
       // Définition des catégories et produits avec COULEURS NUTRITIONNELLES
       const CATEGORIES = {
         // 🟦 BASE - BLEU (à consommer abondamment)
@@ -2491,44 +2501,52 @@
       }
 
       // ============================================
-      // 💾 STOCKAGE LOCALSTORAGE
+      // 💾 STOCKAGE SUPABASE + LOCALSTORAGE FALLBACK
       // ============================================
 
-      // Load from localStorage
+      // Load from Supabase
       async function loadFromAPI() {
         try {
-          // ✅ CHARGER depuis localStorage
-          const savedList = localStorage.getItem("food_home_shopping_list");
           let itemsFromStorage = [];
-
-          if (savedList) {
-            try {
-              itemsFromStorage = JSON.parse(savedList);
-              console.log(
-                `📥 ${itemsFromStorage.length} items chargés depuis localStorage`
-              );
-            } catch (e) {
-              console.error("Erreur parsing localStorage:", e);
+          
+          // 🔥 CHARGER depuis Supabase
+          const { data, error } = await window.mySupabase
+            .from('shopping_list')
+            .select('items')
+            .eq('user_id', 'default_user')
+            .single();
+          
+          if (error) {
+            if (error.code === 'PGRST116') {
+              console.log('📭 Aucune liste dans Supabase, fallback localStorage');
+            } else {
+              console.error('⚠️ Erreur Supabase:', error);
             }
+            // Fallback vers localStorage
+            const savedList = localStorage.getItem("food_home_shopping_list");
+            if (savedList) {
+              itemsFromStorage = JSON.parse(savedList);
+              console.log(`📥 ${itemsFromStorage.length} items depuis localStorage`);
+            }
+          } else {
+            itemsFromStorage = data?.items || [];
+            console.log(`📥 ${itemsFromStorage.length} items depuis Supabase`);
+            // Sauvegarder aussi en localStorage
+            localStorage.setItem("food_home_shopping_list", JSON.stringify(itemsFromStorage));
           }
 
           // ✅ DISPATCHER dans les bonnes catégories
           itemsFromStorage.forEach((item) => {
             const categoryKey = findCategoryForItem(item);
-
-            // S'assurer que la catégorie a un tableau items
             const cat = CATEGORIES[categoryKey];
 
             if (cat.items) {
-              // Si la catégorie a déjà un tableau items, ajouter si absent
               if (!cat.items.includes(item)) {
                 cat.items.push(item);
               }
             } else if (cat.groups) {
-              // Si c'est une catégorie avec groupes, ne rien ajouter (déjà présent)
-              // Les items sont déjà dans les groupes
+              // Items déjà dans les groupes
             } else {
-              // Pour "autres" qui n'a pas de items/groups, créer le tableau
               if (!CATEGORIES.autres.items) {
                 CATEGORIES.autres.items = [];
               }
@@ -2537,21 +2555,20 @@
               }
             }
 
-            // ✅ INITIALISER la sélection si elle n'existe pas
+            // ✅ INITIALISER la sélection
             if (selections[categoryKey][item] === undefined) {
               selections[categoryKey][item] = false;
             }
 
-            // Cocher l'item
             selections[categoryKey][item] = true;
           });
 
           renderCategories();
 
-          // Si on est sur la vue shopping, rafraîchir
-          if (
-            document.getElementById("shoppingView").classList.contains("active")
-          ) {
+          // Si la vue shopping existe, la rafraîchir
+          const shoppingView = document.getElementById("shoppingView");
+          if (shoppingView && shoppingView.classList.contains("active")) {
+            // Rafraîchir si nécessaire
           }
         } catch (error) {
           console.error("Erreur chargement:", error);
@@ -2570,18 +2587,30 @@
         });
 
         try {
-          // ✅ SAUVEGARDER dans localStorage
-          localStorage.setItem(
-            "food_home_shopping_list",
-            JSON.stringify(allItems)
-          );
-          console.log(
-            "💾 Sauvegarde dans localStorage:",
-            allItems.length,
-            "items"
-          );
+          // 🔥 SAUVEGARDER dans Supabase
+          const { error } = await window.mySupabase
+            .from('shopping_list')
+            .upsert({
+              user_id: 'default_user',
+              items: allItems
+            }, {
+              onConflict: 'user_id'
+            });
+          
+          if (error) {
+            console.error('⚠️ Erreur Supabase:', error);
+            // Fallback vers localStorage
+            localStorage.setItem("food_home_shopping_list", JSON.stringify(allItems));
+            console.log("💾 Fallback localStorage:", allItems.length, "items");
+          } else {
+            console.log("💾 Sauvegarde Supabase:", allItems.length, "items");
+            // Aussi sauvegarder en localStorage
+            localStorage.setItem("food_home_shopping_list", JSON.stringify(allItems));
+          }
         } catch (error) {
           console.error("Erreur sauvegarde:", error);
+          // Fallback localStorage
+          localStorage.setItem("food_home_shopping_list", JSON.stringify(allItems));
         }
       }
 
