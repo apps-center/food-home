@@ -1577,9 +1577,14 @@
     <div id="supermarketMode" class="supermarket-mode">
       <div class="supermarket-header">
         <h2>🛒 Mode Supermarché</h2>
-        <button class="supermarket-close" onclick="closeSupermarketMode()">
-          ✕
-        </button>
+        <div style="display: flex; gap: 12px; align-items: center;">
+          <button class="btn btn-secondary" onclick="clearAllFromSupermarket()" style="padding: 8px 16px; font-size: 14px;">
+            🗑️ Tout effacer
+          </button>
+          <button class="supermarket-close" onclick="closeSupermarketMode()">
+            ✕
+          </button>
+        </div>
       </div>
       <div class="supermarket-content" id="supermarketContent">
         <!-- Généré dynamiquement -->
@@ -2084,6 +2089,9 @@
           } else if (event.data.type === "REFRESH_DATA") {
             console.log("🔄 Refresh data demandé");
             loadFromAPI();
+          } else if (event.data.type === "SHOPPING_LIST_UPDATED") {
+            console.log("🔄 Shopping list updated, rechargement...");
+            loadFromAPI();
           }
         });
       }
@@ -2407,6 +2415,29 @@
         );
       }
 
+      // Clear all depuis le mode supermarché
+      function clearAllFromSupermarket() {
+        showConfirmModal(
+          "Tout effacer ?",
+          "Toute votre liste de courses sera vidée. Cette action est irréversible.",
+          () => {
+            Object.keys(selections).forEach((cat) => {
+              Object.keys(selections[cat]).forEach((item) => {
+                selections[cat][item] = false;
+              });
+            });
+
+            renderCategories();
+            saveToAPI();
+
+            // Fermer le mode supermarché
+            closeSupermarketMode();
+
+            showToast("Liste effacée");
+          }
+        );
+      }
+
       // Stock de base
       // Stock de base - Afficher uniquement les essentiels
       function openStockDrawer() {
@@ -2507,8 +2538,6 @@
       // Load from Supabase
       async function loadFromAPI() {
         try {
-          let itemsFromStorage = [];
-          
           // Charger TOUJOURS localStorage d'abord
           const savedList = localStorage.getItem("food_home_shopping_list");
           const localItems = savedList ? JSON.parse(savedList) : [];
@@ -2520,54 +2549,36 @@
             .eq('user_id', 'default_user')
             .single();
           
+          let supabaseItems = [];
           if (error) {
             if (error.code === 'PGRST116') {
               console.log('📭 Aucune liste dans Supabase');
             } else {
               console.error('⚠️ Erreur Supabase:', error);
             }
-            // Utiliser localStorage
-            itemsFromStorage = localItems;
-            console.log(`📥 ${itemsFromStorage.length} items depuis localStorage`);
-            
-            // Si localStorage a des items, les sauvegarder dans Supabase
-            if (itemsFromStorage.length > 0) {
-              await window.mySupabase
-                .from('shopping_list')
-                .upsert({
-                  user_id: 'default_user',
-                  items: itemsFromStorage
-                }, {
-                  onConflict: 'user_id'
-                });
-              console.log('💾 Sync localStorage → Supabase');
-            }
           } else {
-            const supabaseItems = data?.items || [];
-            
-            // Si Supabase est vide MAIS localStorage a des items → utiliser localStorage
-            if (supabaseItems.length === 0 && localItems.length > 0) {
-              itemsFromStorage = localItems;
-              console.log(`📥 ${itemsFromStorage.length} items depuis localStorage (Supabase vide)`);
-              
-              // Sauvegarder dans Supabase
-              await window.mySupabase
-                .from('shopping_list')
-                .upsert({
-                  user_id: 'default_user',
-                  items: itemsFromStorage
-                }, {
-                  onConflict: 'user_id'
-                });
-              console.log('💾 Sync localStorage → Supabase');
-            } else {
-              // Sinon utiliser Supabase
-              itemsFromStorage = supabaseItems;
-              console.log(`📥 ${itemsFromStorage.length} items depuis Supabase`);
-              // Sauvegarder aussi en localStorage
-              localStorage.setItem("food_home_shopping_list", JSON.stringify(itemsFromStorage));
-            }
+            supabaseItems = data?.items || [];
           }
+          
+          // ✅ TOUJOURS FUSIONNER Supabase + localStorage (dédupliquer)
+          const itemsFromStorage = [...new Set([...supabaseItems, ...localItems])];
+          console.log(`📥 Fusion: ${supabaseItems.length} Supabase + ${localItems.length} localStorage = ${itemsFromStorage.length} items`);
+          
+          // Si on a des items et que Supabase n'est pas à jour, sync
+          if (itemsFromStorage.length > supabaseItems.length) {
+            await window.mySupabase
+              .from('shopping_list')
+              .upsert({
+                user_id: 'default_user',
+                items: itemsFromStorage
+              }, {
+                onConflict: 'user_id'
+              });
+            console.log('💾 Sync fusionné → Supabase');
+          }
+          
+          // Sauvegarder la version fusionnée en localStorage
+          localStorage.setItem("food_home_shopping_list", JSON.stringify(itemsFromStorage));
 
           // ✅ DISPATCHER dans les bonnes catégories
           itemsFromStorage.forEach((item) => {
