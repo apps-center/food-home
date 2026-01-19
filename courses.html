@@ -1363,11 +1363,8 @@
         <p class="subtitle">Sélectionne tes catégories et coche tes produits</p>
       </div>
       <div class="card">
-        <!-- 🔄 Toggle vues : Catégories (défaut) et Vue Supermarché -->
+        <!-- 🔄 Toggle vues : Vue Supermarché uniquement -->
         <div class="view-toggle">
-          <button class="toggle-btn active" onclick="switchView('categories')">
-            📦 Catégories
-          </button>
           <button class="toggle-btn" onclick="openSupermarketMode()">
             🛒 Liste
           </button>
@@ -1375,21 +1372,21 @@
 
         <!-- VUE CATÉGORIES - ACTIVE PAR DÉFAUT -->
         <div id="categoriesView" class="categories-view active">
-          <!-- ✅ GRANDES CATÉGORIES -->
-          <div class="main-categories">
-            <button class="main-category-btn" onclick="switchMainCategory('alimentaire')">
+          <!-- ✅ GRANDES CATÉGORIES - Layout 2x2+1 -->
+          <div class="main-categories" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 400px; margin: 0 auto 24px;">
+            <button class="main-category-btn" onclick="switchMainCategory('alimentaire')" style="width: 100%;">
               🍎 Alimentaire
             </button>
-            <button class="main-category-btn" onclick="switchMainCategory('hygiene')">
+            <button class="main-category-btn" onclick="switchMainCategory('hygiene')" style="width: 100%;">
               🧴 Hygiène
             </button>
-            <button class="main-category-btn" onclick="switchMainCategory('menage')">
+            <button class="main-category-btn" onclick="switchMainCategory('menage')" style="width: 100%; grid-column: span 2;">
               🧹 Produits ménagers
             </button>
-            <button class="main-category-btn" onclick="switchMainCategory('bricolage')">
+            <button class="main-category-btn" onclick="switchMainCategory('bricolage')" style="width: 100%;">
               🔧 Bricolage
             </button>
-            <button class="main-category-btn" onclick="switchMainCategory('culture')">
+            <button class="main-category-btn" onclick="switchMainCategory('culture')" style="width: 100%;">
               📚 Culture
             </button>
           </div>
@@ -1731,8 +1728,8 @@
     <div id="subcategoryView" class="subcategory-fullscreen">
       <div class="subcategory-fullscreen-header">
         <h2 id="subcategoryFullscreenTitle">Catégories</h2>
-        <button class="subcategory-fullscreen-close" onclick="closeSubcategoryFullscreen()">
-          ←
+        <button class="subcategory-fullscreen-close" onclick="closeSubcategoryFullscreen()" style="width: auto; padding: 10px 20px; border-radius: 12px; font-size: 15px; font-weight: 600;">
+          📦 Catégories
         </button>
       </div>
       <div class="subcategory-fullscreen-content" id="subcategoryFullscreenContent">
