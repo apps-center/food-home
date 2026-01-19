@@ -1,0 +1,3160 @@
+<!DOCTYPE html>
+<!-- Test de déploiement interface graphique 2-->
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+    <!-- Apple Touch Icon pour iPhone -->
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <!-- Nom de l'app sur l'écran d'accueil -->
+    <meta name="apple-mobile-web-app-title" content="FOOD HOME" />
+
+    <!-- Mode plein écran (masquer la barre Safari) -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+
+    <!-- Couleur de la barre de statut -->
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+
+    <!-- Favicon standard pour navigateurs -->
+    <link rel="icon" type="image/png" href="/apple-touch-icon.png" />
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <title>FOOD HOME — Listes de courses</title>
+    <link rel="stylesheet" href="/css/common.css" />
+    <link rel="stylesheet" href="/css/courses.css" />
+    <style>
+      /* 🎨 COULEURS NUTRITIONNELLES - Styles dynamiques */
+      .category-btn[data-color="blue"] {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        border: 2px solid rgba(59, 130, 246, 0.3);
+      }
+      .category-btn[data-color="blue"]:hover {
+        background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+      }
+      .category-btn[data-color="orange"] {
+        background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+        border: 2px solid rgba(249, 115, 22, 0.3);
+      }
+      .category-btn[data-color="orange"]:hover {
+        background: linear-gradient(135deg, #fdba74 0%, #fb923c 100%);
+      }
+      .category-btn[data-color="green"] {
+        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        border: 2px solid rgba(16, 185, 129, 0.3);
+      }
+      .category-btn[data-color="green"]:hover {
+        background: linear-gradient(135deg, #a7f3d0 0%, #6ee7b7 100%);
+      }
+      .category-btn[data-color="yellow"] {
+        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        border: 2px solid rgba(245, 158, 11, 0.3);
+      }
+      .category-btn[data-color="yellow"]:hover {
+        background: linear-gradient(135deg, #fde68a 0%, #fcd34d 100%);
+      }
+      .category-btn[data-color="pink"] {
+        background: linear-gradient(135deg, #fecdd3 0%, #fda4af 100%);
+        border: 2px solid rgba(244, 63, 94, 0.3);
+      }
+      .category-btn[data-color="pink"]:hover {
+        background: linear-gradient(135deg, #fda4af 0%, #fb7185 100%);
+      }
+      .category-btn[data-color="gray"] {
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        border: 2px solid rgba(107, 114, 128, 0.2);
+      }
+      .category-btn[data-color="gray"]:hover {
+        background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+      }
+      /* Indicateur nutritionnel */
+      .nutrition-indicator {
+        font-size: 10px;
+        color: var(--text-muted);
+        margin-top: 4px;
+        font-weight: var(--font-weight-medium);
+      }
+      /* Toggle vues */
+      .view-toggle {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+        justify-content: center;
+      }
+      .toggle-btn {
+        padding: 12px 28px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(59, 130, 246, 0.2);
+        border-radius: var(--radius-full);
+        cursor: pointer;
+        transition: all var(--transition-base);
+        font-weight: var(--font-weight-semibold);
+        font-size: 15px;
+      }
+      .toggle-btn.active {
+        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        color: white;
+        border-color: transparent;
+      }
+
+      /* === GRANDES CATÉGORIES === */
+      .main-category-btn {
+        padding: 14px 24px;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 2px solid rgba(59, 130, 246, 0.2);
+        border-radius: var(--radius-xl);
+        cursor: pointer;
+        transition: all var(--transition-base);
+        font-weight: var(--font-weight-bold);
+        font-size: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      
+      .main-category-btn:hover {
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+      }
+      
+      .main-category-btn.active {
+        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      }
+
+      .main-categories {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .subcategories-container {
+        display: none;
+        animation: fadeInCategories 0.3s ease-out;
+      }
+      
+      .subcategories-container.active {
+        display: block;
+      }
+      
+      @keyframes fadeInCategories {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+
+      /* Bouton accent (Stock de base) */
+      .btn-accent {
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+      }
+
+      .btn-accent:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
+      }
+
+      /* Bouton Undo flottant */
+      .btn-undo {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+        color: white;
+        border: none;
+        border-radius: var(--radius-full);
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+        z-index: 999;
+        font-weight: var(--font-weight-semibold);
+        font-size: 15px;
+        transition: all var(--transition-base);
+        animation: slideInUp 0.3s ease-out;
+      }
+
+      .btn-undo:hover {
+        transform: translateY(-4px) scale(1.05);
+        box-shadow: 0 12px 32px rgba(139, 92, 246, 0.5);
+      }
+
+      .btn-undo:active {
+        transform: translateY(-2px) scale(1.02);
+      }
+
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(60px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Grille de catégories */
+      .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+
+      .category-btn {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 2px solid rgba(59, 130, 246, 0.15);
+        border-radius: var(--radius-xl);
+        padding: 24px 16px;
+        cursor: pointer;
+        transition: all var(--transition-base);
+        text-align: center;
+        position: relative;
+      }
+
+      .category-btn:hover {
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+      }
+
+      .category-btn .icon {
+        font-size: 40px;
+        display: block;
+        margin-bottom: 8px;
+      }
+
+      .category-btn .name {
+        font-weight: var(--font-weight-bold);
+        font-size: 14px;
+        color: var(--text-primary);
+      }
+
+      .category-btn .badge {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        background: #0ea5e9;
+        color: white;
+        border-radius: var(--radius-full);
+        padding: 4px 10px;
+        font-size: 12px;
+        font-weight: var(--font-weight-bold);
+      }
+
+      /* Drawer (tiroir latéral) */
+      .drawer-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
+        z-index: 999;
+        display: none;
+      }
+
+      .drawer-backdrop.active {
+        display: block;
+        animation: fadeIn 0.2s ease-out;
+      }
+
+      .drawer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 90%;
+        max-width: 500px;
+        background: white;
+        box-shadow: -4px 0 32px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        transform: translateX(100%);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .drawer.active {
+        transform: translateX(0);
+      }
+
+      .drawer-header {
+        padding: 24px;
+        border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      }
+
+      .drawer-header h2 {
+        margin: 0;
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .drawer-close {
+        background: rgba(239, 68, 68, 0.1);
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-full);
+        cursor: pointer;
+        font-size: 20px;
+        color: #dc2626;
+        transition: all var(--transition-fast);
+      }
+
+      .drawer-close:hover {
+        background: rgba(239, 68, 68, 0.2);
+        transform: rotate(90deg);
+      }
+
+      .drawer-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 24px;
+      }
+
+      .drawer-footer {
+        padding: 20px 24px;
+        border-top: 2px solid rgba(59, 130, 246, 0.1);
+        display: flex;
+        gap: 12px;
+        background: rgba(240, 249, 255, 0.5);
+      }
+
+      /* Items avec checkbox */
+      .item-group {
+        margin-bottom: 24px;
+      }
+
+      .item-group-title {
+        font-size: 15px;
+        font-weight: var(--font-weight-bold);
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+        padding-left: 8px;
+        border-left: 3px solid #0ea5e9;
+      }
+
+      .checkbox-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 12px;
+        background: rgba(240, 249, 255, 0.5);
+        border-radius: var(--radius-md);
+        margin-bottom: 8px;
+        transition: all var(--transition-fast);
+      }
+
+      .checkbox-item:hover {
+        background: rgba(224, 242, 254, 0.8);
+        transform: translateX(4px);
+      }
+
+      .checkbox-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+
+      .checkbox-item label {
+        flex: 1;
+        cursor: pointer;
+        font-size: 15px;
+      }
+
+      .checkbox-item.checked {
+        opacity: 0.5;
+      }
+
+      .checkbox-item.checked label {
+        text-decoration: line-through;
+      }
+
+      /* Vue liste courses */
+      .shopping-view {
+        display: none;
+      }
+
+      .shopping-view.active {
+        display: block;
+      }
+
+      .shopping-category {
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(59, 130, 246, 0.1);
+        border-radius: var(--radius-xl);
+        padding: 12px 16px;
+        margin-bottom: 12px;
+      }
+
+      .shopping-category-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: var(--font-weight-extrabold);
+        color: #0ea5e9;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid rgba(14, 165, 233, 0.2);
+      }
+
+      .shopping-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 8px;
+        background: transparent;
+        border-radius: var(--radius-md);
+        margin-bottom: 4px;
+        transition: all var(--transition-fast);
+      }
+
+      .shopping-item:hover {
+        background: rgba(240, 249, 255, 0.8);
+      }
+
+      .shopping-item input[type="checkbox"] {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        flex-shrink: 0;
+      }
+
+      .shopping-item label {
+        font-size: 13px;
+        cursor: pointer;
+        user-select: none;
+        flex: 1;
+        line-height: 1.2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      /* Grille pour afficher les items en 2 colonnes */
+      .shopping-items-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px 8px;
+      }
+
+      .shopping-item.checked {
+        opacity: 0.5;
+      }
+
+      .shopping-item.checked label {
+        text-decoration: line-through;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-muted);
+      }
+
+      .empty-state::before {
+        content: "🛒";
+        display: block;
+        font-size: 64px;
+        margin-bottom: 16px;
+        opacity: 0.6;
+      }
+
+      .categories-view,
+      .shopping-view {
+        display: none;
+      }
+
+      .categories-view.active,
+      .shopping-view.active {
+        display: block;
+      }
+      /* Modal infos nutritionnelles */
+      .nutrition-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 10001;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .nutrition-modal.active {
+        display: flex;
+        animation: fadeIn 0.2s ease-out;
+      }
+      .nutrition-modal-content {
+        background: white;
+        border-radius: var(--radius-2xl);
+        max-width: 800px;
+        width: 100%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+        position: relative;
+      }
+      .nutrition-modal-header {
+        position: sticky;
+        top: 0;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        padding: 24px;
+        border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 10;
+      }
+      .nutrition-modal-header h2 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nutrition-modal-body {
+        padding: 24px;
+      }
+      .nutrition-section {
+        margin-bottom: 32px;
+      }
+      .nutrition-section h3 {
+        color: #0ea5e9;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .nutrition-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 16px;
+      }
+      .nutrition-card {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 1px solid rgba(59, 130, 246, 0.2);
+        border-radius: var(--radius-lg);
+        padding: 16px;
+      }
+      .nutrition-card h4 {
+        margin: 0 0 12px 0;
+        color: #1e40af;
+        font-size: 16px;
+      }
+      .nutrition-card ul {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--text-secondary);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+      .nutrition-card li {
+        margin-bottom: 6px;
+      }
+      .pyramid-image {
+        width: 100%;
+        max-width: 600px;
+        margin: 20px auto;
+        display: block;
+        border-radius: var(--radius-xl);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      }
+      .nutrition-tips {
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        border-left: 4px solid #0ea5e9;
+        padding: 16px 20px;
+        border-radius: var(--radius-lg);
+        margin-top: 24px;
+      }
+      .nutrition-tips h4 {
+        margin: 0 0 12px 0;
+        color: #1e40af;
+      }
+      .nutrition-tips ul {
+        margin: 0;
+        padding-left: 20px;
+        color: var(--text-secondary);
+        line-height: 1.7;
+      }
+      .nutrition-info-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .nutrition-info-icon {
+        font-size: 28px;
+      }
+      @media (max-width: 768px) {
+        .drawer {
+          width: 100%;
+          max-width: 100%;
+        }
+        .categories-grid {
+          grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+          gap: 12px;
+        }
+        .category-btn {
+          padding: 20px 12px;
+        }
+        .category-btn .icon {
+          font-size: 32px;
+        }
+        /* 🔧 FIX MOBILE : Assurer que le drawer prend toute la hauteur */
+        .drawer {
+          height: 100vh;
+          height: 100dvh; /* Dynamic viewport height pour iOS */
+        }
+        .drawer-header {
+          padding: 16px 20px;
+        }
+        .drawer-header h2 {
+          font-size: 20px;
+        }
+        .drawer-body {
+          padding: 20px;
+          /* Calculer la hauteur disponible */
+          max-height: calc(100vh - 160px); /* 100vh - header - footer */
+          max-height: calc(100dvh - 160px); /* Pour iOS */
+        }
+        .drawer-footer {
+          padding: 16px 20px;
+        }
+        /* Liste shopping en une seule colonne sur petit écran */
+        .shopping-items-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      /* 🎨 Toast notification moderne */
+      .toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        padding: 16px 24px;
+        border-radius: var(--radius-xl);
+        box-shadow: 0 8px 32px rgba(16, 185, 129, 0.3);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-weight: var(--font-weight-semibold);
+        animation: slideInRight 0.3s ease-out,
+          fadeOut 0.3s ease-out 2.7s forwards;
+      }
+      .toast.error {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+      }
+      @keyframes slideInRight {
+        from {
+          transform: translateX(400px);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes fadeOut {
+        to {
+          opacity: 0;
+          transform: translateX(400px);
+        }
+      }
+      /* 🎨 Modal de confirmation moderne */
+      .confirm-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 10001;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      .confirm-modal.active {
+        display: flex;
+        animation: fadeIn 0.2s ease-out;
+      }
+      .confirm-content {
+        background: white;
+        border-radius: var(--radius-2xl);
+        padding: 32px;
+        max-width: 400px;
+        width: 100%;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
+        text-align: center;
+      }
+      .confirm-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+      .confirm-content h3 {
+        margin: 0 0 12px;
+        font-size: 22px;
+      }
+      .confirm-content p {
+        margin: 0 0 24px;
+        color: var(--text-secondary);
+      }
+      .confirm-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+      }
+      .confirm-btn {
+        padding: 12px 24px;
+        border: none;
+        border-radius: var(--radius-lg);
+        font-size: 15px;
+        font-weight: var(--font-weight-semibold);
+        cursor: pointer;
+        transition: all var(--transition-base);
+      }
+      .confirm-btn-primary {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.25);
+      }
+      .confirm-btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
+      }
+      .confirm-btn-secondary {
+        background: rgba(255, 255, 255, 0.9);
+        border: 2px solid rgba(0, 0, 0, 0.1);
+        color: var(--text-primary);
+      }
+      .confirm-btn-secondary:hover {
+        background: white;
+        border-color: rgba(59, 130, 246, 0.2);
+      }
+
+      /* Indicateur scroll drawer */
+      .drawer-scroll-hint {
+        text-align: center;
+        padding: 20px;
+        color: #9ca3af;
+        font-size: 28px;
+        opacity: 0.6;
+        position: sticky;
+        bottom: 0;
+        background: linear-gradient(to top, white 70%, transparent);
+        pointer-events: none;
+      }
+
+      .drawer-scroll-hint span {
+        display: block;
+        animation: bounceDrawer 2s ease-in-out infinite;
+      }
+
+      @keyframes bounceDrawer {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+
+      .drawer-scroll-hint p {
+        margin: 0;
+        font-style: italic;
+      }
+
+      .drawer-body {
+        -webkit-overflow-scrolling: touch;
+      }
+
+      /* Indicateur scroll shopping list */
+      .scroll-indicator-shopping {
+        text-align: center;
+        padding: 40px 20px 20px;
+        color: var(--text-muted);
+        font-size: 12px;
+        opacity: 0.6;
+        margin-top: 30px;
+      }
+
+      .scroll-indicator-shopping span {
+        display: block;
+        font-size: 28px;
+        margin-bottom: 6px;
+        animation: bounceShopping 2s ease-in-out infinite;
+      }
+
+      @keyframes bounceShopping {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
+      }
+
+      .scroll-indicator-shopping p {
+        margin: 0;
+        font-style: italic;
+      }
+
+      /* Boutons compacts dans le header */
+      .btn-compact {
+        padding: 8px 16px;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        font-weight: var(--font-weight-semibold);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .btn-compact-primary {
+        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        color: white;
+        box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
+      }
+
+      .btn-compact-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      }
+
+      .btn-compact-secondary {
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        color: var(--text-primary);
+      }
+
+      .btn-compact-secondary:hover {
+        background: white;
+        border-color: rgba(239, 68, 68, 0.3);
+        color: #dc2626;
+      }
+
+      /* Ajuster le header pour 2 lignes */
+      .drawer-header {
+        padding: 20px 24px;
+        display: flex;
+        align-items: flex-start;
+        gap: 16px;
+      }
+
+      .drawer-header > div:first-child {
+        flex: 1;
+      }
+
+      /* Icône de fermeture plus pro */
+      .drawer-close {
+        background: rgba(0, 0, 0, 0.05);
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        font-size: 24px;
+        color: var(--text-muted);
+        transition: all var(--transition-fast);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .drawer-close:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: #dc2626;
+        transform: translateX(-4px);
+      }
+
+      /* Améliorer empty state */
+      .empty-state {
+        animation: fadeIn 0.5s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Animation pour les categories */
+      .category-btn {
+        animation: scaleIn 0.3s ease-out;
+      }
+
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* Animation pour shopping items */
+      .shopping-category {
+        animation: slideInUp 0.3s ease-out;
+      }
+
+      @keyframes slideInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* Bounce animation pour le scroll indicator */
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-4px);
+        }
+      }
+
+      /* Bouton Mode Supermarché */
+      .btn-supermarket {
+        padding: 14px 32px;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        border-radius: var(--radius-full);
+        font-size: 16px;
+        font-weight: var(--font-weight-bold);
+        cursor: pointer;
+        box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+        transition: all var(--transition-base);
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn-supermarket:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 24px rgba(16, 185, 129, 0.4);
+      }
+
+      /* Mode Supermarché - Plein écran */
+      .supermarket-mode {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        z-index: 10000;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .supermarket-mode.active {
+        display: block;
+        animation: slideInFromBottom 0.3s ease-out;
+      }
+
+      @keyframes slideInFromBottom {
+        from {
+          transform: translateY(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      /* Header du mode supermarché */
+      .supermarket-header {
+        position: sticky;
+        top: 0;
+        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        color: white;
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        z-index: 100;
+      }
+
+      .supermarket-header h2 {
+        margin: 0;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .supermarket-close {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-full);
+        color: white;
+        font-size: 20px;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .supermarket-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      /* Contenu du mode supermarché */
+      .supermarket-content {
+        padding: 16px 12px 200px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .supermarket-category {
+        background: white;
+        border-radius: var(--radius-lg);
+        padding: 12px 16px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+
+      .supermarket-category-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: var(--font-weight-bold);
+        color: var(--text-primary);
+        margin-bottom: 10px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+      }
+
+      /* Grille compacte pour le mode supermarché */
+      .supermarket-items {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 6px 8px;
+      }
+
+      .supermarket-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 10px;
+        background: #f8fafc;
+        border-radius: var(--radius-md);
+        transition: all var(--transition-fast);
+        border: 1px solid transparent;
+      }
+
+      .supermarket-item:active {
+        background: #e0f2fe;
+        border-color: #0ea5e9;
+      }
+
+      .supermarket-item input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        flex-shrink: 0;
+        margin: 0;
+      }
+
+      .supermarket-item label {
+        font-size: 13px;
+        cursor: pointer;
+        user-select: none;
+        flex: 1;
+        line-height: 1.3;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin: 0;
+      }
+
+      .supermarket-item.checked {
+        opacity: 0.4;
+        background: #f1f5f9;
+      }
+
+      .supermarket-item.checked label {
+        text-decoration: line-through;
+        color: var(--text-muted);
+      }
+
+      /* Indicateur de scroll en bas (FIXE) */
+      .supermarket-scroll-indicator {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(
+          to top,
+          rgba(255, 255, 255, 0.95) 70%,
+          transparent
+        );
+        padding: 60px 20px 20px;
+        text-align: center;
+        pointer-events: none;
+        z-index: 99;
+      }
+
+      .supermarket-scroll-indicator.hidden {
+        display: none;
+      }
+
+      .supermarket-scroll-arrow {
+        font-size: 32px;
+        color: #0ea5e9;
+        opacity: 0.6;
+        animation: bounceUp 2s ease-in-out infinite;
+      }
+
+      @keyframes bounceUp {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .supermarket-scroll-text {
+        font-size: 12px;
+        color: var(--text-muted);
+        margin-top: 8px;
+        font-style: italic;
+      }
+
+      /* Responsive pour très petits écrans */
+      @media (max-width: 380px) {
+        .supermarket-items {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .shopping-item {
+        transition: all 0.3s ease;
+      }
+
+      /* Items en stock - Style orange */
+      .shopping-item.in-stock {
+        background: linear-gradient(
+          135deg,
+          #fff7ed 0%,
+          #fed7aa 100%
+        ) !important;
+        border: 2px solid #fb923c !important;
+        position: relative;
+      }
+
+      .shopping-item.in-stock:hover {
+        background: linear-gradient(
+          135deg,
+          #fed7aa 0%,
+          #fdba74 100%
+        ) !important;
+        border-color: #f97316 !important;
+      }
+
+      .shopping-item.in-stock label {
+        color: #ea580c;
+        font-weight: var(--font-weight-semibold);
+      }
+
+      /* ========================================= */
+      /* VUE PLEIN ÉCRAN SOUS-CATÉGORIES */
+      /* ========================================= */
+      .subcategory-fullscreen {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        z-index: 10002;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .subcategory-fullscreen.active {
+        display: block;
+        animation: slideInFromRight 0.3s ease-out;
+      }
+
+      @keyframes slideInFromRight {
+        from {
+          transform: translateX(100%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+
+      .subcategory-fullscreen-header {
+        position: sticky;
+        top: 0;
+        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 100;
+      }
+
+      .subcategory-fullscreen-header h2 {
+        color: white;
+        margin: 0;
+        font-size: 22px;
+        font-weight: var(--font-weight-bold);
+      }
+
+      .subcategory-fullscreen-close {
+        background: rgba(255, 255, 255, 0.2);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        color: white;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        font-size: 24px;
+        cursor: pointer;
+        transition: all var(--transition-base);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+      }
+
+      .subcategory-fullscreen-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+        transform: scale(1.1);
+      }
+
+      .subcategory-fullscreen-content {
+        padding: 20px 16px 120px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      .subcategory-card {
+        background: white;
+        border-radius: var(--radius-xl);
+        padding: 20px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        transition: all var(--transition-base);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .subcategory-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+      }
+
+      .subcategory-card-icon {
+        font-size: 40px;
+        flex-shrink: 0;
+      }
+
+      .subcategory-card-content {
+        flex: 1;
+      }
+
+      .subcategory-card-title {
+        font-size: 18px;
+        font-weight: var(--font-weight-bold);
+        color: var(--text-primary);
+        margin-bottom: 8px;
+      }
+
+      .subcategory-card-items {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 8px;
+      }
+
+      .subcategory-card-item {
+        background: var(--bg-secondary);
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+        font-size: 12px;
+        color: var(--text-secondary);
+      }
+
+      .subcategory-card-arrow {
+        font-size: 24px;
+        color: var(--text-muted);
+        flex-shrink: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container" style="padding-top: 8px; padding-bottom: 20px;">
+      <div class="header" style="padding-top: 8px; padding-bottom: 12px; margin-bottom: -8px;">
+        <div class="logo">🛒</div>
+        <h1>FOOD HOME — Listes de courses</h1>
+        <p class="subtitle">Sélectionne tes catégories et coche tes produits</p>
+      </div>
+      <div class="card">
+        <!-- 🔄 Toggle vues : Vue Supermarché uniquement -->
+        <div class="view-toggle">
+          <button class="toggle-btn" onclick="openSupermarketMode()">
+            🛒 Liste
+          </button>
+        </div>
+
+        <!-- VUE CATÉGORIES - ACTIVE PAR DÉFAUT -->
+        <div id="categoriesView" class="categories-view active">
+          <!-- ✅ GRANDES CATÉGORIES - Layout 2x2+1 -->
+          <div class="main-categories" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 400px; margin: 0 auto 24px;">
+            <button class="main-category-btn" onclick="switchMainCategory('alimentaire')" style="width: 100%;">
+              🍎 Alimentaire
+            </button>
+            <button class="main-category-btn" onclick="switchMainCategory('hygiene')" style="width: 100%;">
+              🧴 Hygiène
+            </button>
+            <button class="main-category-btn" onclick="switchMainCategory('menage')" style="width: 100%; grid-column: span 2;">
+              🧹 Produits ménagers
+            </button>
+            <button class="main-category-btn" onclick="switchMainCategory('bricolage')" style="width: 100%;">
+              🔧 Bricolage
+            </button>
+            <button class="main-category-btn" onclick="switchMainCategory('culture')" style="width: 100%;">
+              📚 Culture
+            </button>
+          </div>
+
+          <!-- Sous-catégories -->
+          <div id="subcategory-alimentaire" class="subcategories-container">
+            <div class="categories-grid" id="categoriesGrid-alimentaire"></div>
+          </div>
+          <div id="subcategory-hygiene" class="subcategories-container">
+            <div class="categories-grid" id="categoriesGrid-hygiene"></div>
+          </div>
+          <div id="subcategory-menage" class="subcategories-container">
+            <div class="categories-grid" id="categoriesGrid-menage"></div>
+          </div>
+          <div id="subcategory-bricolage" class="subcategories-container">
+            <div class="categories-grid" id="categoriesGrid-bricolage"></div>
+          </div>
+          <div id="subcategory-culture" class="subcategories-container">
+            <div class="categories-grid" id="categoriesGrid-culture"></div>
+          </div>
+        </div>
+        <!-- Actions -->
+        <div class="actions">
+          <button class="btn btn-accent" onclick="openStockDrawer()">
+            📦 Stock de base
+          </button>
+          <button class="btn btn-primary" onclick="exportList()">
+            📤 Exporter
+          </button>
+          <button class="btn btn-secondary" onclick="clearAll()">
+            🗑️
+          </button>
+        </div>
+        <!-- Bouton Undo flottant -->
+        <button
+          class="btn-undo"
+          id="undoBtn"
+          onclick="undoLastAction()"
+          style="display: none"
+        >
+          <span style="font-size: 20px">↩️</span>
+          <span id="undoText">Annuler</span>
+        </button>
+
+        <!-- ✅ Indicateur scroll pour shopping (SOUS les boutons) -->
+        <div
+          id="scrollHintShopping"
+          style="
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+            color: #9ca3af;
+            font-size: 28px;
+            opacity: 0.6;
+          "
+        >
+          ⋯<br />
+          <small
+            style="
+              display: block;
+              font-size: 12px;
+              margin-top: 8px;
+              font-style: italic;
+            "
+            >Faites défiler vers le haut</small
+          >
+        </div>
+      </div>
+    </div>
+    <!-- Backdrop -->
+    <div id="backdrop" class="drawer-backdrop" onclick="closeDrawer()"></div>
+    <!-- Drawer dynamique - BOUTONS DANS LE HEADER -->
+    <div id="drawer" class="drawer">
+      <div class="drawer-header">
+        <div style="flex: 1">
+          <h2 id="drawerTitle" style="margin: 0 0 12px 0"></h2>
+          <!-- ✅ Boutons compacts dans le header -->
+          <div style="display: flex; gap: 8px">
+            <button
+              class="btn-compact btn-compact-primary"
+              onclick="saveDrawer()"
+            >
+              💾 Sauvegarder
+            </button>
+            <button
+              class="btn-compact btn-compact-secondary"
+              onclick="clearDrawer()"
+            >
+              🗑️ Vider
+            </button>
+          </div>
+        </div>
+        <button class="drawer-close" onclick="closeDrawer()">&larr;</button>
+      </div>
+      <div class="drawer-body" id="drawerBody"></div>
+
+      <!-- ✅ Indicateur scroll EN BAS du drawer (surtout pour mobile) -->
+      <div class="drawer-scroll-hint">
+        ⋯<br />
+        <small>Faites défiler pour voir tout</small>
+      </div>
+    </div>
+
+    <!-- Modal infos nutritionnelles -->
+    <div id="nutritionModal" class="nutrition-modal">
+      <div class="nutrition-modal-content">
+        <div class="nutrition-modal-header">
+          <h2>ℹ️ Pyramide Alimentaire & Nutrition</h2>
+          <button class="drawer-close" onclick="closeNutritionModal()">
+            ×
+          </button>
+        </div>
+        <div class="nutrition-modal-body">
+          <p style="color: var(--text-secondary); margin-bottom: 24px">
+            Une alimentation équilibrée est essentielle pour maintenir une santé
+            optimale. Voici un guide pour comprendre comment construire des
+            repas équilibrés.
+          </p>
+
+          <!-- Image de la pyramide -->
+          <img
+            src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 800 600'%3E%3Crect fill='%23f0f9ff' width='800' height='600'/%3E%3Ctext x='400' y='300' text-anchor='middle' font-size='32' fill='%230ea5e9'%3E🍎 Pyramide Alimentaire 🥗%3C/text%3E%3C/svg%3E"
+            alt="Pyramide Alimentaire"
+            class="pyramid-image"
+            style="width: 100%; max-width: 100%; height: auto"
+          />
+
+          <div class="nutrition-section">
+            <h3>🌈 Les Groupes Alimentaires</h3>
+            <div class="nutrition-grid">
+              <div class="nutrition-card">
+                <h4>💧 Boissons (Base)</h4>
+                <ul>
+                  <li>Eau à volonté</li>
+                  <li>Thé, tisanes</li>
+                  <li>Limiter les boissons sucrées</li>
+                </ul>
+              </div>
+              <div class="nutrition-card">
+                <h4>🌾 Céréales & Féculents</h4>
+                <ul>
+                  <li>À chaque repas</li>
+                  <li>Pâtes, riz, pain, pommes de terre</li>
+                  <li>Privilégier les complets</li>
+                </ul>
+              </div>
+              <div class="nutrition-card">
+                <h4>🍎 Fruits & Légumes</h4>
+                <ul>
+                  <li>5 portions par jour minimum</li>
+                  <li>Variez les couleurs</li>
+                  <li>Frais, surgelés ou en conserve</li>
+                </ul>
+              </div>
+              <div class="nutrition-card">
+                <h4>🥛 Produits Laitiers</h4>
+                <ul>
+                  <li>3 produits par jour</li>
+                  <li>Lait, yaourt, fromage</li>
+                  <li>Sources de calcium</li>
+                </ul>
+              </div>
+              <div class="nutrition-card">
+                <h4>🍖 Protéines</h4>
+                <ul>
+                  <li>1-2 portions par jour</li>
+                  <li>Viandes, poissons, œufs</li>
+                  <li>Varier les sources</li>
+                </ul>
+              </div>
+              <div class="nutrition-card">
+                <h4>🧈 Matières Grasses</h4>
+                <ul>
+                  <li>Avec modération</li>
+                  <li>Privilégier les huiles végétales</li>
+                  <li>Limiter le beurre</li>
+                </ul>
+              </div>
+              <div class="nutrition-card">
+                <h4>🍬 Sucreries</h4>
+                <ul>
+                  <li>Occasionnellement</li>
+                  <li>Pour le plaisir</li>
+                  <li>À consommer avec modération</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="nutrition-tips">
+            <h4>💡 Conseils Pratiques</h4>
+            <ul>
+              <li>
+                <strong>Variété :</strong> Mangez différents aliments chaque
+                jour
+              </li>
+              <li>
+                <strong>Équilibre :</strong> Répartissez bien vos repas dans la
+                journée
+              </li>
+              <li>
+                <strong>Quantité :</strong> Adaptez les portions à vos besoins
+              </li>
+              <li>
+                <strong>Activité :</strong> Combinez alimentation équilibrée et
+                exercice physique
+              </li>
+              <li>
+                <strong>Plaisir :</strong> Prenez le temps de savourer vos repas
+              </li>
+            </ul>
+          </div>
+
+          <div class="nutrition-section" style="margin-top: 32px">
+            <h3>🎨 Code Couleur de vos Catégories</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 16px">
+              Les catégories de votre liste sont colorées selon leur position
+              dans la pyramide alimentaire :
+            </p>
+            <div class="nutrition-grid">
+              <div
+                class="nutrition-card"
+                style="
+                  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+                "
+              >
+                <h4>🔵 Bleu - Base</h4>
+                <p
+                  style="
+                    font-size: 13px;
+                    color: var(--text-secondary);
+                    margin: 0;
+                  "
+                >
+                  Boissons, céréales : à consommer à chaque repas
+                </p>
+              </div>
+              <div
+                class="nutrition-card"
+                style="
+                  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+                "
+              >
+                <h4>🟢 Vert - Priorité</h4>
+                <p
+                  style="
+                    font-size: 13px;
+                    color: var(--text-secondary);
+                    margin: 0;
+                  "
+                >
+                  Fruits & légumes : 5 portions/jour minimum
+                </p>
+              </div>
+              <div
+                class="nutrition-card"
+                style="
+                  background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+                "
+              >
+                <h4>🟠 Orange - Modération</h4>
+                <p
+                  style="
+                    font-size: 13px;
+                    color: var(--text-secondary);
+                    margin: 0;
+                  "
+                >
+                  Laitiers, protéines : quantités mesurées
+                </p>
+              </div>
+              <div
+                class="nutrition-card"
+                style="
+                  background: linear-gradient(135deg, #fecdd3 0%, #fda4af 100%);
+                "
+              >
+                <h4>🔴 Rose - Occasionnel</h4>
+                <p
+                  style="
+                    font-size: 13px;
+                    color: var(--text-secondary);
+                    margin: 0;
+                  "
+                >
+                  Graisses, sucres : avec parcimonie
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div id="confirmModal" class="confirm-modal">
+      <div class="confirm-content">
+        <div class="confirm-icon">⚠️</div>
+        <h3 id="confirmTitle">Confirmation</h3>
+        <p id="confirmMessage">Êtes-vous sûr ?</p>
+        <div class="confirm-actions">
+          <button
+            class="confirm-btn confirm-btn-secondary"
+            onclick="closeConfirmModal()"
+          >
+            Annuler
+          </button>
+          <button class="confirm-btn confirm-btn-primary" id="confirmButton">
+            Confirmer
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mode Supermarché Plein Écran -->
+    <div id="supermarketMode" class="supermarket-mode">
+      <div class="supermarket-header">
+        <h2>🛒 Liste</h2>
+        <div style="display: flex; gap: 48px; align-items: center;">
+          <button class="btn btn-secondary" onclick="clearAllFromSupermarket()" style="padding: 8px 16px; font-size: 14px;">
+            🗑️
+          </button>
+          <button class="supermarket-close" onclick="closeSupermarketMode()">
+            ←
+          </button>
+        </div>
+      </div>
+      <div class="supermarket-content" id="supermarketContent">
+        <!-- Généré dynamiquement -->
+      </div>
+      <!-- Indicateur de scroll -->
+      <div id="supermarketScrollIndicator" class="supermarket-scroll-indicator">
+        <div class="supermarket-scroll-arrow">↑</div>
+        <div class="supermarket-scroll-text">Plus d'articles ci-dessus</div>
+      </div>
+    </div>
+
+    <!-- Vue Plein Écran Sous-Catégories -->
+    <div id="subcategoryView" class="subcategory-fullscreen">
+      <div class="subcategory-fullscreen-header">
+        <h2 id="subcategoryFullscreenTitle">Catégories</h2>
+        <button class="subcategory-fullscreen-close" onclick="closeSubcategoryFullscreen()" style="width: auto; padding: 10px 20px; border-radius: 12px; font-size: 15px; font-weight: 600;">
+          📦 Catégories
+        </button>
+      </div>
+      <div class="subcategory-fullscreen-content" id="subcategoryFullscreenContent">
+        <!-- Généré dynamiquement -->
+      </div>
+    </div>
+
+    <script>
+      // ============================================
+      // CONFIGURATION SUPABASE
+      // ============================================
+      window.mySupabase = window.supabase.createClient(
+        'https://jjqachkaouvcrdxreuza.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqcWFjaGthb3V2Y3JkeHJldXphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2OTQ3NzQsImV4cCI6MjA4NDI3MDc3NH0.FVGtd99ES_ByhXKkIsxk5SV4ampFHNBeIGuMMOg2qMg'
+      );
+
+      // Définition des catégories et produits avec COULEURS NUTRITIONNELLES
+      const CATEGORIES = {
+        // 🟦 BASE - BLEU (à consommer abondamment)
+        boissons: {
+          mainCategory: "alimentaire",
+          icon: "💧",
+          name: "Boissons",
+          order: 1,
+          color: "blue",
+          nutritionLevel: "🟦 Base - À volonté",
+          items: [
+            "Eau",
+            "Sanpellegrino",
+            "Jus",
+            "Lait",
+            "Thé",
+            "Café",
+            "Tisanes",
+            "Sirop",
+            "Coca / Soda",
+          ],
+        },
+        // 🟧 FÉCULENTS - ORANGE (1 portion/repas)
+        cereales: {
+          mainCategory: "alimentaire",
+          icon: "🌾",
+          name: "Céréales & Féculents",
+          order: 2,
+          color: "orange",
+          nutritionLevel: "🟧 1 portion/repas",
+          items: [
+            "Pâtes",
+            "Semoule",
+            "Riz",
+            "Blé",
+            "pain de mie",
+            "krisprolls",
+            "Quinoa",
+            "Boulgour",
+            "Couscous",
+            "Lentilles corail",
+            "Haricots secs",
+            "Pois chiches",
+          ],
+        },
+        // 🟩 PRIORITÉ - VERT (5 portions/jour)
+        fruits: {
+          mainCategory: "alimentaire",
+          icon: "🍎",
+          name: "Fruits & Légumes",
+          order: 3,
+          priority: true,
+          color: "green",
+          nutritionLevel: "🟩 5 portions/jour",
+          groups: {
+            Fruits: [
+              "Pommes",
+              "Bananes",
+              "Noix",
+              "Abricots",
+              "Oranges",
+              "Poires",
+              "Raisins",
+              "Fraises",
+              "Kiwis",
+              "Fruits secs",
+              "clémentines",
+              "fraises",
+              "framboises",
+              "myrtilles",
+              "mangue",
+              "fruit de la passion",
+              "litchi",
+              "melon",
+              "pastèque",
+            ],
+            Légumes: [
+              "Tomates",
+              "Betteraves",
+              "Salade",
+              "Carottes",
+              "Courgettes",
+              "Brocolis",
+              "Choux",
+              "Poivrons",
+              "Concombres",
+              "Oignons",
+              "Ail",
+              "haricots verts",
+              "céleri",
+              "aubergine",
+              "potimarron",
+              "avocat",
+              "choux rouge",
+              "chou blanc",
+              "poireaux",
+            ],
+          },
+        },
+        // 🟨 MODÉRATION - JAUNE (1 produit/repas)
+        laitiers: {
+          mainCategory: "alimentaire",
+          icon: "🥛",
+          name: "Produits laitiers",
+          order: 4,
+          color: "yellow",
+          nutritionLevel: "🟨 1 produit/repas",
+          items: [
+            "Fromages",
+            "Yaourts",
+            "Fromage blanc",
+            "Fromage râpé",
+            "Skyr",
+            "Lait",
+            "Beurre",
+            "Crème liquide",
+            "Crème fraîche",
+            "Mascarpone",
+            "saint môret",
+            "mascarpone",
+            "Philadelphia",
+            "mozzarella",
+            "burrata",
+            "fêta",
+            "Parmesan",
+            "Emmental",
+          ],
+        },
+        // 🟨 PROTÉINES - JAUNE (2 portions/jour)
+        proteines: {
+          mainCategory: "alimentaire",
+          icon: "🍖",
+          name: "Protéines",
+          order: 5,
+          color: "yellow",
+          nutritionLevel: "🟨 2 portions/jour",
+          groups: {
+            Viandes: [
+              "Bœuf",
+              "Porc",
+              "Veau",
+              "Poulet",
+              "Agneau",
+              "Canard",
+              "Steak haché",
+              "lapin",
+            ],
+            Poissons: [
+              "Cabillaud",
+              "Thon",
+              "Truite",
+              "Saumon",
+              "Sardines",
+              "Maquereau",
+              "Crevettes",
+              "Moules",
+            ],
+            Autres: ["Œufs", "Tofu"],
+          },
+        },
+        // 🟥 LIMITÉ - ROSE (consommation occasionnelle)
+        graisses: {
+          mainCategory: "alimentaire",
+          icon: "🧈",
+          name: "Matières grasses",
+          order: 6,
+          color: "pink",
+          nutritionLevel: "🟥 À limiter",
+          items: [
+            "Huile olive",
+            "Huile colza",
+            "Beurre",
+            "Margarine",
+            "Huile tournesol",
+            "Huile noix",
+            "Huile coco",
+          ],
+        },
+        sucres: {
+          mainCategory: "alimentaire",
+          icon: "🍬",
+          name: "Sucreries",
+          order: 7,
+          color: "pink",
+          nutritionLevel: "🟥 À limiter",
+          items: [
+            "Gâteaux",
+            "Bonbons",
+            "Chocolats",
+            "Nutella",
+            "Confiture",
+            "Miel",
+            "Sirop d'érable",
+            "Biscuits",
+            "Glaces",
+            "Compote",
+          ],
+        },
+        // AUTRES CATÉGORIES - GRIS (hors pyramide)
+        condiments: {
+          mainCategory: "alimentaire",
+          icon: "🧂",
+          name: "Condiments",
+          order: 8,
+          color: "gray",
+          items: [
+            "Sel",
+            "Poivre",
+            "Épices",
+            "Ketchup",
+            "pesto vert",
+            "pesto rouge",
+            "Moutarde",
+            "Mayonnaise",
+            "Cornichons",
+            "Vinaigre",
+            "Sauce soja",
+            "Basilic séché",
+            "Thym",
+            "Curry",
+            "Paprika",
+            "Cannelle",
+            "Bouillon cube",
+          ],
+        },
+        transformes: {
+          mainCategory: "alimentaire",
+          icon: "🍕",
+          name: "Produits transformés",
+          order: 9,
+          color: "pink",
+          nutritionLevel: "🟥 À limiter",
+          items: [
+            "Pain Harris",
+            "Farritas",
+            "Pizzas",
+            "Lardons",
+            "Saucisses Herta",
+            "Jambon Herta",
+            "Cordons bleus",
+            "Nuggets",
+            "Cordons bleus",
+            "Crèmes desserts",
+            "Corn flakes",
+            "Surgelés légumes",
+            "Raviolis",
+            "Gnocchis",
+            "Quiches",
+            "Tartes salées",
+            "Soupes",
+            "Poissons panés",
+            "Steaks végétaux",
+            "pâte brisée",
+            "pâte feuilletée",
+          ],
+        },
+        apero: {
+          mainCategory: "alimentaire",
+          icon: "🍸",
+          name: "Apéro",
+          order: 10,
+          color: "pink",
+          nutritionLevel: "🟥 Occasionnel",
+          groups: {
+            Alcools: [
+              "Gin",
+              "Aperol",
+              "Tonic",
+              "Get 27",
+              "Bailey",
+              "Vin rouge",
+              "Vin blanc",
+              "Bière",
+              "Whisky",
+              "Rhum",
+            ],
+            Grignotage: [
+              "Cacahuètes",
+              "Chips",
+              "Saucisson",
+              "Olives",
+              "Crackers",
+              "Fruits secs",
+              "Tapenades",
+              "Houmous",
+              "Gressin",
+            ],
+          },
+        },
+        hygiene: {
+          mainCategory: "hygiene",
+          icon: "🧴",
+          name: "Hygiène",
+          order: 11,
+          color: "gray",
+          items: [
+            "Savon",
+            "Shampoing",
+            "Cotons-tiges",
+            "Coton démaquillant",
+            "Dentifrice",
+            "Déodorant",
+            "Gel douche",
+            "Brosse à dents",
+            "Rasoirs",
+            "Mousse à raser",
+            "Crème hydratante",
+            "Protection solaire",
+            "Mouchoirs",
+          ],
+        },
+        menage: {
+          mainCategory: "menage",
+          icon: "🧹",
+          name: "Produits ménagers",
+          order: 12,
+          color: "gray",
+          items: [
+            "Liquide vaisselle",
+            "Lessives",
+            "Adoucissant",
+            "Litière",
+            "Calgon",
+            "Powerball",
+            "Sac poubelle",
+            "Aluminium",
+            "Papier cuisson",
+            "Cellophane",
+            "Éponges",
+            "Javel",
+            "Dégraissant",
+            "Produit vitre",
+            "Produit sol",
+            "Anti-calcaire",
+            "Essuie-tout",
+          ],
+        },
+        wc: {
+          mainCategory: "menage",
+          icon: "🚽",
+          name: "WC",
+          order: 13,
+          color: "gray",
+          items: [
+            "Papier toilette",
+            "Canard WC",
+            "Désodorisant",
+            "Lingettes WC",
+            "Blocs WC",
+          ],
+        },
+        salon: {
+          mainCategory: "bricolage",
+          icon: "🕯️",
+          name: "Salon",
+          order: 14,
+          color: "gray",
+          items: ["Bougies", "Allume-feu", "Allumettes"],
+        },
+        electromenager: {
+          mainCategory: "bricolage",
+          icon: "💡",
+          name: "Électroménager",
+          order: 15,
+          color: "gray",
+          items: [
+            "Ampoules",
+            "Piles",
+            "Piles rechargeables",
+            "Câbles USB",
+            "Adaptateurs",
+            "Chargeurs",
+          ],
+        },
+        // === CULTURE ===
+  culture_livres: {
+    mainCategory: "culture",
+    icon: "📚",
+    name: "Livres",
+    order: 16,
+    color: "gray",
+    items: ["Romans", "BD", "Magazines", "Livres de cuisine", "Guides"],
+  },
+  culture_multimedia: {
+    mainCategory: "culture",
+    icon: "🎬",
+    name: "Multimédia",
+    order: 17,
+    color: "gray",
+    items: ["DVD", "Blu-ray", "Jeux vidéo", "Abonnements streaming"],
+  },
+  culture_papeterie: {
+    mainCategory: "culture",
+    icon: "✏️",
+    name: "Papeterie",
+    order: 18,
+    color: "gray",
+    items: ["Stylos", "Cahiers", "Papier", "Enveloppes", "Crayons", "Feutres"],
+  },
+  autres: {
+    mainCategory: "alimentaire",
+    icon: "📦",
+    name: "Autres",
+    order: 99,
+    color: "gray",
+    items: [],
+  },
+};
+
+      // État
+      let selections = {};
+      let currentCategory = null;
+
+      // === STOCK DE BASE - LISTE FIXE DES ESSENTIELS ===
+      const STOCK_BASE_ITEMS = [
+        "Sel",
+        "Poivre",
+        "Huile olive",
+        "Huile colza",
+        "Sucre",
+        "Farine",
+        "Oignons",
+        "Ail",
+        "Épices",
+        "Bouillon cube",
+        "Moutarde",
+        "Ketchup",
+        "Mayonnaise",
+        "Vinaigre",
+        "Beurre",
+        "Lait",
+        "Œufs",
+        "Riz",
+        "Pâtes",
+        "Concentré de tomate",
+      ];
+
+      let stockBase = {}; // Items qu'on a en stock
+      let undoHistory = []; // Historique des suppressions (max 10)
+      const MAX_UNDO = 10;
+
+      // Init
+      function init() {
+        // Initialiser stockBase avec les items essentiels
+        STOCK_BASE_ITEMS.forEach((item) => {
+          stockBase[item] = false;
+        });
+
+        // Charger stock depuis localStorage
+        const savedStock = localStorage.getItem("food_home_stock_base");
+        if (savedStock) {
+          try {
+            const loaded = JSON.parse(savedStock);
+            Object.assign(stockBase, loaded);
+            console.log("📦 Stock de base chargé depuis localStorage");
+          } catch (e) {
+            console.error("Erreur chargement stock:", e);
+          }
+        }
+
+        // Initialiser selections
+        Object.keys(CATEGORIES).forEach((key) => {
+          selections[key] = {};
+          const cat = CATEGORIES[key];
+          if (cat.items) {
+            cat.items.forEach((item) => (selections[key][item] = false));
+          } else if (cat.groups) {
+            Object.values(cat.groups).forEach((items) => {
+              items.forEach((item) => (selections[key][item] = false));
+            });
+          }
+        });
+
+        renderCategories();
+        loadFromAPI();
+
+        // 🎯 ÉCOUTER LES MESSAGES de home.html pour switcher automatiquement
+        window.addEventListener("message", (event) => {
+          if (event.data.type === "SHOW_SHOPPING_LIST") {
+            console.log("📨 Message reçu : afficher Liste courses");
+            switchView("shopping");
+          } else if (event.data.type === "REFRESH_DATA") {
+            console.log("🔄 Refresh data demandé");
+            loadFromAPI();
+          } else if (event.data.type === "SHOPPING_LIST_UPDATED") {
+            console.log("🔄 Shopping list updated, rechargement...");
+            loadFromAPI();
+          }
+        });
+      }
+
+      // Render grille catégories avec couleurs
+      // ============================================
+      // FONCTIONS NAVIGATION GRANDES CATÉGORIES
+      // ============================================
+      
+      let currentMainCategory = null;
+      
+      function switchMainCategory(mainCat) {
+        openSubcategoryFullscreen(mainCat);
+      }
+
+      // Ouvrir la vue plein écran des sous-catégories
+      function openSubcategoryFullscreen(mainCat) {
+        const view = document.getElementById('subcategoryView');
+        const title = document.getElementById('subcategoryFullscreenTitle');
+        const content = document.getElementById('subcategoryFullscreenContent');
+        
+        // Définir le titre selon la catégorie
+        const titles = {
+          'alimentaire': '🍽️ Alimentaire',
+          'hygiene': '🧴 Hygiène',
+          'menage': '🧹 Ménage',
+          'bricolage': '🔧 Bricolage',
+          'culture': '📚 Culture'
+        };
+        title.textContent = titles[mainCat] || 'Catégories';
+        
+        // Générer les cards des sous-catégories
+        const categoriesByMain = {};
+        Object.entries(CATEGORIES).forEach(([key, cat]) => {
+          const catMainCategory = cat.mainCategory || 'alimentaire';
+          if (catMainCategory === mainCat) {
+            categoriesByMain[key] = cat;
+          }
+        });
+        
+        let html = '';
+        Object.entries(categoriesByMain).forEach(([key, cat]) => {
+          // Compter les items sélectionnés
+          const selectedCount = Object.values(selections[key] || {}).filter(Boolean).length;
+          const badge = selectedCount > 0 ? `<span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 12px; font-size: 12px; margin-left: 8px;">${selectedCount}</span>` : '';
+          
+          // Récupérer quelques items pour preview
+          let previewItems = [];
+          if (cat.items) {
+            previewItems = cat.items.slice(0, 5);
+          } else if (cat.groups) {
+            Object.values(cat.groups).forEach(group => {
+              if (group.items) {
+                previewItems.push(...group.items.slice(0, 3));
+              }
+            });
+            previewItems = previewItems.slice(0, 5);
+          }
+          
+          html += `
+            <div class="subcategory-card" onclick="openCategory('${key}')">
+              <div class="subcategory-card-icon">${cat.icon}</div>
+              <div class="subcategory-card-content">
+                <div class="subcategory-card-title">${cat.name}${badge}</div>
+                <div class="subcategory-card-items">
+                  ${previewItems.map(item => `<div class="subcategory-card-item">${item}</div>`).join('')}
+                  ${previewItems.length >= 5 ? '<div class="subcategory-card-item">...</div>' : ''}
+                </div>
+              </div>
+              <div class="subcategory-card-arrow">→</div>
+            </div>
+          `;
+        });
+        
+        content.innerHTML = html;
+        
+        // Afficher la vue avec animation
+        view.classList.add('active');
+        
+        // Gérer le swipe down pour fermer
+        setupSwipeDown(view);
+      }
+      
+      // Fermer la vue plein écran
+      function closeSubcategoryFullscreen() {
+        const view = document.getElementById('subcategoryView');
+        view.classList.remove('active');
+      }
+      
+      // Ouvrir une catégorie depuis la vue plein écran
+      function openCategory(categoryKey) {
+        // S'assurer qu'on est dans la vue catégories
+        switchView('categories');
+        
+        // Ouvrir le tiroir d'abord
+        openDrawer(categoryKey);
+        
+        // Fermer la vue plein écran juste après (overlay au-dessus)
+        setTimeout(() => {
+          closeSubcategoryFullscreen();
+        }, 10);
+      }
+      
+      // Gérer le swipe down pour fermer
+      function setupSwipeDown(element) {
+        let startY = 0;
+        let currentY = 0;
+        let isDragging = false;
+        
+        element.addEventListener('touchstart', (e) => {
+          // Seulement si on est en haut de la page
+          if (element.scrollTop === 0) {
+            startY = e.touches[0].clientY;
+            isDragging = true;
+          }
+        });
+        
+        element.addEventListener('touchmove', (e) => {
+          if (!isDragging) return;
+          
+          currentY = e.touches[0].clientY;
+          const diff = currentY - startY;
+          
+          // Si swipe vers le bas de plus de 100px
+          if (diff > 100) {
+            closeSubcategoryFullscreen();
+            isDragging = false;
+          }
+        });
+        
+        element.addEventListener('touchend', () => {
+          isDragging = false;
+        });
+      }
+
+      // Render toutes les grilles de catégories
+      function renderCategories() {
+        // Grouper les catégories par mainCategory
+        const categoriesByMain = {};
+        Object.entries(CATEGORIES).forEach(([key, cat]) => {
+          const mainCat = cat.mainCategory || 'alimentaire';
+          if (!categoriesByMain[mainCat]) {
+            categoriesByMain[mainCat] = [];
+          }
+          categoriesByMain[mainCat].push([key, cat]);
+        });
+
+        // Render chaque groupe dans son grid
+        Object.entries(categoriesByMain).forEach(([mainCat, cats]) => {
+          const grid = document.getElementById(`categoriesGrid-${mainCat}`);
+          if (!grid) return;
+
+          const sorted = cats.sort((a, b) => a[1].order - b[1].order);
+          
+          grid.innerHTML = sorted.map(([key, cat]) => {
+            const count = Object.values(selections[key]).filter(v => v).length;
+            const colorAttr = cat.color ? `data-color="${cat.color}"` : '';
+            const nutritionLabel = cat.nutritionLevel ? 
+              `<div class="nutrition-indicator">${cat.nutritionLevel}</div>` : '';
+            
+            return `
+              <div class="category-btn" ${colorAttr} onclick="openDrawer('${key}')">
+                ${count > 0 ? `<div class="badge">${count}</div>` : ""}
+                <span class="icon">${cat.icon}</span>
+                <span class="name">${cat.name}</span>
+                ${nutritionLabel}
+              </div>
+            `;
+          }).join("");
+        });
+      }
+
+      // Ouvrir drawer
+      function openDrawer(categoryKey) {
+        currentCategory = categoryKey;
+        const cat = CATEGORIES[categoryKey];
+        document.getElementById(
+          "drawerTitle"
+        ).innerHTML = `${cat.icon} ${cat.name}`;
+
+        let html = "";
+        if (cat.items) {
+          html = cat.items
+            .map(
+              (item) => `
+          <div class="checkbox-item ${
+            selections[categoryKey][item] ? "checked" : ""
+          }">
+            <input type="checkbox"
+                   id="item-${item}"
+                   ${selections[categoryKey][item] ? "checked" : ""}
+                   onchange="toggleItem('${categoryKey}', '${item}')">
+            <label for="item-${item}">${item}</label>
+          </div>
+        `
+            )
+            .join("");
+        } else if (cat.groups) {
+          html = Object.entries(cat.groups)
+            .map(
+              ([groupName, items]) => `
+          <div class="item-group">
+            <div class="item-group-title">${groupName}</div>
+            ${items
+              .map(
+                (item) => `
+                <div class="checkbox-item ${
+                  selections[categoryKey][item] ? "checked" : ""
+                }">
+                  <input type="checkbox"
+                         id="item-${item}"
+                         ${selections[categoryKey][item] ? "checked" : ""}
+                         onchange="toggleItem('${categoryKey}', '${item}')">
+                  <label for="item-${item}">${item}</label>
+                </div>
+              `
+              )
+              .join("")}
+          </div>
+        `
+            )
+            .join("");
+        }
+        document.getElementById("drawerBody").innerHTML = html;
+        document.getElementById("drawer").classList.add("active");
+        document.getElementById("backdrop").classList.add("active");
+      }
+
+      function closeDrawer() {
+        document.getElementById("drawer").classList.remove("active");
+        document.getElementById("backdrop").classList.remove("active");
+        renderCategories();
+      }
+
+      function toggleItem(category, item) {
+        selections[category][item] = !selections[category][item];
+        const checkbox = document.getElementById(`item-${item}`);
+        const parent = checkbox.closest(".checkbox-item");
+        parent.classList.toggle("checked");
+      }
+
+      function saveDrawer() {
+        // Si c'est le drawer du stock de base
+        if (currentCategory === null) {
+          // Sauvegarder le stock dans localStorage (déjà fait dans toggleStockItem)
+          localStorage.setItem(
+            "food_home_stock_base",
+            JSON.stringify(stockBase)
+          );
+
+          closeDrawer();
+
+          // NE PLUS filtrer automatiquement - juste afficher en orange
+          // (Ancien code de filtrage supprimé)
+          let filtered = 0; // Garder pour compatibilité
+
+          renderCategories();
+          saveToAPI();
+
+          showToast(
+            "✅ Stock de base sauvegardé ! Les items en stock seront affichés en orange."
+          );
+
+          return;
+        }
+
+        closeDrawer();
+        saveToAPI();
+      }
+
+      function clearDrawer() {
+        showConfirmModal(
+          "Vider cette catégorie ?",
+          "Tous les items cochés de cette catégorie seront décochés.",
+          () => {
+            Object.keys(selections[currentCategory]).forEach((item) => {
+              selections[currentCategory][item] = false;
+            });
+            openDrawer(currentCategory);
+            showToast("Catégorie vidée");
+          }
+        );
+      }
+
+      // 🎯 MODIFICATION : switchView avec bascule des boutons et affichage de la vue
+      function switchView(view) {
+        // Cette fonction est appelée quand on clique sur "Catégories"
+        // Elle réinitialise l'affichage des grandes catégories
+        
+        if (view === "categories") {
+          // Réactiver le bouton Catégories
+          document.querySelectorAll(".toggle-btn").forEach(btn => btn.classList.remove("active"));
+          document.querySelectorAll(".toggle-btn")[0].classList.add("active");
+          
+          // Réinitialiser les grandes catégories (fermer tout)
+          document.querySelectorAll('.main-category-btn').forEach(b => b.classList.remove('active'));
+          document.querySelectorAll('.subcategories-container').forEach(c => c.classList.remove('active'));
+          currentMainCategory = null;
+        }
+      }
+
+      // ============================================
+      // 🔄 SYSTÈME UNDO
+      // ============================================
+
+      function addToUndoHistory(action) {
+        undoHistory.push(action);
+
+        // Limiter l'historique à MAX_UNDO items
+        if (undoHistory.length > MAX_UNDO) {
+          undoHistory.shift(); // Retirer le plus ancien
+        }
+
+        // Afficher le bouton Undo
+        showUndoButton();
+      }
+
+      function showUndoButton() {
+        const undoBtn = document.getElementById("undoBtn");
+        const undoText = document.getElementById("undoText");
+
+        if (undoHistory.length > 0) {
+          const lastAction = undoHistory[undoHistory.length - 1];
+          undoText.textContent = `Annuler (${lastAction.item})`;
+          undoBtn.style.display = "flex";
+
+          // Masquer après 5 secondes d'inactivité
+          clearTimeout(undoBtn._hideTimeout);
+          undoBtn._hideTimeout = setTimeout(() => {
+            undoBtn.style.opacity = "0";
+            setTimeout(() => {
+              undoBtn.style.display = "none";
+              undoBtn.style.opacity = "1";
+            }, 300);
+          }, 5000);
+        } else {
+          undoBtn.style.display = "none";
+        }
+      }
+
+      function undoLastAction() {
+        if (undoHistory.length === 0) return;
+
+        const lastAction = undoHistory.pop();
+
+        if (lastAction.action === "remove") {
+          // Restaurer l'item
+          selections[lastAction.category][lastAction.item] = true;
+
+          // Rafraîchir l'affichage
+          renderCategories();
+          saveToAPI();
+
+          showToast(`✅ "${lastAction.item}" restauré !`);
+        }
+
+        // Mettre à jour le bouton
+        if (undoHistory.length > 0) {
+          showUndoButton();
+        } else {
+          document.getElementById("undoBtn").style.display = "none";
+        }
+      }
+
+      // Export
+      function exportList() {
+        let text = "🛒 LISTE DE COURSES\n\n";
+
+        Object.entries(CATEGORIES)
+          .sort((a, b) => a[1].order - b[1].order)
+          .forEach(([key, cat]) => {
+            const selected = Object.entries(selections[key]).filter(
+              ([_, checked]) => checked
+            );
+
+            if (selected.length > 0) {
+              text += `\n${cat.icon} ${cat.name.toUpperCase()}\n`;
+              selected.forEach(([item, _]) => {
+                text += `☐ ${item}\n`;
+              });
+            }
+          });
+
+        navigator.clipboard.writeText(text);
+        showToast("✅ Liste copiée dans le presse-papier !");
+      }
+
+      // Clear all
+      function clearAll() {
+        showConfirmModal(
+          "Tout effacer ?",
+          "Toute votre liste de courses sera vidée. Cette action est irréversible.",
+          () => {
+            Object.keys(selections).forEach((cat) => {
+              Object.keys(selections[cat]).forEach((item) => {
+                selections[cat][item] = false;
+              });
+            });
+
+            renderCategories();
+            saveToAPI();
+
+            // ✅ AJOUT : Rafraîchir aussi la vue shopping list
+            if (
+              document
+                .getElementById("shoppingView")
+                .classList.contains("active")
+            ) {
+            }
+
+            showToast("Liste effacée");
+          }
+        );
+      }
+
+      // Clear all depuis le mode supermarché
+      function clearAllFromSupermarket() {
+        showConfirmModal(
+          "Tout effacer ?",
+          "Toute votre liste de courses sera vidée. Cette action est irréversible.",
+          () => {
+            Object.keys(selections).forEach((cat) => {
+              Object.keys(selections[cat]).forEach((item) => {
+                selections[cat][item] = false;
+              });
+            });
+
+            renderCategories();
+            saveToAPI();
+
+            // Fermer le mode supermarché
+            closeSupermarketMode();
+
+            showToast("Liste effacée");
+          }
+        );
+      }
+
+      // Stock de base
+      // Stock de base - Afficher uniquement les essentiels
+      function openStockDrawer() {
+        currentCategory = null; // Indiquer que c'est le stock
+
+        document.getElementById("drawerTitle").innerHTML = `📦 Stock de base`;
+
+        let html = `
+          <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">
+            Le <strong>stock de base</strong> contient les produits essentiels que vous avez toujours chez vous.
+            Ces items seront <strong>automatiquement filtrés</strong> de votre liste de courses quand vous cliquez sur "Sauvegarder".
+          </p>
+          <div class="item-group">
+            <div class="item-group-title">🧂 Produits essentiels</div>
+            ${STOCK_BASE_ITEMS.map(
+              (item) => `
+              <div class="checkbox-item ${stockBase[item] ? "checked" : ""}">
+                <input type="checkbox"
+                       id="stock-${item}"
+                       ${stockBase[item] ? "checked" : ""}
+                       onchange="toggleStockItem('${item}')">
+                <label for="stock-${item}">${item}</label>
+              </div>
+            `
+            ).join("")}
+          </div>
+        `;
+
+        document.getElementById("drawerBody").innerHTML = html;
+        document.getElementById("drawer").classList.add("active");
+        document.getElementById("backdrop").classList.add("active");
+      }
+
+      function toggleStockItem(item) {
+        stockBase[item] = !stockBase[item];
+        const checkbox = document.getElementById(`stock-${item}`);
+        const parent = checkbox.closest(".checkbox-item");
+        parent.classList.toggle("checked");
+
+        // Sauvegarder dans localStorage
+        localStorage.setItem("food_home_stock_base", JSON.stringify(stockBase));
+      }
+
+      // ============================================
+      // 🎯 FONCTION : Trouver la catégorie d'un item
+      // ============================================
+      function findCategoryForItem(itemName) {
+        // Normaliser le nom pour la recherche (enlever quantités entre parenthèses)
+        const cleanName = itemName.split("(")[0].trim();
+
+        // Chercher dans toutes les catégories
+        for (const [catKey, cat] of Object.entries(CATEGORIES)) {
+          // Vérifier dans les items directs
+          if (cat.items) {
+            // Recherche exacte
+            if (cat.items.includes(itemName)) {
+              return catKey;
+            }
+            // Recherche partielle (pour items avec quantités)
+            if (
+              cat.items.some(
+                (item) =>
+                  item.startsWith(cleanName) || cleanName.startsWith(item)
+              )
+            ) {
+              return catKey;
+            }
+          }
+
+          // Vérifier dans les groupes
+          if (cat.groups) {
+            for (const [groupName, items] of Object.entries(cat.groups)) {
+              // Recherche exacte
+              if (items.includes(itemName)) {
+                return catKey;
+              }
+              // Recherche partielle
+              if (
+                items.some(
+                  (item) =>
+                    item.startsWith(cleanName) || cleanName.startsWith(item)
+                )
+              ) {
+                return catKey;
+              }
+            }
+          }
+        }
+
+        // Si pas trouvé, retourner "autres"
+        return "autres";
+      }
+
+      // ============================================
+      // 💾 STOCKAGE SUPABASE + LOCALSTORAGE FALLBACK
+      // ============================================
+
+      // Load from Supabase
+      async function loadFromAPI() {
+        try {
+          // Charger TOUJOURS localStorage d'abord
+          const savedList = localStorage.getItem("food_home_shopping_list");
+          const localItems = savedList ? JSON.parse(savedList) : [];
+          
+          // 🔥 CHARGER depuis Supabase
+          const { data, error } = await window.mySupabase
+            .from('shopping_list')
+            .select('items')
+            .eq('user_id', 'default_user')
+            .single();
+          
+          let supabaseItems = [];
+          if (error) {
+            if (error.code === 'PGRST116') {
+              console.log('📭 Aucune liste dans Supabase');
+            } else {
+              console.error('⚠️ Erreur Supabase:', error);
+            }
+          } else {
+            supabaseItems = data?.items || [];
+          }
+          
+          // ✅ TOUJOURS FUSIONNER Supabase + localStorage (dédupliquer)
+          const itemsFromStorage = [...new Set([...supabaseItems, ...localItems])];
+          console.log(`📥 Fusion: ${supabaseItems.length} Supabase + ${localItems.length} localStorage = ${itemsFromStorage.length} items`);
+          
+          // Si on a des items et que Supabase n'est pas à jour, sync
+          if (itemsFromStorage.length > supabaseItems.length) {
+            await window.mySupabase
+              .from('shopping_list')
+              .upsert({
+                user_id: 'default_user',
+                items: itemsFromStorage
+              }, {
+                onConflict: 'user_id'
+              });
+            console.log('💾 Sync fusionné → Supabase');
+          }
+          
+          // Sauvegarder la version fusionnée en localStorage
+          localStorage.setItem("food_home_shopping_list", JSON.stringify(itemsFromStorage));
+
+          // ✅ DISPATCHER dans les bonnes catégories
+          itemsFromStorage.forEach((item) => {
+            const categoryKey = findCategoryForItem(item);
+            const cat = CATEGORIES[categoryKey];
+
+            if (cat.items) {
+              if (!cat.items.includes(item)) {
+                cat.items.push(item);
+              }
+            } else if (cat.groups) {
+              // Items déjà dans les groupes
+            } else {
+              if (!CATEGORIES.autres.items) {
+                CATEGORIES.autres.items = [];
+              }
+              if (!CATEGORIES.autres.items.includes(item)) {
+                CATEGORIES.autres.items.push(item);
+              }
+            }
+
+            // ✅ INITIALISER la sélection
+            if (selections[categoryKey][item] === undefined) {
+              selections[categoryKey][item] = false;
+            }
+
+            selections[categoryKey][item] = true;
+          });
+
+          renderCategories();
+
+          // Si la vue shopping existe, la rafraîchir
+          const shoppingView = document.getElementById("shoppingView");
+          if (shoppingView && shoppingView.classList.contains("active")) {
+            // Rafraîchir si nécessaire
+          }
+        } catch (error) {
+          console.error("Erreur chargement:", error);
+          renderCategories();
+        }
+      }
+
+      // Save to localStorage
+      async function saveToAPI() {
+        const allItems = [];
+
+        Object.entries(selections).forEach(([cat, items]) => {
+          Object.entries(items).forEach(([item, checked]) => {
+            if (checked) allItems.push(item);
+          });
+        });
+
+        try {
+          // 🔥 SAUVEGARDER dans Supabase
+          const { error } = await window.mySupabase
+            .from('shopping_list')
+            .upsert({
+              user_id: 'default_user',
+              items: allItems
+            }, {
+              onConflict: 'user_id'
+            });
+          
+          if (error) {
+            console.error('⚠️ Erreur Supabase:', error);
+            // Fallback vers localStorage
+            localStorage.setItem("food_home_shopping_list", JSON.stringify(allItems));
+            console.log("💾 Fallback localStorage:", allItems.length, "items");
+          } else {
+            console.log("💾 Sauvegarde Supabase:", allItems.length, "items");
+            // Aussi sauvegarder en localStorage
+            localStorage.setItem("food_home_shopping_list", JSON.stringify(allItems));
+          }
+        } catch (error) {
+          console.error("Erreur sauvegarde:", error);
+          // Fallback localStorage
+          localStorage.setItem("food_home_shopping_list", JSON.stringify(allItems));
+        }
+      }
+
+      // ============================================
+      // TOAST & MODALS
+      // ============================================
+
+      // Toast notification
+      function showToast(message, type = "success") {
+        const oldToast = document.querySelector(".toast");
+        if (oldToast) oldToast.remove();
+        const toast = document.createElement("div");
+        toast.className = `toast ${type === "error" ? "error" : ""}`;
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+
+      // Modal de confirmation réutilisable
+      let confirmCallback = null;
+
+      function showConfirmModal(title, message, callback) {
+        document.getElementById("confirmTitle").textContent = title;
+        document.getElementById("confirmMessage").textContent = message;
+        confirmCallback = callback;
+        document.getElementById("confirmModal").classList.add("active");
+      }
+
+      function closeConfirmModal() {
+        document.getElementById("confirmModal").classList.remove("active");
+        confirmCallback = null;
+      }
+
+      document.getElementById("confirmButton").addEventListener("click", () => {
+        if (confirmCallback) {
+          confirmCallback();
+          confirmCallback = null;
+        }
+        closeConfirmModal();
+      });
+
+      // Fermer les modals en cliquant à l'extérieur
+      document.getElementById("confirmModal").addEventListener("click", (e) => {
+        if (e.target.id === "confirmModal") {
+          closeConfirmModal();
+        }
+      });
+
+      // Modal nutrition
+      function openNutritionModal() {
+        document.getElementById("nutritionModal").classList.add("active");
+      }
+
+      function closeNutritionModal() {
+        document.getElementById("nutritionModal").classList.remove("active");
+      }
+
+      document
+        .getElementById("nutritionModal")
+        .addEventListener("click", (e) => {
+          if (e.target.id === "nutritionModal") {
+            closeNutritionModal();
+          }
+        });
+
+      // ============================================
+      // MODE SUPERMARCHÉ
+      // ============================================
+
+      function openSupermarketMode() {
+        const mode = document.getElementById("supermarketMode");
+        const content = document.getElementById("supermarketContent");
+
+        // Générer la liste
+        renderSupermarketList();
+
+        // Afficher le mode
+        mode.classList.add("active");
+
+        // Bloquer le scroll du body
+        document.body.style.overflow = "hidden";
+
+        // Gérer l'indicateur de scroll
+        setTimeout(() => {
+          updateScrollIndicator();
+          mode.addEventListener("scroll", updateScrollIndicator);
+        }, 100);
+      }
+
+      function closeSupermarketMode() {
+        const mode = document.getElementById("supermarketMode");
+        mode.classList.remove("active");
+
+        // Réactiver le scroll du body
+        document.body.style.overflow = "";
+
+        // Retirer l'écouteur de scroll
+        mode.removeEventListener("scroll", updateScrollIndicator);
+      }
+
+      function renderSupermarketList() {
+        const container = document.getElementById("supermarketContent");
+
+        // Ordre logique de parcours du supermarché
+        const supermarketOrder = [
+          { keys: ["fruits"], name: "Fruits & Légumes", icon: "🍎" },
+          { keys: ["cereales"], name: "Pâtes, Riz & Féculents", icon: "🌾" },
+          { keys: ["laitiers"], name: "Produits Laitiers", icon: "🥛" },
+          { keys: ["proteines"], name: "Viandes & Poissons", icon: "🍖" },
+          { keys: ["graisses"], name: "Huiles & Matières grasses", icon: "🧈" },
+          {
+            keys: ["transformes"],
+            name: "Surgelés & Produits transformés",
+            icon: "🍕",
+          },
+          { keys: ["boissons"], name: "Boissons", icon: "💧" },
+          {
+            keys: ["sucres", "apero"],
+            name: "Snacks & Gourmandises",
+            icon: "🍬",
+          },
+          { keys: ["condiments"], name: "Épicerie & Condiments", icon: "🧂" },
+          {
+            keys: ["hygiene", "menage", "wc"],
+            name: "Hygiène & Entretien",
+            icon: "🧹",
+          },
+          {
+            keys: ["salon", "electromenager"],
+            name: "Bricolage & Maison",
+            icon: "🔧",
+          },
+          {
+            keys: ["culture_livres", "culture_multimedia", "culture_papeterie"],
+            name: "Culture & Loisirs",
+            icon: "📚",
+          },
+          {
+            keys: ["autres"],
+            name: "Autres",
+            icon: "📦",
+          },
+        ];
+
+        let html = "";
+
+        supermarketOrder.forEach((section) => {
+          const sectionItems = [];
+
+          section.keys.forEach((key) => {
+            const selected = Object.entries(selections[key] || {}).filter(
+              ([_, checked]) => checked
+            );
+            selected.forEach(([item, _]) => {
+              sectionItems.push({ item, category: key });
+            });
+          });
+
+          if (sectionItems.length > 0) {
+            html += `
+              <div class="supermarket-category">
+                <div class="supermarket-category-title">
+                  <span>${section.icon}</span>
+                  <span>${section.name}</span>
+                </div>
+                <div class="supermarket-items">
+                ${sectionItems
+                  .map(({ item, category }) => {
+                    const uniqueId = `super-${category}-${item.replace(
+                      /\s/g,
+                      "-"
+                    )}`;
+                    return `
+                        <div class="supermarket-item" data-item="${item}" data-category="${category}">
+                          <input type="checkbox"
+                                 id="${uniqueId}"
+                                 onchange="toggleSupermarketItem(this, '${item}', '${category}')">
+                          <label for="${uniqueId}">${item}</label>
+                        </div>
+                      `;
+                  })
+                  .join("")}
+                </div>
+              </div>
+            `;
+          }
+        });
+
+        if (html === "") {
+          html =
+            '<div class="empty-state">Votre liste est vide<br><span style="font-size: 14px; opacity: 0.7;">Ajoutez des produits depuis "Catégories"</span></div>';
+        }
+
+        container.innerHTML = html;
+      }
+
+      function toggleSupermarketItem(checkbox, itemName, categoryKey) {
+        const parent = checkbox.closest(".supermarket-item");
+
+        if (checkbox.checked) {
+          // Cocher = barrer visuellement
+          parent.classList.add("checked");
+        } else {
+          // Décocher = retirer de la liste
+          selections[categoryKey][itemName] = false;
+
+          parent.style.opacity = "0";
+          parent.style.transform = "scale(0.8)";
+
+          setTimeout(() => {
+            parent.remove();
+
+            // Si plus d'items dans cette section, la retirer
+            const section = parent.closest(".supermarket-category");
+            if (
+              section &&
+              section.querySelectorAll(".supermarket-item").length === 0
+            ) {
+              section.remove();
+            }
+
+            // Si plus d'items du tout, afficher message vide
+            const container = document.getElementById("supermarketContent");
+            if (container.querySelectorAll(".supermarket-item").length === 0) {
+              container.innerHTML =
+                '<div class="empty-state">Votre liste est vide !<br><span style="font-size: 14px; opacity: 0.7;">Tous les articles ont été cochés ✓</span></div>';
+            }
+
+            // Mettre à jour les badges et sauvegarder
+            renderCategories();
+            saveToAPI();
+
+            // Mettre à jour la vue shopping si elle est active
+            if (
+              document
+                .getElementById("shoppingView")
+                .classList.contains("active")
+            ) {
+            }
+          }, 300);
+        }
+      }
+
+      function updateScrollIndicator() {
+        const mode = document.getElementById("supermarketMode");
+        const indicator = document.getElementById("supermarketScrollIndicator");
+
+        if (!mode || !indicator) return;
+
+        // Vérifier si on peut scroller vers le haut
+        const scrollTop = mode.scrollTop;
+        const scrollHeight = mode.scrollHeight;
+        const clientHeight = mode.clientHeight;
+
+        // Cacher l'indicateur si on est tout en haut OU si tout est visible
+        if (scrollTop <= 50 || scrollHeight <= clientHeight + 100) {
+          indicator.classList.add("hidden");
+        } else {
+          indicator.classList.remove("hidden");
+        }
+      }
+
+      // ============================================
+      // INIT
+      // ============================================
+      window.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>
