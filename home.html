@@ -120,25 +120,14 @@ toggleBtn.addEventListener("click", () => {
   localStorage.setItem('active_app', newApp); // Stocke en local
   updateToggleButton(newApp);
  
-  // 🎯 NOUVELLE FONCTIONNALITÉ : Quand on bascule vers courses, envoyer un message pour afficher la Liste courses
+  // 🎯 Envoyer un message à courses pour afficher la Liste courses (sans recharger l'iframe)
   if (newApp === "courses") {
     setTimeout(() => {
       try {
-        // Recharger l'iframe pour refresh les données
-        coursesFrame.src = coursesFrame.src;
-        console.log("✅ Iframe courses rechargée pour refresh");
-        
-        // Attendre que l'iframe soit chargée, puis envoyer le message
-        coursesFrame.onload = () => {
-          try {
-            coursesFrame.contentWindow.postMessage({ type: "SHOW_SHOPPING_LIST" }, "*");
-            console.log("📨 Message envoyé : afficher Liste courses");
-          } catch (e) {
-            console.error("Error sending message to courses iframe:", e);
-          }
-        };
+        coursesFrame.contentWindow.postMessage({ type: "SHOW_SHOPPING_LIST" }, "*");
+        console.log("📨 Message envoyé : afficher Liste courses");
       } catch (e) {
-        console.error("Error reloading courses iframe:", e);
+        console.error("Error sending message to courses iframe:", e);
       }
     }, 100);
   }
