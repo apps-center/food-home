@@ -113,6 +113,35 @@
         transform: scale(1.1);
       }
       
+      /* Boutons icônes pour les types */
+      .type-icon-btn {
+        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        border: 2px solid rgba(59, 130, 246, 0.2);
+        border-radius: var(--radius-xl);
+        padding: 16px 24px;
+        cursor: pointer;
+        font-size: 32px;
+        transition: all var(--transition-base);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        min-width: 100px;
+      }
+      
+      .type-icon-btn:hover {
+        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+      }
+      
+      .type-icon-btn.active {
+        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        color: white;
+        border-color: transparent;
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      }
+      
       /* 🎯 Bouton retour planning (flèche) */
       .btn-back-planning {
         background: rgba(139, 92, 246, 0.1) !important;
@@ -185,27 +214,30 @@
       </div>
       <!-- Filtres -->
       <section class="card">
-        <!-- 🎯 FILTRES PRINCIPAUX (toujours visibles) -->
-        <div class="filters-grid" style="grid-template-columns: 1fr 1fr auto; gap: 12px; margin-bottom: 16px;">
-          <div class="filter-group">
+        <!-- Ligne 1 : Recherche + Bouton Filtres -->
+        <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+          <div class="filter-group" style="flex: 1;">
             <label for="search">Rechercher</label>
             <input type="text" id="search" placeholder="Nom du plat..." />
           </div>
-          <div class="filter-group">
-            <label for="type">Type</label>
-            <select id="type">
-              <option value="">Tous types</option>
-              <option value="entree">🥗 Entrée</option>
-              <option value="plat">🍛 Plat</option>
-              <option value="dessert">🍰 Dessert</option>
-            </select>
-          </div>
-          <!-- 🎯 BOUTON TOGGLE FILTRES AVANCÉS -->
           <div class="filter-group" style="display: flex; align-items: flex-end;">
             <button class="btn btn-secondary" id="btn-toggle-filters" onclick="toggleAdvancedFilters()">
               <span id="filter-toggle-icon">+</span> Filtres <span id="filter-count"></span>
             </button>
           </div>
+        </div>
+
+        <!-- Ligne 2 : Icônes Type (Entrée, Plat, Dessert) -->
+        <div style="display: flex; gap: 12px; margin-bottom: 16px; justify-content: center;">
+          <button class="type-icon-btn" data-type="entree" onclick="selectType('entree')">
+            🥗<br><span style="font-size: 13px;">Entrée</span>
+          </button>
+          <button class="type-icon-btn" data-type="plat" onclick="selectType('plat')">
+            🍛<br><span style="font-size: 13px;">Plat</span>
+          </button>
+          <button class="type-icon-btn" data-type="dessert" onclick="selectType('dessert')">
+            🍰<br><span style="font-size: 13px;">Dessert</span>
+          </button>
         </div>
 
         <!-- 🎯 FILTRES AVANCÉS (masqués par défaut) -->
@@ -246,15 +278,21 @@
             </div>
           </div>
         </div>
-        <div style="margin-top: 20px; display: flex; gap: 12px; flex-wrap: wrap">
-          <button class="btn btn-accent" id="btn-generate-week">
-            📅 Générer planning famille (5 jours)
-          </button>
+        
+        <!-- Ligne 3 : Boutons Plat au hasard et Réinitialiser -->
+        <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center;">
           <button class="btn btn-primary" id="btn-random">
             🎲 Plat au hasard
           </button>
           <button class="btn btn-secondary" id="btn-reset">
             🔄 Réinitialiser
+          </button>
+        </div>
+        
+        <!-- Bouton planning (en dessous) -->
+        <div style="margin-top: 12px; display: flex; justify-content: center;">
+          <button class="btn btn-accent" id="btn-generate-week">
+            📅 Générer planning famille (5 jours)
           </button>
         </div>
       </section>
@@ -360,6 +398,30 @@
       const btnExportPlanning = document.getElementById("btn-export-planning");
       const btnRegenerate = document.getElementById("btn-regenerate");
       const weekGrid = document.getElementById("weekGrid");
+      
+      // ============================================
+      // FONCTION SELECTION TYPE PAR ICONES
+      // ============================================
+      function selectType(type) {
+        const buttons = document.querySelectorAll('.type-icon-btn');
+        buttons.forEach(btn => {
+          if (btn.getAttribute('data-type') === type) {
+            if (btn.classList.contains('active')) {
+              // Si déjà actif, désactiver (tous types)
+              btn.classList.remove('active');
+              typeSelect.value = '';
+            } else {
+              // Sinon, activer celui-ci
+              btn.classList.add('active');
+              typeSelect.value = type;
+            }
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+        filterAndRender();
+      }
+      
       // ============================================
       // CHARGEMENT DES RECETTES DEPUIS SUPABASE
       // ============================================
@@ -827,6 +889,21 @@
         saisonSelect.value = "";
         regimeSelect.value = "";
         proteineSelect.value = "";
+        
+        // Désactiver tous les boutons icônes
+        document.querySelectorAll('.type-icon-btn').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        
+        // Fermer les filtres avancés
+        const advancedFilters = document.getElementById('advancedFilters');
+        const icon = document.getElementById('filter-toggle-icon');
+        advancedFilters.style.display = 'none';
+        icon.textContent = '+';
+        
+        // Mettre à jour le compteur
+        updateFilterCount();
+        
         filterAndRender();
       }
       // ============================================
