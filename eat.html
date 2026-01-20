@@ -118,15 +118,15 @@
         background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
         border: 2px solid rgba(59, 130, 246, 0.2);
         border-radius: var(--radius-xl);
-        padding: 16px 24px;
+        padding: 12px 16px;
         cursor: pointer;
-        font-size: 32px;
+        font-size: 28px;
         transition: all var(--transition-base);
         display: flex;
         flex-direction: column;
         align-items: center;
         gap: 4px;
-        min-width: 100px;
+        min-width: 80px;
       }
       
       .type-icon-btn:hover {
@@ -214,29 +214,35 @@
       </div>
       <!-- Filtres -->
       <section class="card">
+        <!-- Select type caché (pour la compatibilité du code) -->
+        <select id="type" style="display: none;">
+          <option value="">Tous types</option>
+          <option value="entree">Entrée</option>
+          <option value="plat">Plat</option>
+          <option value="dessert">Dessert</option>
+        </select>
+        
         <!-- Ligne 1 : Recherche + Bouton Filtres -->
-        <div style="display: flex; gap: 12px; margin-bottom: 16px;">
+        <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items: flex-end;">
           <div class="filter-group" style="flex: 1;">
             <label for="search">Rechercher</label>
             <input type="text" id="search" placeholder="Nom du plat..." />
           </div>
-          <div class="filter-group" style="display: flex; align-items: flex-end;">
-            <button class="btn btn-secondary" id="btn-toggle-filters" onclick="toggleAdvancedFilters()">
-              <span id="filter-toggle-icon">+</span> Filtres <span id="filter-count"></span>
-            </button>
-          </div>
+          <button class="btn btn-secondary" id="btn-toggle-filters" onclick="toggleAdvancedFilters()" style="height: 44px;">
+            <span id="filter-toggle-icon">+</span> Filtres <span id="filter-count"></span>
+          </button>
         </div>
 
         <!-- Ligne 2 : Icônes Type (Entrée, Plat, Dessert) -->
         <div style="display: flex; gap: 12px; margin-bottom: 16px; justify-content: center;">
           <button class="type-icon-btn" data-type="entree" onclick="selectType('entree')">
-            🥗<br><span style="font-size: 13px;">Entrée</span>
+            🥗<br><span style="font-size: 12px;">Entrée</span>
           </button>
           <button class="type-icon-btn" data-type="plat" onclick="selectType('plat')">
-            🍛<br><span style="font-size: 13px;">Plat</span>
+            🍛<br><span style="font-size: 12px;">Plat</span>
           </button>
           <button class="type-icon-btn" data-type="dessert" onclick="selectType('dessert')">
-            🍰<br><span style="font-size: 13px;">Dessert</span>
+            🍰<br><span style="font-size: 12px;">Dessert</span>
           </button>
         </div>
 
@@ -279,20 +285,20 @@
           </div>
         </div>
         
-        <!-- Ligne 3 : Boutons Plat au hasard et Réinitialiser -->
-        <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center;">
+        <!-- Bouton planning -->
+        <div style="margin-top: 20px; display: flex; justify-content: center;">
+          <button class="btn btn-accent" id="btn-generate-week">
+            📅 Générer planning famille (5 jours)
+          </button>
+        </div>
+        
+        <!-- Boutons Plat au hasard et Réinitialiser (en dessous) -->
+        <div style="margin-top: 12px; display: flex; gap: 12px; justify-content: center;">
           <button class="btn btn-primary" id="btn-random">
             🎲 Plat au hasard
           </button>
           <button class="btn btn-secondary" id="btn-reset">
             🔄 Réinitialiser
-          </button>
-        </div>
-        
-        <!-- Bouton planning (en dessous) -->
-        <div style="margin-top: 12px; display: flex; justify-content: center;">
-          <button class="btn btn-accent" id="btn-generate-week">
-            📅 Générer planning famille (5 jours)
           </button>
         </div>
       </section>
