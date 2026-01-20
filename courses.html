@@ -1464,25 +1464,18 @@
     <!-- Drawer dynamique - BOUTONS DANS LE HEADER -->
     <div id="drawer" class="drawer">
       <div class="drawer-header">
-        <div style="flex: 1">
-          <h2 id="drawerTitle" style="margin: 0 0 12px 0"></h2>
-          <!-- ✅ Boutons compacts dans le header -->
-          <div style="display: flex; gap: 8px">
-            <button
-              class="btn-compact btn-compact-primary"
-              onclick="saveDrawer()"
-            >
-              💾 Sauvegarder
-            </button>
-            <button
-              class="btn-compact btn-compact-secondary"
-              onclick="clearDrawer()"
-            >
-              🗑️ Vider
-            </button>
-          </div>
+        <div style="flex: 1; display: flex; align-items: center; gap: 12px;">
+          <button
+            class="btn-compact btn-compact-secondary"
+            onclick="clearDrawer()"
+          >
+            🗑️ Vider
+          </button>
+          <h2 id="drawerTitle" style="margin: 0"></h2>
         </div>
-        <button class="drawer-close" onclick="closeDrawer()">&larr;</button>
+        <button class="drawer-close" onclick="closeDrawer()" style="width: auto; padding: 10px 20px; border-radius: 12px; font-size: 15px; font-weight: 600;">
+          📦 Catégories
+        </button>
       </div>
       <div class="drawer-body" id="drawerBody"></div>
 
@@ -2476,35 +2469,16 @@
         const checkbox = document.getElementById(`item-${item}`);
         const parent = checkbox.closest(".checkbox-item");
         parent.classList.toggle("checked");
+        
+        // Sauvegarde automatique
+        renderCategories();
+        saveToAPI();
       }
 
       function saveDrawer() {
-        // Si c'est le drawer du stock de base
-        if (currentCategory === null) {
-          // Sauvegarder le stock dans localStorage (déjà fait dans toggleStockItem)
-          localStorage.setItem(
-            "food_home_stock_base",
-            JSON.stringify(stockBase)
-          );
-
-          closeDrawer();
-
-          // NE PLUS filtrer automatiquement - juste afficher en orange
-          // (Ancien code de filtrage supprimé)
-          let filtered = 0; // Garder pour compatibilité
-
-          renderCategories();
-          saveToAPI();
-
-          showToast(
-            "✅ Stock de base sauvegardé ! Les items en stock seront affichés en orange."
-          );
-
-          return;
-        }
-
+        // Cette fonction n'est maintenant utilisée que pour la compatibilité
+        // La sauvegarde se fait automatiquement dans toggleItem et toggleStockItem
         closeDrawer();
-        saveToAPI();
       }
 
       function clearDrawer() {
@@ -2685,7 +2659,7 @@
         let html = `
           <p style="color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">
             Le <strong>stock de base</strong> contient les produits essentiels que vous avez toujours chez vous.
-            Ces items seront <strong>automatiquement filtrés</strong> de votre liste de courses quand vous cliquez sur "Sauvegarder".
+            Ces items seront <strong>affichés en orange</strong> dans votre liste de courses pour vous rappeler qu'ils sont déjà en stock.
           </p>
           <div class="item-group">
             <div class="item-group-title">🧂 Produits essentiels</div>
