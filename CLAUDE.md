@@ -57,10 +57,12 @@ chaînes) :
   "saisons": "toute",              // "toute" | "printemps" | "ete" | "automne" | "hiver"
   "diets": "equilibre|vegetarien", // valeurs séparées par « | »
   "proteine": "laitier",           // viande | poisson | oeuf | laitier | vegetal | ...
-  "kidsFriendly": "Oui",           // "Oui" | "Non"
+  "kidsFriendly": "Oui",           // "Oui" | "Non" (hérité, peu fiable — voir `public`)
   "temps": "50",                   // minutes (chaîne)
   "budget": "budget",              // "budget" | "moyen" | "eleve"
-  "categorie_jour": "",            // "" | "semaine" (usage planning)
+  "categorie_jour": "",            // "" | "semaine" (hérité, non utilisé par le planning)
+  "moment": "semaine",             // "semaine" | "we" | "tous" — quand servir la recette
+  "public": "kids",                // "kids" | "adultes" | "tous" — pour qui
   "ingredients": "Lait (1 L)|Œufs (5)|Sucre (100 g)", // items séparés par « | », quantité entre ( )
   "instructions": "Préchauffer le four à 180°C. …"    // texte libre
 }
@@ -69,6 +71,25 @@ chaînes) :
 Convention **ingrédients** : `Nom (quantité)` séparés par `|`. La quantité entre
 parenthèses est la donnée que l'utilisateur a récemment ajoutée à tout le
 catalogue.
+
+**Étiquettes `moment` / `public`** (présentes sur les 167 recettes). Ce sont les
+axes qui pilotent le générateur de planning et les badges des cartes
+(`public: kids` → 👶, `adultes` → 🍷, `moment: we` → 🗓️). `kidsFriendly` et
+`categorie_jour` restent dans le JSON pour compatibilité mais ne sont plus la
+source de vérité — utiliser `moment`/`public`.
+
+### Planning famille (`generateWeeklyPlanning` dans `eat.html`)
+
+Le planning couvre **9 repas**, définis dans la constante `PLANNING_SLOTS` :
+dîners Lun→Ven + déjeuner du mercredi (créneaux `kind:"semaine"`), puis samedi
+dîner + dimanche déjeuner & dîner (`kind:"we"`). Les midis d'école
+(Lun/Mar/Jeu/Ven) sont volontairement absents.
+
+- Créneaux **semaine** : plats tirés de `moment ∈ {semaine, tous}` **et**
+  `public ∈ {kids, tous}`, en privilégiant les plats rapides au déjeuner.
+- Créneaux **we** : plats de `moment ∈ {we, tous}` (tous publics), en
+  privilégiant les plus qualitatifs (budget `moyen`/`eleve` ou temps > 45 min).
+- Variété assurée par déduplication des `id` et plafond de 2 par `proteine`.
 
 ### Liste de courses
 
