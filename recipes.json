@@ -18,7 +18,7 @@
   {
     "id": "p2",
     "nom": "Tian de légumes au four",
-    "saisons": "ete|automne",
+    "saisons": "printemps|ete",
     "diets": "equilibre|vegetarien|vegetalien|sans gluten",
     "kidsFriendly": "Oui",
     "temps": "50",
@@ -418,7 +418,7 @@
   {
     "id": "p27",
     "nom": "Saumon grillé avec riz basmati",
-    "saisons": "toute",
+    "saisons": "printemps|ete",
     "diets": "equilibre|poisson",
     "kidsFriendly": "Oui",
     "temps": "25",
@@ -482,7 +482,7 @@
   {
     "id": "p31",
     "nom": "Falafels maison avec salade",
-    "saisons": "toute",
+    "saisons": "printemps|ete",
     "diets": "equilibre|vegetarien|vegetalien",
     "kidsFriendly": "Oui",
     "temps": "30",
@@ -882,7 +882,7 @@
   {
     "id": "p56",
     "nom": "Thon mi-cuit avec avocat",
-    "saisons": "toute",
+    "saisons": "printemps|ete",
     "diets": "equilibre|poisson",
     "kidsFriendly": "Oui",
     "temps": "15",
@@ -994,7 +994,7 @@
   {
     "id": "p63",
     "nom": "Salade de lentilles et betteraves",
-    "saisons": "toute",
+    "saisons": "printemps|ete",
     "diets": "equilibre|vegetarien|vegetalien|sans gluten",
     "kidsFriendly": "Oui",
     "temps": "15",
@@ -1346,7 +1346,7 @@
   {
     "id": "p85",
     "nom": "Ratatouille et poulet",
-    "saisons": "été|automne",
+    "saisons": "printemps|ete",
     "diets": "equilibre|sans gluten",
     "kidsFriendly": "Oui",
     "temps": "45",
@@ -1714,7 +1714,7 @@
   {
     "id": "p116",
     "nom": "Œufs brouillés à la grecque",
-    "saisons": "",
+    "saisons": "printemps|ete",
     "diets": "equilibre|rapide",
     "kidsFriendly": "Oui",
     "temps": "15",
@@ -1874,7 +1874,7 @@
   {
     "id": "p126",
     "nom": "Steak tartare",
-    "saisons": "toutes",
+    "saisons": "printemps|ete",
     "diets": "facile",
     "kidsFriendly": "Oui",
     "temps": "20",
@@ -1906,7 +1906,7 @@
   {
     "id": "p128",
     "nom": "Crevettes à l'ail",
-    "saisons": "toutes",
+    "saisons": "printemps|ete",
     "diets": "facile|rapide",
     "kidsFriendly": "Non",
     "temps": "20",
@@ -2242,7 +2242,7 @@
   {
     "id": "p149",
     "nom": "Mijoté de poulet",
-    "saisons": "toute",
+    "saisons": "automne|hiver",
     "diets": "equilibre|viande|sans gluten",
     "kidsFriendly": "Oui",
     "temps": "45",
@@ -2466,7 +2466,7 @@
   {
     "id": "p163",
     "nom": "Tartare de saumon",
-    "saisons": "toute",
+    "saisons": "printemps|ete",
     "diets": "bistronomie|poisson",
     "kidsFriendly": "Oui",
     "temps": "20",
@@ -2482,7 +2482,7 @@
   {
     "id": "p164",
     "nom": "Carpaccio de bœuf",
-    "saisons": "toute",
+    "saisons": "printemps|ete",
     "diets": "bistronomie|viande",
     "kidsFriendly": "Non",
     "temps": "20",
@@ -2498,7 +2498,7 @@
   {
     "id": "p165",
     "nom": "Tataki de thon",
-    "saisons": "toute",
+    "saisons": "printemps|ete",
     "diets": "bistronomie|poisson",
     "kidsFriendly": "Non",
     "temps": "20",
