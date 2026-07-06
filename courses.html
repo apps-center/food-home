@@ -24,8 +24,6 @@
     <!-- Favicon standard pour navigateurs -->
     <link rel="icon" type="image/png" href="/apple-touch-icon.png" />
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <title>FOOD HOME — Listes de courses</title>
     <link rel="stylesheet" href="/css/common.css" />
     <link rel="stylesheet" href="/css/courses.css" />
@@ -1415,13 +1413,20 @@
           </div>
         </div>
         <!-- Actions -->
-        <div class="actions" style="justify-content: center;">
+        <div class="actions" style="justify-content: center; flex-wrap: wrap;">
           <button class="btn btn-accent" onclick="openStockDrawer()">
             📦 Stock de base
           </button>
           <button class="btn btn-primary" onclick="exportList()">
             📤 Exporter
           </button>
+          <button class="btn btn-secondary" onclick="backupList()">
+            💾 Sauvegarder
+          </button>
+          <button class="btn btn-secondary" onclick="document.getElementById('restoreFileInput').click()">
+            ♻️ Restaurer
+          </button>
+          <input type="file" id="restoreFileInput" accept="application/json,.json" style="display: none" onchange="restoreList(event)" />
         </div>
         <!-- Bouton Undo flottant -->
         <button
@@ -1735,12 +1740,10 @@
 
     <script>
       // ============================================
-      // CONFIGURATION SUPABASE
+      // STOCKAGE
       // ============================================
-      window.mySupabase = window.supabase.createClient(
-        'https://jjqachkaouvcrdxreuza.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqcWFjaGthb3V2Y3JkeHJldXphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2OTQ3NzQsImV4cCI6MjA4NDI3MDc3NH0.FVGtd99ES_ByhXKkIsxk5SV4ampFHNBeIGuMMOg2qMg'
-      );
+      // App 100 % statique : liste de courses persistée en localStorage.
+      const SHOPPING_KEY = 'food_home_shopping_list';
 
       // Définition des catégories et produits avec COULEURS NUTRITIONNELLES
       const CATEGORIES = {
@@ -2598,6 +2601,72 @@
         showToast("✅ Liste copiée dans le presse-papier !");
       }
 
+      // 💾 Sauvegarde de secours : télécharge la liste cochée dans un fichier JSON.
+      // Sert de filet de sécurité (perte de données navigateur, changement d'appareil).
+      function backupList() {
+        const items = [];
+        Object.values(selections).forEach((cat) => {
+          Object.entries(cat).forEach(([item, checked]) => {
+            if (checked) items.push(item);
+          });
+        });
+
+        const payload = {
+          app: "food-home",
+          type: "shopping_list",
+          exportedAt: new Date().toISOString(),
+          items,
+        };
+
+        const blob = new Blob([JSON.stringify(payload, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const stamp = new Date().toISOString().slice(0, 10);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `food-home-courses-${stamp}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+
+        showToast(`💾 Sauvegarde de ${items.length} article(s) téléchargée`);
+      }
+
+      // ♻️ Restauration : lit un fichier de sauvegarde et FUSIONNE avec la liste
+      // actuelle (aucune perte des articles déjà présents).
+      function restoreList(event) {
+        const file = event.target.files && event.target.files[0];
+        event.target.value = ""; // permet de re-sélectionner le même fichier
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => {
+          try {
+            const parsed = JSON.parse(reader.result);
+            const restored = Array.isArray(parsed) ? parsed : parsed.items;
+            if (!Array.isArray(restored)) {
+              throw new Error("Format non reconnu");
+            }
+
+            const current = JSON.parse(localStorage.getItem(SHOPPING_KEY) || "[]");
+            const merged = [...new Set([...current, ...restored])];
+            const added = merged.length - current.length;
+
+            localStorage.setItem(SHOPPING_KEY, JSON.stringify(merged));
+            loadFromAPI(); // re-dispatch dans les rayons + rendu
+
+            showToast(`♻️ Restauré : ${added} nouvel(s) article(s) ajouté(s)`);
+          } catch (err) {
+            console.error("Restauration impossible:", err);
+            showToast("❌ Fichier de sauvegarde invalide", "error");
+          }
+        };
+        reader.onerror = () => showToast("❌ Lecture du fichier impossible", "error");
+        reader.readAsText(file);
+      }
+
       // Clear all
       function clearAll() {
         showConfirmModal(
@@ -2743,53 +2812,16 @@
       }
 
       // ============================================
-      // 💾 STOCKAGE SUPABASE + LOCALSTORAGE FALLBACK
+      // 💾 STOCKAGE LOCALSTORAGE
       // ============================================
 
-      // Load from Supabase
+      // Load from localStorage
       async function loadFromAPI() {
         try {
-          // Charger TOUJOURS localStorage d'abord
-          const savedList = localStorage.getItem("food_home_shopping_list");
-          const localItems = savedList ? JSON.parse(savedList) : [];
-          
-          // 🔥 CHARGER depuis Supabase
-          const { data, error } = await window.mySupabase
-            .from('shopping_list')
-            .select('items')
-            .eq('user_id', 'default_user')
-            .single();
-          
-          let supabaseItems = [];
-          if (error) {
-            if (error.code === 'PGRST116') {
-              console.log('📭 Aucune liste dans Supabase');
-            } else {
-              console.error('⚠️ Erreur Supabase:', error);
-            }
-          } else {
-            supabaseItems = data?.items || [];
-          }
-          
-          // ✅ TOUJOURS FUSIONNER Supabase + localStorage (dédupliquer)
-          const itemsFromStorage = [...new Set([...supabaseItems, ...localItems])];
-          console.log(`📥 Fusion: ${supabaseItems.length} Supabase + ${localItems.length} localStorage = ${itemsFromStorage.length} items`);
-          
-          // Si on a des items et que Supabase n'est pas à jour, sync
-          if (itemsFromStorage.length > supabaseItems.length) {
-            await window.mySupabase
-              .from('shopping_list')
-              .upsert({
-                user_id: 'default_user',
-                items: itemsFromStorage
-              }, {
-                onConflict: 'user_id'
-              });
-            console.log('💾 Sync fusionné → Supabase');
-          }
-          
-          // Sauvegarder la version fusionnée en localStorage
-          localStorage.setItem("food_home_shopping_list", JSON.stringify(itemsFromStorage));
+          // Charger la liste depuis localStorage (source unique)
+          const savedList = localStorage.getItem(SHOPPING_KEY);
+          const itemsFromStorage = savedList ? JSON.parse(savedList) : [];
+          console.log(`📥 ${itemsFromStorage.length} items chargés depuis localStorage`);
 
           // ✅ DISPATCHER dans les bonnes catégories
           itemsFromStorage.forEach((item) => {
@@ -2843,30 +2875,11 @@
         });
 
         try {
-          // 🔥 SAUVEGARDER dans Supabase
-          const { error } = await window.mySupabase
-            .from('shopping_list')
-            .upsert({
-              user_id: 'default_user',
-              items: allItems
-            }, {
-              onConflict: 'user_id'
-            });
-          
-          if (error) {
-            console.error('⚠️ Erreur Supabase:', error);
-            // Fallback vers localStorage
-            localStorage.setItem("food_home_shopping_list", JSON.stringify(allItems));
-            console.log("💾 Fallback localStorage:", allItems.length, "items");
-          } else {
-            console.log("💾 Sauvegarde Supabase:", allItems.length, "items");
-            // Aussi sauvegarder en localStorage
-            localStorage.setItem("food_home_shopping_list", JSON.stringify(allItems));
-          }
+          localStorage.setItem(SHOPPING_KEY, JSON.stringify(allItems));
+          console.log("💾 Sauvegarde localStorage:", allItems.length, "items");
         } catch (error) {
           console.error("Erreur sauvegarde:", error);
-          // Fallback localStorage
-          localStorage.setItem("food_home_shopping_list", JSON.stringify(allItems));
+          showToast("⚠️ Sauvegarde impossible (stockage plein ?)", "error");
         }
       }
 

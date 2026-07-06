@@ -72,52 +72,43 @@ catalogue.
 
 ### Liste de courses
 
-Stockée sous forme d'un tableau de chaînes (noms d'items) :
-- `localStorage['food_home_shopping_list']` (source locale, toujours présente) ;
-- historiquement aussi une table Supabase `shopping_list` (colonne `items` JSON,
-  une ligne par `user_id`, ici `'default_user'`). Voir « Statut / migration ».
+Stockée en `localStorage['food_home_shopping_list']` sous forme d'un tableau de
+chaînes (noms d'items). Clé exposée dans le code via la constante
+`SHOPPING_KEY` (définie dans `eat.html` et `courses.html`).
 
 Dans `courses.html`, les items sont rangés par rayon via l'objet `CATEGORIES`
 (clé → `{ name, icon, items[] | groups{} }`) et `findCategoryForItem()`.
+Sauvegarde/restauration manuelle vers un fichier JSON via `backupList()` /
+`restoreList()` (boutons « 💾 Sauvegarder » / « ♻️ Restaurer »). La restauration
+**fusionne** avec la liste existante (dédup), elle n'écrase jamais.
 
-## ⚠️ Statut actuel & migration recommandée
+## Architecture de stockage — 100 % statique (plus de Supabase)
 
-**Contexte.** Le backend Supabase du projet a été mis en pause par inactivité
-(offre gratuite : pause après ~1 semaine, suppression du dashboard après 90 j).
-Résultat : les appels réseau échouent, mais **l'app continue de fonctionner**
-grâce aux fallbacks `localStorage`.
+**Historique.** Le backend Supabase du projet avait été mis en pause par
+inactivité (offre gratuite : pause après ~1 semaine, suppression du dashboard
+après 90 j), rendant les recettes inaccessibles.
 
-**Deux points à connaître avant toute modif :**
+**État actuel (migration effectuée).** Supabase a été entièrement retiré. L'app
+est désormais purement front-end :
 
-1. **Les recettes sont (encore) lues depuis Supabase, pas depuis `recipes.json`.**
-   `eat.html > loadRecipes()` fait `mySupabase.from('recipes').select('*')` puis
-   mappe des colonnes SQL (`name`, `category`, `season`, `diet`, `protein`,
-   `difficulty`, `preparation_time`, `ingredients[]`, `instructions`) vers la
-   forme interne (`nom`, `type_repas`, …). Tant que Supabase est en pause,
-   `loadRecipes()` échoue et affiche « Erreur de chargement ». **`recipes.json`
-   n'est donc chargé par personne aujourd'hui** — le catalogue mis à jour n'est
-   pas visible dans l'app.
+- **Recettes** : `eat.html > loadRecipes()` fait `fetch('recipes.json')`. Le
+  fichier est déjà au format interne (`nom`, `type_repas`, …), aucun mapping.
+  `recipes.json` est **l'unique source de vérité** des recettes — éditer ce
+  fichier suffit à mettre à jour l'app.
+- **Liste de courses** : `localStorage` seul, dans `eat.html` (ajout d'items) et
+  `courses.html` (`loadFromAPI` / `saveToAPI`). Plus aucun appel réseau.
+- Le `<script src="…supabase-js…">` et les `createClient(...)` ont été supprimés
+  des deux pages.
 
-2. **Bonne nouvelle : `recipes.json` a déjà exactement la forme interne attendue
-   par `eat.html`** (`nom`, `type_repas`, `saisons`, `diets`, `proteine`,
-   `kidsFriendly`, `temps`, `ingredients` en chaîne « | », `instructions`).
+**Conséquences.** Plus aucun backend à réveiller/payer, jamais de nouvelle mise
+en pause, déploiement gratuit et durable sur Vercel. Contrepartie : la liste de
+courses n'est plus synchronisée automatiquement entre appareils — utiliser
+« 💾 Sauvegarder » / « ♻️ Restaurer » pour la transférer manuellement.
 
-**Reprise propre recommandée : supprimer Supabase, tout en statique.**
-Remplacer dans `eat.html > loadRecipes()` l'appel Supabase par
-`fetch('recipes.json')` (les données sont déjà au bon format, plus besoin du
-`.map(...)`), et laisser la liste de courses en `localStorage` seul (retirer les
-blocs `mySupabase.from('shopping_list')` dans `eat.html` et `courses.html`, ainsi
-que le `<script src="…supabase-js…">` et `createClient(...)`). Avantages : plus
-aucun backend à réveiller/payer, jamais de nouvelle mise en pause, `recipes.json`
-devient l'unique source de vérité, déploiement gratuit et durable sur Vercel.
-Limite : la liste de courses n'est plus synchronisée entre appareils (elle ne
-l'était déjà plus depuis la pause).
-
-Alternative (si sync multi-appareils indispensable) : recréer un projet Supabase,
-re-seed la table `recipes` **depuis `recipes.json`** (attention au mapping de
-colonnes ci-dessus, inversé), et mettre à jour l'URL + la clé anon dans
-`eat.html` et `courses.html`. Plus fragile (re-pause possible) et deux endroits à
-maintenir.
+Si un jour une vraie synchronisation multi-appareils devient nécessaire,
+préférer un service pensé pour les apps statiques peu actives (ex. un simple
+gist/KV, ou Supabase avec un cron de « keep-alive ») plutôt que de dépendre d'un
+backend qui se remet en pause.
 
 ## Qualité des données `recipes.json`
 
