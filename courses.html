@@ -2485,15 +2485,31 @@
       }
 
       function clearDrawer() {
+        // Le tiroir « Stock de base » n'utilise pas `selections` mais l'objet
+        // `stockBase` (currentCategory === null dans ce cas).
+        const isStock = currentCategory === null;
         showConfirmModal(
-          "Vider cette catégorie ?",
-          "Tous les items cochés de cette catégorie seront décochés.",
+          isStock ? "Vider le stock de base ?" : "Vider cette catégorie ?",
+          isStock
+            ? "Tous les produits du stock de base seront décochés."
+            : "Tous les items cochés de cette catégorie seront décochés.",
           () => {
-            Object.keys(selections[currentCategory]).forEach((item) => {
-              selections[currentCategory][item] = false;
-            });
-            openDrawer(currentCategory);
-            showToast("Catégorie vidée");
+            if (isStock) {
+              Object.keys(stockBase).forEach((item) => {
+                stockBase[item] = false;
+              });
+              localStorage.setItem("food_home_stock_base", JSON.stringify(stockBase));
+              openStockDrawer();
+              renderCategories();
+              showToast("Stock de base vidé");
+            } else {
+              Object.keys(selections[currentCategory]).forEach((item) => {
+                selections[currentCategory][item] = false;
+              });
+              saveToAPI();
+              openDrawer(currentCategory);
+              showToast("Catégorie vidée");
+            }
           }
         );
       }
