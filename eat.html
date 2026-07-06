@@ -569,22 +569,49 @@
       // ============================================
       // GÉNÉRATEUR DE PLANNING INTELLIGENT
       // ============================================
+      // Saison courante (hémisphère nord) d'après le mois
+      function currentSeason(date = new Date()) {
+        const m = date.getMonth(); // 0 = janvier
+        if (m >= 2 && m <= 4) return "printemps";
+        if (m >= 5 && m <= 7) return "ete";
+        if (m >= 8 && m <= 10) return "automne";
+        return "hiver";
+      }
+      // Une recette est de saison si "toute"/"toutes"/vide, ou si elle liste
+      // la saison courante. Tolère les accents (été → ete) et le séparateur « | ».
+      function matchesSeason(recipe, season) {
+        const raw = (recipe.saisons || "")
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+        if (!raw.trim()) return true;
+        const set = raw.split("|").map((s) => s.trim());
+        if (set.includes("toute") || set.includes("toutes")) return true;
+        return set.includes(season);
+      }
+
       function generateWeeklyPlanning() {
         // Réinitialiser
         weeklyPlanning = {};
 
+        const season = currentSeason();
         const plats = allRecipes.filter((r) => r.type_repas === "plat");
+        const seasonal = plats.filter((r) => matchesSeason(r, season));
 
-        // Pool SEMAINE : plats semaine/tous, plutôt kids/tous
-        const semainePool = plats.filter(
-          (r) =>
-            (r.moment === "semaine" || r.moment === "tous") &&
-            (r.public === "kids" || r.public === "tous")
-        );
-        // Pool WEEK-END : plats we/tous, tous publics (adultes bienvenus)
-        const wePool = plats.filter(
-          (r) => r.moment === "we" || r.moment === "tous"
-        );
+        const mkSemaine = (src) =>
+          src.filter(
+            (r) =>
+              (r.moment === "semaine" || r.moment === "tous") &&
+              (r.public === "kids" || r.public === "tous")
+          );
+        const mkWe = (src) =>
+          src.filter((r) => r.moment === "we" || r.moment === "tous");
+
+        // Pools de saison, avec repli sur toute l'année si trop peu de choix
+        let semainePool = mkSemaine(seasonal);
+        let wePool = mkWe(seasonal);
+        if (semainePool.length < 6) semainePool = mkSemaine(plats);
+        if (wePool.length < 3) wePool = mkWe(plats);
 
         if (semainePool.length < 6 || wePool.length < 3) {
           showToast("Pas assez de recettes étiquetées pour générer le planning");
