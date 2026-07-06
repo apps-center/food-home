@@ -20,8 +20,6 @@
     <!-- Favicon standard pour navigateurs -->
     <link rel="icon" type="image/png" href="/apple-touch-icon.png">
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
     <title>Quel plat ce soir ?</title>
     <!-- 🎨 CSS EXTERNES -->
     <link rel="stylesheet" href="/css/common.css">
@@ -370,14 +368,12 @@
     </div>
     <script>
       // ============================================
-      // CONFIGURATION SUPABASE
+      // STOCKAGE
       // ============================================
-      // Utiliser window.mySupabase pour éviter les conflits
-      window.mySupabase = window.supabase.createClient(
-        'https://jjqachkaouvcrdxreuza.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqcWFjaGthb3V2Y3JkeHJldXphIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg2OTQ3NzQsImV4cCI6MjA4NDI3MDc3NH0.FVGtd99ES_ByhXKkIsxk5SV4ampFHNBeIGuMMOg2qMg'
-      );
-      
+      // App 100 % statique : recettes lues depuis recipes.json,
+      // liste de courses stockée en localStorage (clé partagée avec courses.html).
+      const SHOPPING_KEY = 'food_home_shopping_list';
+
       // ============================================
       // VARIABLES GLOBALES
       // ============================================
@@ -429,44 +425,29 @@
       }
       
       // ============================================
-      // CHARGEMENT DES RECETTES DEPUIS SUPABASE
+      // CHARGEMENT DES RECETTES DEPUIS recipes.json
       // ============================================
       async function loadRecipes() {
         resultsDiv.innerHTML = '<div class="loading">Chargement des recettes...</div>';
-        
+
         try {
-          console.log('🔄 Chargement depuis Supabase...');
-          
-          const { data, error } = await window.mySupabase
-            .from('recipes')
-            .select('*')
-            .order('name', { ascending: true });
-          
-          if (error) {
-            console.error('❌ Erreur Supabase:', error);
-            throw error;
+          console.log('🔄 Chargement depuis recipes.json...');
+
+          const response = await fetch('recipes.json', { cache: 'no-cache' });
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
           }
-          
-          console.log('✅ Recettes chargées:', data.length);
-          
-          allRecipes = data.map(recipe => ({
-            id: recipe.id,
-            nom: recipe.name,
-            type_repas: recipe.category,
-            saisons: recipe.season || 'toute',
-            diets: recipe.diet || '',
-            proteine: recipe.protein || '',
-            kidsFriendly: recipe.difficulty === 'Facile' ? 'Oui' : 'Non',
-            temps: recipe.preparation_time || 0,
-            ingredients: Array.isArray(recipe.ingredients) 
-              ? recipe.ingredients.join('|')
-              : '',
-            instructions: recipe.instructions || ''
-          }));
-          
-          console.log('✅ Mappé:', allRecipes.length, 'recettes');
+
+          const data = await response.json();
+
+          // recipes.json est déjà au format interne : aucun mapping nécessaire.
+          allRecipes = data
+            .slice()
+            .sort((a, b) => (a.nom || '').localeCompare(b.nom || '', 'fr'));
+
+          console.log('✅ Recettes chargées:', allRecipes.length);
           filterAndRender();
-          
+
         } catch (error) {
           console.error('❌ Erreur:', error);
           resultsDiv.innerHTML = `
@@ -671,52 +652,20 @@
         }
         
         try {
-          // 🔥 CHARGER depuis Supabase ET localStorage puis FUSIONNER
-          const { data, error } = await window.mySupabase
-            .from('shopping_list')
-            .select('items')
-            .eq('user_id', 'default_user')
-            .single();
-          
-          let supabaseItems = [];
-          if (error && error.code !== 'PGRST116') {
-            console.error('⚠️ Erreur Supabase:', error);
-          } else if (data?.items && Array.isArray(data.items)) {
-            supabaseItems = data.items;
-          }
-          
-          // Toujours charger localStorage aussi
-          const localItems = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
-          
-          // FUSIONNER Supabase + localStorage (dédupliquer)
-          const allExistingItems = [...new Set([...supabaseItems, ...localItems])];
-          console.log(`📥 Fusion: ${supabaseItems.length} Supabase + ${localItems.length} localStorage = ${allExistingItems.length} items`);
-          
-          const newItems = Array.from(allIngredients).filter(item => !allExistingItems.includes(item));
-          const finalList = [...allExistingItems, ...newItems];
-          
-          // 🔥 SAUVEGARDER dans Supabase
-          const { error: upsertError } = await window.mySupabase
-            .from('shopping_list')
-            .upsert({
-              user_id: 'default_user',
-              items: finalList
-            }, {
-              onConflict: 'user_id'
-            });
-          
-          if (upsertError) {
-            console.error('⚠️ Erreur sauvegarde Supabase:', upsertError);
-          }
-          
-          // Aussi sauvegarder en localStorage
-          localStorage.setItem('food_home_shopping_list', JSON.stringify(finalList));
-          
-          // Notifier le parent pour refresh
+          // Charger la liste existante depuis localStorage
+          const existingItems = JSON.parse(localStorage.getItem(SHOPPING_KEY) || '[]');
+
+          const newItems = Array.from(allIngredients).filter(item => !existingItems.includes(item));
+          const finalList = [...existingItems, ...newItems];
+
+          // Sauvegarder en localStorage (source unique)
+          localStorage.setItem(SHOPPING_KEY, JSON.stringify(finalList));
+
+          // Notifier le parent pour refresh de l'iframe courses
           window.parent.postMessage({
             type: 'SHOPPING_LIST_UPDATED'
           }, '*');
-          
+
           showToast(`✅ ${newItems.length} ingrédient(s) ajouté(s) à la liste de courses !`);
         } catch (error) {
           console.error('❌ Erreur:', error);
@@ -825,52 +774,20 @@
         ingredients = expandedIngredients;
       
         try {
-          // 🔥 CHARGER depuis Supabase ET localStorage puis FUSIONNER
-          const { data, error } = await window.mySupabase
-            .from('shopping_list')
-            .select('items')
-            .eq('user_id', 'default_user')
-            .single();
-          
-          let supabaseItems = [];
-          if (error && error.code !== 'PGRST116') {
-            console.error('⚠️ Erreur Supabase:', error);
-          } else if (data?.items && Array.isArray(data.items)) {
-            supabaseItems = data.items;
-          }
-          
-          // Toujours charger localStorage aussi
-          const localItems = JSON.parse(localStorage.getItem('food_home_shopping_list') || '[]');
-          
-          // FUSIONNER Supabase + localStorage (dédupliquer)
-          const allExistingItems = [...new Set([...supabaseItems, ...localItems])];
-          console.log(`📥 Fusion: ${supabaseItems.length} Supabase + ${localItems.length} localStorage = ${allExistingItems.length} items`);
-          
-          const newItems = ingredients.filter(item => !allExistingItems.includes(item));
-          const finalList = [...allExistingItems, ...newItems];
-          
-          // 🔥 SAUVEGARDER dans Supabase
-          const { error: upsertError } = await window.mySupabase
-            .from('shopping_list')
-            .upsert({
-              user_id: 'default_user',
-              items: finalList
-            }, {
-              onConflict: 'user_id'
-            });
-          
-          if (upsertError) {
-            console.error('⚠️ Erreur sauvegarde Supabase:', upsertError);
-          }
-          
-          // Aussi sauvegarder en localStorage
-          localStorage.setItem('food_home_shopping_list', JSON.stringify(finalList));
-          
-          // Notifier le parent pour refresh
+          // Charger la liste existante depuis localStorage
+          const existingItems = JSON.parse(localStorage.getItem(SHOPPING_KEY) || '[]');
+
+          const newItems = ingredients.filter(item => !existingItems.includes(item));
+          const finalList = [...existingItems, ...newItems];
+
+          // Sauvegarder en localStorage (source unique)
+          localStorage.setItem(SHOPPING_KEY, JSON.stringify(finalList));
+
+          // Notifier le parent pour refresh de l'iframe courses
           window.parent.postMessage({
             type: 'SHOPPING_LIST_UPDATED'
           }, '*');
-          
+
           showToast(`✅ ${newItems.length} ingrédient(s) ajouté(s) !`);
         } catch (error) {
           console.error('❌ Erreur:', error);

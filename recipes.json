@@ -37,8 +37,8 @@
     "budget": "moyen",
     "proteine": "viande",
     "ingredients": "Feuilles de lasagnes (250 g)|Bœuf haché (500 g)|Oignons (1)|Ail (2 gousses)|Carottes (1 petite)|Tomates (400 g)|Concentré de tomate (1 c. s.)|Lait (500 ml)|Beurre (40 g)|Farine (40 g)|Sel, poivre (QS)|Fromage râpé (120 g)",
-    "instructions": "Préparer la sauce tomate: faire revenir oignon, ail et carotte, ajouter le bœuf, puis tomates et concentré",
-    "type_repas": "mijoter 20 min. Préparer une béchamel: fondre le beurre, ajouter la farine, puis le lait au fouet jusqu’à épaississement",
+    "instructions": "Préparer la sauce tomate: faire revenir oignon, ail et carotte, ajouter le bœuf, puis tomates et concentré, mijoter 20 min. Préparer une béchamel: fondre le beurre, ajouter la farine, puis le lait au fouet jusqu’à épaississement",
+    "type_repas": "plat",
     "categorie_jour": ""
   },
   {
@@ -765,8 +765,8 @@
     "budget": "moyen",
     "proteine": "poisson",
     "ingredients": "Saumon (500 g)|500 g d’asperges vertes|Citron (1, zeste et jus)|Huile olive (2 c. s.)|Ail (2 gousses)|Échalotes (2, optionnel)|Ciboulette (QS)|Sel, poivre (QS)",
-    "instructions": "Coupez l’extrémité dure des asperges, rincez-les et séchez-les. Chauffez 1 c. à s. d’huile dans une grande poêle. Faites revenir l’échalote 1 minute puis ajoutez les asperges avec une pincée de sel. Saisissez 3–4 minutes à feu vif, baissez le feu et poursuivez 4–5 minutes jusqu’à ce qu’elles soient tendres mais encore croquantes",
-    "type_repas": "ajoutez l’ail en fin de cuisson. Dans une seconde poêle antiadhésive, chauffez 1 c. à s. d’huile. Salez et poivrez les darnes de saumon. Saisissez-les 3–4 minutes côté peau, retournez et cuisez 2–3 minutes selon l’épaisseur (le cœur doit rester légèrement rosé). Hors du feu, arrosez avec le jus de citron et parsemez de zeste et d’herbes ciselées. Servez immédiatement les darnes sur un lit d’asperges, nappez du jus citronné de la poêle.",
+    "instructions": "Coupez l’extrémité dure des asperges, rincez-les et séchez-les. Chauffez 1 c. à s. d’huile dans une grande poêle. Faites revenir l’échalote 1 minute puis ajoutez les asperges avec une pincée de sel. Saisissez 3–4 minutes à feu vif, baissez le feu et poursuivez 4–5 minutes jusqu’à ce qu’elles soient tendres mais encore croquantes, ajoutez l’ail en fin de cuisson. Dans une seconde poêle antiadhésive, chauffez 1 c. à s. d’huile. Salez et poivrez les darnes de saumon. Saisissez-les 3–4 minutes côté peau, retournez et cuisez 2–3 minutes selon l’épaisseur (le cœur doit rester légèrement rosé). Hors du feu, arrosez avec le jus de citron et parsemez de zeste et d’herbes ciselées. Servez immédiatement les darnes sur un lit d’asperges, nappez du jus citronné de la poêle.",
+    "type_repas": "plat",
     "categorie_jour": ""
   },
   {
@@ -1274,18 +1274,18 @@
     "categorie_jour": "semaine"
   },
   {
-  "id": "p93",
-  "nom": "Quiche sans pâte à la courgette et au thon",
-  "saisons": "ete",
-  "diets": "equilibre|rapide",
-  "kidsFriendly": "Oui",
-  "temps": "45",
-  "budget": "budget",
-  "proteine": "poisson",
-  "ingredients": "Thon (200 g)|Courgettes (400 g)|Fécule de maïs (30 g)|Œufs (4)|Crème légère liquide (200 ml)|Fromage blanc (200 g)",
-  "instructions": "Préchauffer le four à 180 °C. Laver et couper les courgettes en rondelles, puis les cuire à la poêle huilée ou à la vapeur selon le goût préféré. Dans un bol, verser le fromage blanc, casser les 4 œufs entiers, puis ajouter la crème et la fécule. Saler et poivrer à convenance. Dans un plat à tarte, émietter le thon au fond, disposer les rondelles de courgettes cuites par-dessus. Verser délicatement l'appareil à quiche sur la garniture. Enfourner pour 35 minutes, vérifier la cuisson régulièrement avec un couteau : le dessus doit être doré à la fin.",
-  "type_repas": "plat",
-  "categorie_jour": "semaine"
+    "id": "p93",
+    "nom": "Quiche sans pâte à la courgette et au thon",
+    "saisons": "ete",
+    "diets": "equilibre|rapide",
+    "kidsFriendly": "Oui",
+    "temps": "45",
+    "budget": "budget",
+    "proteine": "poisson",
+    "ingredients": "Thon (200 g)|Courgettes (400 g)|Fécule de maïs (30 g)|Œufs (4)|Crème légère liquide (200 ml)|Fromage blanc (200 g)",
+    "instructions": "Préchauffer le four à 180 °C. Laver et couper les courgettes en rondelles, puis les cuire à la poêle huilée ou à la vapeur selon le goût préféré. Dans un bol, verser le fromage blanc, casser les 4 œufs entiers, puis ajouter la crème et la fécule. Saler et poivrer à convenance. Dans un plat à tarte, émietter le thon au fond, disposer les rondelles de courgettes cuites par-dessus. Verser délicatement l'appareil à quiche sur la garniture. Enfourner pour 35 minutes, vérifier la cuisson régulièrement avec un couteau : le dessus doit être doré à la fin.",
+    "type_repas": "plat",
+    "categorie_jour": "semaine"
   },
   {
     "id": "p101",
@@ -2338,4 +2338,3 @@
     "categorie_jour": ""
   }
 ]
-
