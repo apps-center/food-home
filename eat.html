@@ -352,7 +352,7 @@
           <button class="btn-close" id="btn-close-planning">×</button>
         </div>
         <div class="alert-info">
-          👨‍👩‍👧‍👦 Planning pour une famille de 4 (2 adultes + 2 enfants) - Lundi au Vendredi
+          👨‍👩‍👧‍👦 Dîners de la semaine + déjeuner du mercredi, et week-end plus gourmand (les midis d'école sont exclus)
         </div>
         <!-- 🎯 BOUTONS DÉPLACÉS EN HAUT en version compacte -->
         <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
@@ -380,8 +380,23 @@
       let allRecipes = [];
       let currentRecipe = null;
       let weeklyPlanning = {};
-      const DAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+      const DAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
       const MEALS = ["dejeuner", "diner"];
+      // Créneaux réellement planifiés (les midis d'école Lun/Mar/Jeu/Ven sont
+      // volontairement absents : enfants à la cantine).
+      //  - kind "semaine" : plats simples/rapides, plutôt kids
+      //  - kind "we"      : plats plus qualitatifs, adultes possibles
+      const PLANNING_SLOTS = [
+        { day: "Lundi",    meal: "diner",    kind: "semaine" },
+        { day: "Mardi",    meal: "diner",    kind: "semaine" },
+        { day: "Mercredi", meal: "dejeuner", kind: "semaine" },
+        { day: "Mercredi", meal: "diner",    kind: "semaine" },
+        { day: "Jeudi",    meal: "diner",    kind: "semaine" },
+        { day: "Vendredi", meal: "diner",    kind: "semaine" },
+        { day: "Samedi",   meal: "diner",    kind: "we" },
+        { day: "Dimanche", meal: "dejeuner", kind: "we" },
+        { day: "Dimanche", meal: "diner",    kind: "we" },
+      ];
       // Elements DOM
       const searchInput = document.getElementById("search");
       const typeSelect = document.getElementById("type");
@@ -536,7 +551,9 @@
           <div class="recipe-meta">
             <span>⏱️ ${recipe.temps} min</span>
             <span>🥩 ${recipe.proteine}</span>
-            ${recipe.kidsFriendly === "Oui" ? "<span>👶 Kids</span>" : ""}
+            ${recipe.public === "kids" ? "<span>👶 Kids</span>" : ""}
+            ${recipe.public === "adultes" ? "<span>🍷 Adultes</span>" : ""}
+            ${recipe.moment === "we" ? "<span>🗓️ WE</span>" : ""}
           </div>
         `;
         return card;
@@ -555,55 +572,75 @@
       function generateWeeklyPlanning() {
         // Réinitialiser
         weeklyPlanning = {};
-        // Filtrer les recettes adaptées aux enfants et plats uniquement
-        const kidsRecipes = allRecipes.filter(
-          (r) => r.kidsFriendly === "Oui" && r.type_repas === "plat"
+
+        const plats = allRecipes.filter((r) => r.type_repas === "plat");
+
+        // Pool SEMAINE : plats semaine/tous, plutôt kids/tous
+        const semainePool = plats.filter(
+          (r) =>
+            (r.moment === "semaine" || r.moment === "tous") &&
+            (r.public === "kids" || r.public === "tous")
         );
-        if (kidsRecipes.length < 10) {
-          showToast("Pas assez de recettes adaptées aux enfants disponibles");
+        // Pool WEEK-END : plats we/tous, tous publics (adultes bienvenus)
+        const wePool = plats.filter(
+          (r) => r.moment === "we" || r.moment === "tous"
+        );
+
+        if (semainePool.length < 6 || wePool.length < 3) {
+          showToast("Pas assez de recettes étiquetées pour générer le planning");
           return;
         }
-        // Séparer par catégories
-        const quickRecipes = kidsRecipes.filter(
-          (r) => parseInt(r.temps) <= 30 || r.diets.includes("rapide")
-        );
-        const standardRecipes = kidsRecipes.filter(
-          (r) => parseInt(r.temps) > 30 && parseInt(r.temps) <= 60
-        );
-        // Tracker des protéines utilisées pour varier
+
+        // Variété : éviter les répétitions et limiter chaque protéine
         const usedProteins = {};
-        const selectedRecipes = [];
-        // Fonction pour sélectionner une recette avec variété
-        function selectRecipe(pool, preferQuick = false) {
-          const available = pool.filter(
+        const usedIds = new Set();
+
+        function pick(pool, { preferQuick = false, preferQuali = false } = {}) {
+          let avail = pool.filter(
             (r) =>
-              !selectedRecipes.includes(r.id) &&
+              !usedIds.has(r.id) &&
               (!usedProteins[r.proteine] || usedProteins[r.proteine] < 2)
           );
-          if (available.length === 0)
-            return pool[Math.floor(Math.random() * pool.length)];
-          const recipe =
-            available[Math.floor(Math.random() * available.length)];
-          selectedRecipes.push(recipe.id);
+          if (avail.length === 0) avail = pool.filter((r) => !usedIds.has(r.id));
+          if (avail.length === 0) avail = pool;
+
+          if (preferQuick) {
+            const quick = avail.filter(
+              (r) => parseInt(r.temps) <= 30 || r.diets.includes("rapide")
+            );
+            if (quick.length) avail = quick;
+          }
+          if (preferQuali) {
+            const quali = avail.filter(
+              (r) =>
+                r.budget === "moyen" ||
+                r.budget === "eleve" ||
+                parseInt(r.temps) > 45
+            );
+            if (quali.length) avail = quali;
+          }
+
+          const recipe = avail[Math.floor(Math.random() * avail.length)];
+          usedIds.add(recipe.id);
           usedProteins[recipe.proteine] =
             (usedProteins[recipe.proteine] || 0) + 1;
           return recipe;
         }
-        // Générer 10 repas (5 jours × 2 repas)
-        DAYS.forEach((day, dayIndex) => {
-          weeklyPlanning[day] = {};
-          // Déjeuner : privilégier les plats rapides
-          weeklyPlanning[day]["dejeuner"] = selectRecipe(
-            quickRecipes.length > 0 ? quickRecipes : kidsRecipes,
-            true
-          );
-          // Dîner : mixer rapides et standards
-          const dinnerPool =
-            dayIndex < 3 ? quickRecipes : [...quickRecipes, ...standardRecipes];
-          weeklyPlanning[day]["diner"] = selectRecipe(
-            dinnerPool.length > 0 ? dinnerPool : kidsRecipes
-          );
+
+        // Remplir chaque créneau selon son type
+        PLANNING_SLOTS.forEach((slot) => {
+          if (!weeklyPlanning[slot.day]) weeklyPlanning[slot.day] = {};
+          if (slot.kind === "we") {
+            weeklyPlanning[slot.day][slot.meal] = pick(wePool, {
+              preferQuali: true,
+            });
+          } else {
+            weeklyPlanning[slot.day][slot.meal] = pick(semainePool, {
+              preferQuick: slot.meal === "dejeuner",
+            });
+          }
         });
+
         // Afficher le planning
         renderWeeklyPlanning();
         planningModal.classList.add("active");
@@ -611,34 +648,41 @@
       function renderWeeklyPlanning() {
         weekGrid.innerHTML = "";
         DAYS.forEach((day) => {
+          const dayPlan = weeklyPlanning[day];
+          if (!dayPlan) return; // pas de créneau ce jour-là
+          const isWE = day === "Samedi" || day === "Dimanche";
+
+          let slotsHtml = "";
+          [
+            ["dejeuner", "☀️ Déjeuner"],
+            ["diner", "🌙 Dîner"],
+          ].forEach(([meal, label]) => {
+            const recipe = dayPlan[meal];
+            if (!recipe) return;
+            slotsHtml += `
+              <div class="meal-slot clickable" onclick="openRecipeFromPlanning('${day}', '${meal}')">
+                <div class="meal-label">${label}</div>
+                <div class="meal-content">${recipe.nom}</div>
+              </div>`;
+          });
+
+          const weBadge = isWE
+            ? ' <span style="font-size:11px;font-weight:700;color:#c26a1a;background:#fbecda;padding:2px 8px;border-radius:6px;vertical-align:middle;">WE</span>'
+            : "";
+
           const dayCard = document.createElement("div");
           dayCard.className = "day-card";
-          const dejeunerRecipe = weeklyPlanning[day]?.["dejeuner"];
-          const dinerRecipe = weeklyPlanning[day]?.["diner"];
           dayCard.innerHTML = `
-            <div class="day-name">${day}</div>
-           
-            <div class="meal-slot ${dejeunerRecipe ? 'clickable' : ''}" ${dejeunerRecipe ? `onclick="openRecipeFromPlanning('${day}', 'dejeuner')"` : ''}>
-              <div class="meal-label">☀️ Déjeuner</div>
-              <div class="meal-content">
-                ${dejeunerRecipe ? dejeunerRecipe.nom : "Aucune recette"}
-              </div>
-            </div>
-            <div class="meal-slot ${dinerRecipe ? 'clickable' : ''}" ${dinerRecipe ? `onclick="openRecipeFromPlanning('${day}', 'diner')"` : ''}>
-              <div class="meal-label">🌙 Dîner</div>
-              <div class="meal-content">
-                ${dinerRecipe ? dinerRecipe.nom : "Aucune recette"}
-              </div>
-            </div>
+            <div class="day-name">${day}${weBadge}</div>
+            ${slotsHtml}
           `;
           weekGrid.appendChild(dayCard);
         });
       }
       async function exportPlanningToShoppingList() {
         const allIngredients = new Set();
-        DAYS.forEach((day) => {
-          ["dejeuner", "diner"].forEach((meal) => {
-            const recipe = weeklyPlanning[day]?.[meal];
+        Object.values(weeklyPlanning).forEach((dayPlan) => {
+          Object.values(dayPlan).forEach((recipe) => {
             if (recipe) {
               recipe.ingredients.split("|").forEach((ing) => {
                 if (ing.trim()) allIngredients.add(ing.trim());
