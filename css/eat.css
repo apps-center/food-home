@@ -294,24 +294,26 @@ h1 {
    ============================================ */
 .week-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
-  margin-top: 20px;
+  /* Une seule rangée : les 7 jours façon calendrier (Lun → Dim). */
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: start; /* pas d'étirement des jours à 1 repas */
+  gap: 10px;
+  margin-top: 16px;
 }
 
 .day-card {
   background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   border: 1px solid rgba(59, 130, 246, 0.15);
-  border-radius: var(--radius-xl);
-  padding: 16px;
+  border-radius: var(--radius-lg);
+  padding: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   animation: slideInUp 0.3s ease-out;
 }
 
 .day-name {
   font-weight: var(--font-weight-bold);
-  font-size: 16px;
-  margin-bottom: 12px;
+  font-size: 14px;
+  margin-bottom: 8px;
   color: #1e40af;
   text-align: center;
   letter-spacing: 0.01em;
@@ -320,27 +322,31 @@ h1 {
 .meal-slot {
   background: white;
   border: 1px solid rgba(59, 130, 246, 0.1);
-  border-radius: var(--radius-lg);
-  padding: 12px;
-  margin-bottom: 10px;
-  min-height: 70px;
+  border-radius: var(--radius-md);
+  padding: 9px 10px;
+  margin-bottom: 8px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
 }
 
+.meal-slot:last-child {
+  margin-bottom: 0;
+}
+
 .meal-label {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: var(--font-weight-semibold);
   color: var(--text-muted);
-  margin-bottom: 6px;
+  margin-bottom: 5px;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
 }
 
 .meal-content {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-primary);
   font-weight: var(--font-weight-medium);
-  line-height: 1.4;
+  line-height: 1.32;
+  overflow-wrap: anywhere; /* évite le débordement dans une colonne étroite */
 }
 
 /* ============================================
@@ -384,7 +390,7 @@ h1 {
 }
 
 .modal-content.large {
-  max-width: 900px;
+  max-width: min(1200px, 95vw);
 }
 
 .modal-header {
