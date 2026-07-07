@@ -87,7 +87,8 @@
       }
       .toggle-btn {
         padding: 12px 28px;
-        background: rgba(255, 255, 255, 0.9);
+        color: var(--text-primary);
+        background: rgb(from var(--surface) r g b / 0.9);
         border: 2px solid rgb(from var(--accent-strong) r g b / 0.2);
         border-radius: var(--radius-full);
         cursor: pointer;
@@ -104,6 +105,7 @@
       /* === GRANDES CATÉGORIES === */
       .main-category-btn {
         padding: 14px 24px;
+        color: var(--text-primary);
         background: linear-gradient(135deg, var(--accent-bg-soft) 0%, var(--accent-bg) 100%);
         border: 2px solid rgb(from var(--accent-strong) r g b / 0.2);
         border-radius: var(--radius-xl);
@@ -286,7 +288,7 @@
         bottom: 0;
         width: 90%;
         max-width: 500px;
-        background: white;
+        background: var(--surface);
         box-shadow: -4px 0 32px rgba(0, 0, 0, 0.15);
         z-index: 1000;
         display: flex;
@@ -407,7 +409,7 @@
       }
 
       .shopping-category {
-        background: rgba(255, 255, 255, 0.95);
+        background: rgb(from var(--surface) r g b / 0.95);
         border: 1px solid rgb(from var(--accent-strong) r g b / 0.1);
         border-radius: var(--radius-xl);
         padding: 12px 16px;
@@ -517,7 +519,7 @@
         animation: fadeIn 0.2s ease-out;
       }
       .nutrition-modal-content {
-        background: white;
+        background: var(--surface);
         border-radius: var(--radius-2xl);
         max-width: 800px;
         width: 100%;
@@ -713,7 +715,7 @@
         animation: fadeIn 0.2s ease-out;
       }
       .confirm-content {
-        background: white;
+        background: var(--surface);
         border-radius: var(--radius-2xl);
         padding: 32px;
         max-width: 400px;
@@ -757,12 +759,12 @@
         box-shadow: 0 6px 20px rgba(239, 68, 68, 0.35);
       }
       .confirm-btn-secondary {
-        background: rgba(255, 255, 255, 0.9);
+        background: rgb(from var(--surface) r g b / 0.9);
         border: 2px solid rgba(0, 0, 0, 0.1);
         color: var(--text-primary);
       }
       .confirm-btn-secondary:hover {
-        background: white;
+        background: var(--surface);
         border-color: rgb(from var(--accent-strong) r g b / 0.2);
       }
 
@@ -861,13 +863,13 @@
       }
 
       .btn-compact-secondary {
-        background: rgba(255, 255, 255, 0.9);
+        background: rgb(from var(--surface) r g b / 0.9);
         border: 1px solid rgba(0, 0, 0, 0.1);
         color: var(--text-primary);
       }
 
       .btn-compact-secondary:hover {
-        background: white;
+        background: var(--surface);
         border-color: rgba(239, 68, 68, 0.3);
         color: #dc2626;
       }
@@ -1041,7 +1043,7 @@
       }
 
       .supermarket-close {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgb(from var(--surface) r g b / 0.2);
         border: none;
         width: 36px;
         height: 36px;
@@ -1056,7 +1058,7 @@
       }
 
       .supermarket-close:hover {
-        background: rgba(255, 255, 255, 0.3);
+        background: rgb(from var(--surface) r g b / 0.3);
         transform: scale(1.1);
       }
 
@@ -1068,7 +1070,7 @@
       }
 
       .supermarket-category {
-        background: white;
+        background: var(--surface);
         border-radius: var(--radius-lg);
         padding: 12px 16px;
         margin-bottom: 12px;
@@ -1099,7 +1101,7 @@
         align-items: center;
         gap: 6px;
         padding: 8px 10px;
-        background: #f8fafc;
+        background: var(--surface-2);
         border-radius: var(--radius-md);
         transition: all var(--transition-fast);
         border: 1px solid transparent;
@@ -1132,7 +1134,7 @@
 
       .supermarket-item.checked {
         opacity: 0.4;
-        background: #f1f5f9;
+        background: var(--surface-2);
       }
 
       .supermarket-item.checked label {
@@ -1271,7 +1273,7 @@
       }
 
       .subcategory-fullscreen-close {
-        background: rgba(255, 255, 255, 0.2);
+        background: rgb(from var(--surface) r g b / 0.2);
         border: 2px solid rgba(255, 255, 255, 0.3);
         color: white;
         width: 44px;
@@ -1287,7 +1289,7 @@
       }
 
       .subcategory-fullscreen-close:hover {
-        background: rgba(255, 255, 255, 0.3);
+        background: rgb(from var(--surface) r g b / 0.3);
         transform: scale(1.1);
       }
 
@@ -1298,7 +1300,7 @@
       }
 
       .subcategory-card {
-        background: white;
+        background: var(--surface);
         border-radius: var(--radius-xl);
         padding: 20px;
         margin-bottom: 16px;

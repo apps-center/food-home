@@ -7,10 +7,11 @@ body {
     165deg,
     var(--accent-bg-2) 0%,
     var(--accent-bg-5) 30%,
-    #ffffff 60%,
+    var(--surface) 60%,
     var(--accent-bg-soft) 100%
   );
   background-attachment: fixed;
+  color: var(--text-primary);
   padding: 40px 20px 80px;
 }
 
@@ -60,7 +61,7 @@ h1 {
    CARD
    ============================================ */
 .card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgb(from var(--surface) r g b / 0.95);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -90,7 +91,7 @@ h1 {
   border-radius: var(--radius-lg);
   font-size: 15px;
   font-family: inherit;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgb(from var(--surface) r g b / 0.9);
   backdrop-filter: blur(8px);
   transition: all var(--transition-base);
   box-shadow: 
@@ -101,7 +102,7 @@ h1 {
 .add-item input:focus {
   outline: none;
   border-color: var(--accent-strong);
-  background: white;
+  background: var(--surface);
   box-shadow: 
     0 0 0 4px rgb(from var(--accent-strong) r g b / 0.1),
     0 4px 12px rgb(from var(--accent-strong) r g b / 0.15);
@@ -165,7 +166,7 @@ h1 {
 }
 
 .btn-secondary {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgb(from var(--surface) r g b / 0.9);
   backdrop-filter: blur(8px);
   border: 2px solid rgba(0, 0, 0, 0.06);
   color: var(--text-primary);
@@ -173,7 +174,7 @@ h1 {
 }
 
 .btn-secondary:hover {
-  background: white;
+  background: var(--surface);
   border-color: rgb(from var(--accent-strong) r g b / 0.2);
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgb(from var(--accent-strong) r g b / 0.1);
