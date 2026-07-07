@@ -160,14 +160,14 @@
 
       /* Bouton accent (Stock de base) */
       .btn-accent {
-        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+        background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent-2-strong) 100%);
         color: white;
-        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+        box-shadow: 0 4px 12px rgb(from var(--accent-2) r g b / 0.25);
       }
 
       .btn-accent:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(139, 92, 246, 0.35);
+        box-shadow: 0 6px 20px rgb(from var(--accent-2) r g b / 0.35);
       }
 
       /* Bouton Undo flottant */
@@ -175,7 +175,7 @@
         position: fixed;
         bottom: 24px;
         right: 24px;
-        background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+        background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent-2-strong) 100%);
         color: white;
         border: none;
         border-radius: var(--radius-full);
@@ -184,7 +184,7 @@
         align-items: center;
         gap: 8px;
         cursor: pointer;
-        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+        box-shadow: 0 8px 24px rgb(from var(--accent-2) r g b / 0.4);
         z-index: 999;
         font-weight: var(--font-weight-semibold);
         font-size: 15px;
@@ -194,7 +194,7 @@
 
       .btn-undo:hover {
         transform: translateY(-4px) scale(1.05);
-        box-shadow: 0 12px 32px rgba(139, 92, 246, 0.5);
+        box-shadow: 0 12px 32px rgb(from var(--accent-2) r g b / 0.5);
       }
 
       .btn-undo:active {

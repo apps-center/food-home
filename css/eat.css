@@ -192,11 +192,11 @@ h1 {
 }
 
 .btn-accent {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  background: linear-gradient(135deg, var(--accent-2) 0%, var(--accent-2-strong) 100%);
   color: white;
   box-shadow:
-    0 4px 12px rgba(139, 92, 246, 0.25),
-    0 2px 6px rgba(99, 102, 241, 0.15);
+    0 4px 12px rgb(from var(--accent-2) r g b / 0.25),
+    0 2px 6px rgb(from var(--accent-2-strong) r g b / 0.15);
   position: relative;
   overflow: hidden;
 }
@@ -205,7 +205,7 @@ h1 {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, var(--accent-2-strong) 0%, var(--accent-2) 100%);
   opacity: 0;
   transition: opacity var(--transition-base);
 }
@@ -217,8 +217,8 @@ h1 {
 .btn-accent:hover {
   transform: translateY(-2px);
   box-shadow:
-    0 6px 20px rgba(139, 92, 246, 0.35),
-    0 4px 10px rgba(99, 102, 241, 0.25);
+    0 6px 20px rgb(from var(--accent-2) r g b / 0.35),
+    0 4px 10px rgb(from var(--accent-2-strong) r g b / 0.25);
 }
 
 .btn-accent > * {
