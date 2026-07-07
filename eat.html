@@ -324,8 +324,13 @@
         <div id="modal-meta" class="recipe-meta"></div>
 
         <!-- Bouton déplacé en haut pour accessibilité mobile -->
-        <button class="btn btn-primary" id="btn-add-shopping" style="width: 100%; margin: 20px 0;">
+        <button class="btn btn-primary" id="btn-add-shopping" style="width: 100%; margin: 20px 0 12px;">
           🛒 Ajouter à la liste de courses
+        </button>
+
+        <!-- Affiché uniquement quand la recette vient de « Plat au hasard » -->
+        <button class="btn btn-secondary" id="btn-random-again" style="width: 100%; margin: 0 0 20px; display: none;">
+          🎲 Nouvelle tentative
         </button>
 
         <div class="ingredients-list">
@@ -749,11 +754,16 @@
       function openRecipeModal(recipe) {
         currentRecipe = recipe;
         document.getElementById("modal-title").textContent = recipe.nom;
-        
+
         // 🎯 Gérer l'affichage des boutons selon l'origine
         const backButton = document.getElementById("btn-back-planning");
         const fromPlanning = sessionStorage.getItem('returnToPlanning') === 'true';
         backButton.style.display = fromPlanning ? 'flex' : 'none';
+
+        // 🎲 Bouton « Nouvelle tentative » : seulement si on vient du tirage au sort
+        const isRandom = openedFromRandom;
+        openedFromRandom = false; // consommé
+        document.getElementById("btn-random-again").style.display = isRandom ? "block" : "none";
         
         // Tags
         const saisons = recipe.saisons.split("|").filter((s) => s);
@@ -869,10 +879,17 @@
       // ============================================
       // PLAT AU HASARD
       // ============================================
+      let openedFromRandom = false; // vrai quand la modale est ouverte via le tirage
       function showRandomRecipe() {
         if (allRecipes.length === 0) return;
-        const randomIndex = Math.floor(Math.random() * allRecipes.length);
-        openRecipeModal(allRecipes[randomIndex]);
+        // Éviter de retomber sur le plat déjà affiché
+        let pool = allRecipes;
+        if (currentRecipe && allRecipes.length > 1) {
+          pool = allRecipes.filter((r) => r.id !== currentRecipe.id);
+        }
+        const recipe = pool[Math.floor(Math.random() * pool.length)];
+        openedFromRandom = true;
+        openRecipeModal(recipe);
       }
       // ============================================
       // RESET FILTRES
@@ -915,6 +932,7 @@
       regimeSelect.addEventListener("change", filterAndRender);
       proteineSelect.addEventListener("change", filterAndRender);
       btnRandom.addEventListener("click", showRandomRecipe);
+      document.getElementById("btn-random-again").addEventListener("click", showRandomRecipe);
       btnReset.addEventListener("click", resetFilters);
       btnGenerateWeek.addEventListener("click", generateWeeklyPlanning);
       btnRegenerate.addEventListener("click", generateWeeklyPlanning);
