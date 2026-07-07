@@ -177,8 +177,13 @@ pages.
   sémantiques, ne suivent pas l'accent) : les rayons de courses
   (orange/jaune/rose/vert/gris), les cartes de la pyramide nutritionnelle, et les
   états d'erreur (rouge).
-- **Dark mode** : maintenant trivial — redéfinir les variables sous
-  `@media (prefers-color-scheme: dark)` dans `tokens.css`.
+- **Dark mode** : **actif**, en automatique (suit le réglage système via
+  `@media (prefers-color-scheme: dark)` dans `tokens.css` — seules des variables
+  y sont redéfinies, le mode clair reste intact). Les surfaces claires passent
+  par `--surface` / `--surface-2` (basculées en sombre). Note : les `<button>`
+  n'héritent pas de la couleur du `body` → ceux à fond neutre portent un
+  `color: var(--text-primary)` explicite (sinon texte noir illisible en sombre).
+  Les couleurs sémantiques (rayons, pyramide, erreurs) ne basculent pas.
 
 ## Conventions
 

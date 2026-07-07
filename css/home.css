@@ -7,17 +7,18 @@ body {
     165deg,
     #f3e8ff 0%,
     #faf5ff 30%,
-    #ffffff 60%,
+    var(--surface) 60%,
     #f8f9fe 100%
   );
   background-attachment: fixed;
+  color: var(--text-primary);
   overflow-x: hidden;
 }
 /* ============================================
    NAVBAR
    ============================================ */
 .navbar {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgb(from var(--surface) r g b / 0.9);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
@@ -140,7 +141,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 12px 22px;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgb(from var(--surface) r g b / 0.8);
   backdrop-filter: blur(8px);
   border: 2px solid rgba(0, 0, 0, 0.06);
   border-radius: var(--radius-full);
@@ -153,7 +154,7 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 }
 .logout-btn:hover {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgb(from var(--surface) r g b / 0.95);
   border-color: rgba(239, 68, 68, 0.2);
   color: #dc2626;
   transform: translateY(-1px);
@@ -254,5 +255,20 @@ iframe {
   }
   .app-container {
     height: calc(100vh - 76px);
+  }
+}
+
+/* ============================================
+   MODE SOMBRE (suit le réglage système)
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: linear-gradient(
+      165deg,
+      #1a1430 0%,
+      #16121f 30%,
+      var(--surface) 60%,
+      var(--bg-primary) 100%
+    );
   }
 }

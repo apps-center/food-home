@@ -17,7 +17,11 @@
   --bg-tertiary: #f1f3f9;
   --bg-glass: rgba(255, 255, 255, 0.8);
   --bg-glass-dark: rgba(255, 255, 255, 0.95);
-  
+
+  /* Surfaces (cartes, modales, panneaux) — basculent en sombre */
+  --surface: #ffffff;   /* surface principale (cartes, modales, inputs) */
+  --surface-2: #f1f5f9; /* panneaux gris neutres */
+
   /* Textes */
   --text-primary: #1a202c;
   --text-secondary: #4a5568;
@@ -98,4 +102,43 @@
   /* Accent secondaire violet (bouton « Générer planning », .btn-accent) */
   --accent-2: #8b5cf6;
   --accent-2-strong: #6366f1;
+}
+
+/* ============================================
+   MODE SOMBRE (suit le réglage système)
+   On ne redéfinit QUE des variables : tout ce qui passe par var()
+   bascule automatiquement. Le mode clair reste intact.
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Surfaces & fonds (slate bleuté, pas noir pur) */
+    --surface: #1b2431;
+    --surface-2: #141b26;
+    --bg-primary: #0f151e;
+    --bg-secondary: #1b2431;
+    --bg-tertiary: #141b26;
+    --bg-glass: rgba(27, 36, 49, 0.8);
+    --bg-glass-dark: rgba(27, 36, 49, 0.95);
+
+    /* Textes */
+    --text-primary: #e7ebf2;
+    --text-secondary: #aeb6c4;
+    --text-muted: #808a9c;
+    --text-inverse: #0f151e;
+
+    /* Accent : hues conservées, texte d'accent éclairci pour la lisibilité */
+    --accent-ink: #93c5fd;
+    --accent-bg-soft: #121a26;
+    --accent-bg: #15243a;
+    --accent-bg-2: #182c46;
+    --accent-bg-3: #1d3a5c;
+    --accent-bg-4: #244a72;
+    --accent-bg-5: #121a26;
+    --accent-300: #2c5480;
+
+    /* Bordures / focus adaptés au fond sombre */
+    --border-light: rgba(255, 255, 255, 0.08);
+    --border-medium: rgba(255, 255, 255, 0.14);
+    --border-focus: rgb(from var(--accent-strong) r g b / 0.5);
+  }
 }
