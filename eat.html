@@ -484,15 +484,29 @@
       // ============================================
       // FILTRAGE
       // ============================================
+      // Normalise pour une recherche insensible à la casse ET aux accents
+      // (ex. "pate" trouve "Pâtes").
+      function normalizeText(s) {
+        return (s || "")
+          .toLowerCase()
+          .replace(/\u0153/g, "oe")
+          .replace(/\u00e6/g, "ae")
+          .normalize("NFD")
+          .replace(/[\u0300-\u036f]/g, "");
+      }
       function filterRecipes() {
-        const searchTerm = searchInput.value.toLowerCase().trim();
+        const searchTerm = normalizeText(searchInput.value.trim());
         const type = typeSelect.value;
         const saison = saisonSelect.value;
         const regime = regimeSelect.value;
         const proteine = proteineSelect.value;
         return allRecipes.filter((recipe) => {
-          // Recherche par nom
-          if (searchTerm && !recipe.nom.toLowerCase().includes(searchTerm)) {
+          // Recherche par nom (accents ignorés), repli sur les ingrédients
+          if (
+            searchTerm &&
+            !normalizeText(recipe.nom).includes(searchTerm) &&
+            !normalizeText(recipe.ingredients).includes(searchTerm)
+          ) {
             return false;
           }
           // Filtre type
