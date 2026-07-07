@@ -231,28 +231,112 @@ h1 {
    ============================================ */
 #results {
   display: grid;
+  /* Desktop : ~3 colonnes dans le conteneur 960px ; mobile : 1 colonne (voir @media). */
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 20px;
 }
 
 .recipe-card {
+  display: flex;
+  flex-direction: column;
   background: linear-gradient(135deg, var(--accent-bg-soft) 0%, var(--accent-bg) 100%);
   border: 1px solid rgb(from var(--accent-strong) r g b / 0.1);
   border-radius: var(--radius-xl);
-  padding: 20px;
+  overflow: hidden; /* rogne l'image au border-radius de la carte */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
   cursor: pointer;
-  transition: all var(--transition-base);
+  transition: transform var(--transition-base), box-shadow var(--transition-base),
+    border-color var(--transition-base);
   animation: slideInUp 0.3s ease-out;
+  /* Perf : n'affiche pas les cartes hors écran ; contain-intrinsic-size réserve
+     leur hauteur pour éviter le saut de scroll (hauteur cible ~360px). */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 360px;
 }
 
 .recipe-card:hover {
-  background: linear-gradient(135deg, var(--accent-bg) 0%, var(--accent-bg-4) 100%);
   border-color: rgb(from var(--accent-strong) r g b / 0.2);
   transform: translateY(-6px);
   box-shadow:
     0 12px 32px rgb(from var(--accent-strong) r g b / 0.15),
     0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* --- Zone média : image en ratio 3/2 (~45 % de la hauteur de la carte) --- */
+.recipe-card__media {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  background: var(--accent-bg-2);
+  /* Shimmer d'attente tant que l'image n'est pas chargée (.is-loaded le coupe). */
+  background-image: linear-gradient(
+    100deg,
+    var(--accent-bg-2) 30%,
+    var(--accent-bg-soft) 50%,
+    var(--accent-bg-2) 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.recipe-card__media.is-loaded {
+  animation: none;
+  background-image: none;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+.recipe-card__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+/* Zoom léger au survol de l'image */
+.recipe-card:hover .recipe-card__image {
+  transform: scale(1.035);
+}
+
+/* Carte sans image : le placeholder est contenu (pas rogné) et ne zoome pas. */
+.recipe-card--no-image .recipe-card__image {
+  object-fit: contain;
+  padding: 22px;
+  opacity: 0.9;
+}
+
+.recipe-card--no-image:hover .recipe-card__image {
+  transform: none;
+}
+
+/* Badge temps ancré en bas-droite de l'image */
+.recipe-card__time {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: rgb(from var(--surface) r g b / 0.92);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: var(--text-primary);
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: var(--font-weight-semibold);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* --- Contenu : titre + badges + métadonnées --- */
+.recipe-card__content {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px 18px;
 }
 
 .recipe-card h3 {
@@ -261,6 +345,13 @@ h1 {
   margin: 0 0 12px;
   color: var(--text-primary);
   line-height: 1.3;
+}
+
+/* Accessibilité : coupe les animations décoratives si l'utilisateur le demande. */
+@media (prefers-reduced-motion: reduce) {
+  .recipe-card__media { animation: none; }
+  .recipe-card__image,
+  .recipe-card:hover .recipe-card__image { transition: none; transform: none; }
 }
 
 .tags {
@@ -571,6 +662,7 @@ h1 {
   }
 
   #results {
+    /* Mobile : 1 colonne, image en pleine largeur. */
     grid-template-columns: 1fr;
   }
 
@@ -582,8 +674,8 @@ h1 {
     grid-template-columns: 1fr;
   }
 
-  .recipe-card {
-    padding: 18px;
+  .recipe-card__content {
+    padding: 16px 16px 18px;
   }
 
   .btn {
