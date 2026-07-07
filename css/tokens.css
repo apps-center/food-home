@@ -105,12 +105,12 @@
 }
 
 /* ============================================
-   MODE SOMBRE (suit le réglage système)
-   On ne redéfinit QUE des variables : tout ce qui passe par var()
-   bascule automatiquement. Le mode clair reste intact.
+   MODE SOMBRE
+   Activé par l'attribut data-theme="dark" sur <html>, posé par theme.js selon
+   la préférence (Auto → suit le système / Clair / Sombre). On ne redéfinit QUE
+   des variables : tout ce qui passe par var() bascule. Le clair reste intact.
    ============================================ */
-@media (prefers-color-scheme: dark) {
-  :root {
+:root[data-theme="dark"] {
     /* Surfaces & fonds (slate bleuté, pas noir pur) */
     --surface: #1b2431;
     --surface-2: #141b26;
@@ -140,5 +140,4 @@
     --border-light: rgba(255, 255, 255, 0.08);
     --border-medium: rgba(255, 255, 255, 0.14);
     --border-focus: rgb(from var(--accent-strong) r g b / 0.5);
-  }
 }

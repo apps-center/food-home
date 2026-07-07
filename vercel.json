@@ -13,6 +13,10 @@
     {
       "source": "/css/(.*)",
       "headers": [{ "key": "Content-Type", "value": "text/css; charset=utf-8" }]
+    },
+    {
+      "source": "/theme.js",
+      "headers": [{ "key": "Content-Type", "value": "text/javascript; charset=utf-8" }]
     }
   ]
 }
