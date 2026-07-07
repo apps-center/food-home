@@ -153,6 +153,26 @@ backend qui se remet en pause.
   (variables CSS `--gradient-primary`, `--radius-*`, police Inter, emojis dans
   l'UI, commentaires FR).
 
+## Thème & couleurs (re-thémage)
+
+Les couleurs sont centralisées en **variables CSS** dans `css/common.css` (`:root`).
+Pour changer l'apparence, éditer ces variables — **pas** les valeurs dans les
+pages.
+
+- **Accent bleu** (couleur d'action : boutons, liens, focus, tags, cartes) :
+  `--accent` et `--accent-strong` pilotent l'essentiel ; les fonds clairs
+  (`--accent-bg`, `--accent-bg-soft`, `--accent-bg-2…5`) et les bordures/ombres
+  translucides en découlent. Les variantes translucides utilisent la *relative
+  color syntax* `rgb(from var(--accent-strong) r g b / α)`, donc elles suivent
+  automatiquement le changement de teinte (Safari 16.4+ / navigateurs récents).
+- **Marque violette** : `--brand-primary` / `--brand-secondary` / `--gradient-primary`.
+- **Sémantiques** : `--success`, `--warning`, `--error`, `--info`.
+- **Statut de la tokenisation** : périmètre **eat** (`eat.html` + `css/eat.css`)
+  entièrement branché sur ces variables. `courses.html`/`css/courses.css` et
+  `index.html` contiennent encore des couleurs en dur (passe à faire au même
+  modèle). Le violet des boutons `.btn-accent` (`#8b5cf6`/`#6366f1`) n'est pas
+  encore tokenisé.
+
 ## Conventions
 
 - Tout en **français** (UI, commentaires, noms de variables métier).

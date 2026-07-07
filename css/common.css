@@ -33,7 +33,21 @@
   --brand-accent: #4facfe;
   --brand-light: #e9d5ff;
   --brand-lighter: #f3e8ff;
-  
+
+  /* Accent bleu — la couleur d'ACTION de l'app (boutons, liens, focus, tags).
+     👉 Pour re-thémer tout le bleu, changez surtout --accent et --accent-strong ;
+        les bordures/ombres translucides bleues en découlent automatiquement. */
+  --accent: #0ea5e9;          /* accent principal */
+  --accent-strong: #3b82f6;   /* variante soutenue / dégradés */
+  --accent-ink: #1e40af;      /* texte bleu foncé sur fond clair */
+  --accent-bg: #e0f2fe;       /* fond clair 1 */
+  --accent-bg-soft: #f0f9ff;  /* fond très clair */
+  --accent-bg-2: #dbeafe;     /* fond clair 2 */
+  --accent-bg-3: #bfdbfe;     /* fond clair 3 */
+  --accent-bg-4: #bae6fd;     /* fond clair 4 */
+  --accent-bg-5: #eff6ff;     /* fond clair 5 */
+  --gradient-blue: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+
   /* États */
   --success: #10b981;
   --warning: #f59e0b;
