@@ -30,11 +30,11 @@
     <style>
       /* 🎨 COULEURS NUTRITIONNELLES - Styles dynamiques */
       .category-btn[data-color="blue"] {
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        border: 2px solid rgba(59, 130, 246, 0.3);
+        background: linear-gradient(135deg, var(--accent-bg-2) 0%, var(--accent-bg-3) 100%);
+        border: 2px solid rgb(from var(--accent-strong) r g b / 0.3);
       }
       .category-btn[data-color="blue"]:hover {
-        background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
+        background: linear-gradient(135deg, var(--accent-bg-3) 0%, var(--accent-300) 100%);
       }
       .category-btn[data-color="orange"] {
         background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
@@ -88,7 +88,7 @@
       .toggle-btn {
         padding: 12px 28px;
         background: rgba(255, 255, 255, 0.9);
-        border: 2px solid rgba(59, 130, 246, 0.2);
+        border: 2px solid rgb(from var(--accent-strong) r g b / 0.2);
         border-radius: var(--radius-full);
         cursor: pointer;
         transition: all var(--transition-base);
@@ -96,7 +96,7 @@
         font-size: 15px;
       }
       .toggle-btn.active {
-        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
         color: white;
         border-color: transparent;
       }
@@ -104,8 +104,8 @@
       /* === GRANDES CATÉGORIES === */
       .main-category-btn {
         padding: 14px 24px;
-        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        border: 2px solid rgba(59, 130, 246, 0.2);
+        background: linear-gradient(135deg, var(--accent-bg-soft) 0%, var(--accent-bg) 100%);
+        border: 2px solid rgb(from var(--accent-strong) r g b / 0.2);
         border-radius: var(--radius-xl);
         cursor: pointer;
         transition: all var(--transition-base);
@@ -117,16 +117,16 @@
       }
       
       .main-category-btn:hover {
-        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        background: linear-gradient(135deg, var(--accent-bg) 0%, var(--accent-bg-4) 100%);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        box-shadow: 0 4px 12px rgb(from var(--accent-strong) r g b / 0.2);
       }
       
       .main-category-btn.active {
-        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
         color: white;
         border-color: transparent;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 12px rgb(from var(--accent-strong) r g b / 0.3);
       }
 
       .main-categories {
@@ -221,8 +221,8 @@
       }
 
       .category-btn {
-        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        border: 2px solid rgba(59, 130, 246, 0.15);
+        background: linear-gradient(135deg, var(--accent-bg-soft) 0%, var(--accent-bg) 100%);
+        border: 2px solid rgb(from var(--accent-strong) r g b / 0.15);
         border-radius: var(--radius-xl);
         padding: 24px 16px;
         cursor: pointer;
@@ -232,9 +232,9 @@
       }
 
       .category-btn:hover {
-        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        background: linear-gradient(135deg, var(--accent-bg) 0%, var(--accent-bg-4) 100%);
         transform: translateY(-4px);
-        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+        box-shadow: 0 8px 24px rgb(from var(--accent-strong) r g b / 0.15);
       }
 
       .category-btn .icon {
@@ -253,7 +253,7 @@
         position: absolute;
         top: 12px;
         right: 12px;
-        background: #0ea5e9;
+        background: var(--accent);
         color: white;
         border-radius: var(--radius-full);
         padding: 4px 10px;
@@ -301,11 +301,11 @@
 
       .drawer-header {
         padding: 24px;
-        border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+        border-bottom: 2px solid rgb(from var(--accent-strong) r g b / 0.1);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        background: linear-gradient(135deg, var(--accent-bg-soft) 0%, var(--accent-bg) 100%);
       }
 
       .drawer-header h2 {
@@ -341,10 +341,10 @@
 
       .drawer-footer {
         padding: 20px 24px;
-        border-top: 2px solid rgba(59, 130, 246, 0.1);
+        border-top: 2px solid rgb(from var(--accent-strong) r g b / 0.1);
         display: flex;
         gap: 12px;
-        background: rgba(240, 249, 255, 0.5);
+        background: rgb(from var(--accent-bg-soft) r g b / 0.5);
       }
 
       /* Items avec checkbox */
@@ -358,7 +358,7 @@
         color: var(--text-secondary);
         margin-bottom: 12px;
         padding-left: 8px;
-        border-left: 3px solid #0ea5e9;
+        border-left: 3px solid var(--accent);
       }
 
       .checkbox-item {
@@ -366,14 +366,14 @@
         align-items: center;
         gap: 12px;
         padding: 10px 12px;
-        background: rgba(240, 249, 255, 0.5);
+        background: rgb(from var(--accent-bg-soft) r g b / 0.5);
         border-radius: var(--radius-md);
         margin-bottom: 8px;
         transition: all var(--transition-fast);
       }
 
       .checkbox-item:hover {
-        background: rgba(224, 242, 254, 0.8);
+        background: rgb(from var(--accent-bg) r g b / 0.8);
         transform: translateX(4px);
       }
 
@@ -408,7 +408,7 @@
 
       .shopping-category {
         background: rgba(255, 255, 255, 0.95);
-        border: 1px solid rgba(59, 130, 246, 0.1);
+        border: 1px solid rgb(from var(--accent-strong) r g b / 0.1);
         border-radius: var(--radius-xl);
         padding: 12px 16px;
         margin-bottom: 12px;
@@ -420,10 +420,10 @@
         gap: 8px;
         font-size: 14px;
         font-weight: var(--font-weight-extrabold);
-        color: #0ea5e9;
+        color: var(--accent);
         margin-bottom: 8px;
         padding-bottom: 8px;
-        border-bottom: 1px solid rgba(14, 165, 233, 0.2);
+        border-bottom: 1px solid rgb(from var(--accent) r g b / 0.2);
       }
 
       .shopping-item {
@@ -438,7 +438,7 @@
       }
 
       .shopping-item:hover {
-        background: rgba(240, 249, 255, 0.8);
+        background: rgb(from var(--accent-bg-soft) r g b / 0.8);
       }
 
       .shopping-item input[type="checkbox"] {
@@ -529,9 +529,9 @@
       .nutrition-modal-header {
         position: sticky;
         top: 0;
-        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        background: linear-gradient(135deg, var(--accent-bg-soft) 0%, var(--accent-bg) 100%);
         padding: 24px;
-        border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+        border-bottom: 2px solid rgb(from var(--accent-strong) r g b / 0.1);
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -550,7 +550,7 @@
         margin-bottom: 32px;
       }
       .nutrition-section h3 {
-        color: #0ea5e9;
+        color: var(--accent);
         margin-bottom: 16px;
         display: flex;
         align-items: center;
@@ -562,14 +562,14 @@
         gap: 16px;
       }
       .nutrition-card {
-        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        border: 1px solid rgba(59, 130, 246, 0.2);
+        background: linear-gradient(135deg, var(--accent-bg-soft) 0%, var(--accent-bg) 100%);
+        border: 1px solid rgb(from var(--accent-strong) r g b / 0.2);
         border-radius: var(--radius-lg);
         padding: 16px;
       }
       .nutrition-card h4 {
         margin: 0 0 12px 0;
-        color: #1e40af;
+        color: var(--accent-ink);
         font-size: 16px;
       }
       .nutrition-card ul {
@@ -591,15 +591,15 @@
         box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
       }
       .nutrition-tips {
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        border-left: 4px solid #0ea5e9;
+        background: linear-gradient(135deg, var(--accent-bg-2) 0%, var(--accent-bg-3) 100%);
+        border-left: 4px solid var(--accent);
         padding: 16px 20px;
         border-radius: var(--radius-lg);
         margin-top: 24px;
       }
       .nutrition-tips h4 {
         margin: 0 0 12px 0;
-        color: #1e40af;
+        color: var(--accent-ink);
       }
       .nutrition-tips ul {
         margin: 0;
@@ -763,7 +763,7 @@
       }
       .confirm-btn-secondary:hover {
         background: white;
-        border-color: rgba(59, 130, 246, 0.2);
+        border-color: rgb(from var(--accent-strong) r g b / 0.2);
       }
 
       /* Indicateur scroll drawer */
@@ -850,14 +850,14 @@
       }
 
       .btn-compact-primary {
-        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
         color: white;
-        box-shadow: 0 2px 6px rgba(59, 130, 246, 0.2);
+        box-shadow: 0 2px 6px rgb(from var(--accent-strong) r g b / 0.2);
       }
 
       .btn-compact-primary:hover {
         transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 12px rgb(from var(--accent-strong) r g b / 0.3);
       }
 
       .btn-compact-secondary {
@@ -996,7 +996,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        background: linear-gradient(135deg, var(--accent-bg-soft) 0%, var(--accent-bg) 100%);
         z-index: 10000;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
@@ -1022,7 +1022,7 @@
       .supermarket-header {
         position: sticky;
         top: 0;
-        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
         color: white;
         padding: 16px 20px;
         display: flex;
@@ -1084,7 +1084,7 @@
         color: var(--text-primary);
         margin-bottom: 10px;
         padding-bottom: 8px;
-        border-bottom: 2px solid rgba(59, 130, 246, 0.1);
+        border-bottom: 2px solid rgb(from var(--accent-strong) r g b / 0.1);
       }
 
       /* Grille compacte pour le mode supermarché */
@@ -1106,8 +1106,8 @@
       }
 
       .supermarket-item:active {
-        background: #e0f2fe;
-        border-color: #0ea5e9;
+        background: var(--accent-bg);
+        border-color: var(--accent);
       }
 
       .supermarket-item input[type="checkbox"] {
@@ -1163,7 +1163,7 @@
 
       .supermarket-scroll-arrow {
         font-size: 32px;
-        color: #0ea5e9;
+        color: var(--accent);
         opacity: 0.6;
         animation: bounceUp 2s ease-in-out infinite;
       }
@@ -1231,7 +1231,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+        background: linear-gradient(135deg, var(--accent-bg-soft) 0%, var(--accent-bg) 100%);
         z-index: 10002;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
@@ -1254,7 +1254,7 @@
       .subcategory-fullscreen-header {
         position: sticky;
         top: 0;
-        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
         padding: 20px;
         display: flex;
         align-items: center;

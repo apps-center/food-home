@@ -46,6 +46,7 @@
   --accent-bg-3: #bfdbfe;     /* fond clair 3 */
   --accent-bg-4: #bae6fd;     /* fond clair 4 */
   --accent-bg-5: #eff6ff;     /* fond clair 5 */
+  --accent-300: #93c5fd;      /* bleu intermédiaire (dégradés courses) */
   --gradient-blue: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
 
   /* États */

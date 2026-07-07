@@ -167,11 +167,13 @@ pages.
   automatiquement le changement de teinte (Safari 16.4+ / navigateurs récents).
 - **Marque violette** : `--brand-primary` / `--brand-secondary` / `--gradient-primary`.
 - **Sémantiques** : `--success`, `--warning`, `--error`, `--info`.
-- **Statut de la tokenisation** : périmètre **eat** (`eat.html` + `css/eat.css`)
-  entièrement branché sur ces variables. `courses.html`/`css/courses.css` et
-  `index.html` contiennent encore des couleurs en dur (passe à faire au même
-  modèle). Le violet des boutons `.btn-accent` (`#8b5cf6`/`#6366f1`) n'est pas
-  encore tokenisé.
+- **Statut de la tokenisation** : périmètres **eat** (`eat.html` + `css/eat.css`)
+  et **courses** (`courses.html` + `css/courses.css`) entièrement branchés sur
+  ces variables d'accent. Restent en couleurs en dur : `index.html` (écran PIN,
+  CSS inline avec ses propres variables dupliquées) et le violet des boutons
+  `.btn-accent` (`#8b5cf6`/`#6366f1`). Les couleurs **sémantiques** de rayons
+  (orange/jaune/rose/vert/gris) et les cartes de la pyramide nutritionnelle
+  restent volontairement littérales — elles ne suivent pas l'accent.
 
 ## Conventions
 

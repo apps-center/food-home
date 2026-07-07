@@ -5,10 +5,10 @@
 body {
   background: linear-gradient(
     165deg,
-    #dbeafe 0%,
-    #eff6ff 30%,
+    var(--accent-bg-2) 0%,
+    var(--accent-bg-5) 30%,
     #ffffff 60%,
-    #f0f9ff 100%
+    var(--accent-bg-soft) 100%
   );
   background-attachment: fixed;
   padding: 40px 20px 80px;
@@ -43,7 +43,7 @@ h1 {
   font-size: 32px;
   font-weight: var(--font-weight-extrabold);
   margin: 0 0 12px;
-  background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -86,7 +86,7 @@ h1 {
 .add-item input {
   flex: 1;
   padding: 14px 20px;
-  border: 2px solid rgba(59, 130, 246, 0.15);
+  border: 2px solid rgb(from var(--accent-strong) r g b / 0.15);
   border-radius: var(--radius-lg);
   font-size: 15px;
   font-family: inherit;
@@ -100,11 +100,11 @@ h1 {
 
 .add-item input:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: var(--accent-strong);
   background: white;
   box-shadow: 
-    0 0 0 4px rgba(59, 130, 246, 0.1),
-    0 4px 12px rgba(59, 130, 246, 0.15);
+    0 0 0 4px rgb(from var(--accent-strong) r g b / 0.1),
+    0 4px 12px rgb(from var(--accent-strong) r g b / 0.15);
   transform: translateY(-1px);
 }
 
@@ -130,11 +130,11 @@ h1 {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
   color: white;
   box-shadow: 
-    0 4px 12px rgba(59, 130, 246, 0.25),
-    0 2px 6px rgba(14, 165, 233, 0.15);
+    0 4px 12px rgb(from var(--accent-strong) r g b / 0.25),
+    0 2px 6px rgb(from var(--accent) r g b / 0.15);
   position: relative;
   overflow: hidden;
 }
@@ -143,7 +143,7 @@ h1 {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #3b82f6 0%, #0ea5e9 100%);
+  background: linear-gradient(135deg, var(--accent-strong) 0%, var(--accent) 100%);
   opacity: 0;
   transition: opacity var(--transition-base);
 }
@@ -155,8 +155,8 @@ h1 {
 .btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 
-    0 6px 20px rgba(59, 130, 246, 0.35),
-    0 4px 10px rgba(14, 165, 233, 0.25);
+    0 6px 20px rgb(from var(--accent-strong) r g b / 0.35),
+    0 4px 10px rgb(from var(--accent) r g b / 0.25);
 }
 
 .btn-primary > * {
@@ -174,9 +174,9 @@ h1 {
 
 .btn-secondary:hover {
   background: white;
-  border-color: rgba(59, 130, 246, 0.2);
+  border-color: rgb(from var(--accent-strong) r g b / 0.2);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 4px 12px rgb(from var(--accent-strong) r g b / 0.1);
 }
 
 /* ============================================
@@ -200,8 +200,8 @@ h1 {
   align-items: center;
   justify-content: space-between;
   padding: 16px 20px;
-  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-  border: 1px solid rgba(59, 130, 246, 0.1);
+  background: linear-gradient(135deg, var(--accent-bg-soft) 0%, var(--accent-bg) 100%);
+  border: 1px solid rgb(from var(--accent-strong) r g b / 0.1);
   border-radius: var(--radius-lg);
   transition: all var(--transition-base);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
@@ -209,12 +209,12 @@ h1 {
 }
 
 .shopping-item:hover {
-  background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-  border-color: rgba(59, 130, 246, 0.2);
+  background: linear-gradient(135deg, var(--accent-bg) 0%, var(--accent-bg-4) 100%);
+  border-color: rgb(from var(--accent-strong) r g b / 0.2);
   transform: translateX(4px);
   box-shadow: 
-    0 4px 12px rgba(59, 130, 246, 0.15),
-    -4px 0 0 rgba(59, 130, 246, 0.3);
+    0 4px 12px rgb(from var(--accent-strong) r g b / 0.15),
+    -4px 0 0 rgb(from var(--accent-strong) r g b / 0.3);
 }
 
 .item-text {
@@ -299,8 +299,8 @@ h1 {
   width: 24px;
   height: 24px;
   margin-left: 10px;
-  border: 3px solid #e0f2fe;
-  border-top-color: #3b82f6;
+  border: 3px solid var(--accent-bg);
+  border-top-color: var(--accent-strong);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
