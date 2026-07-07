@@ -23,6 +23,7 @@
     <title>FOOD HOME - Application</title>
     <link rel="stylesheet" href="/css/common.css" />
     <link rel="stylesheet" href="/css/home.css" />
+    <script src="/theme.js"></script>
   </head>
   <body>
     <!-- Navigation Bar -->
@@ -32,6 +33,10 @@
         <span>FOOD HOME</span>
       </div>
       <div class="navbar-controls">
+        <button class="toggle-btn" id="themeBtn" onclick="cycleTheme()" title="Thème clair / sombre">
+          <span id="themeIcon">🌗</span>
+          <span id="themeText">Auto</span>
+        </button>
         <button class="toggle-btn" id="toggleBtn">
           <span id="toggleIcon">🔄</span>
           <span id="toggleText">Basculer</span>
@@ -164,6 +169,27 @@ window.addEventListener("load", () => {
   }
   console.log("✅ FOOD HOME loaded - postMessage communication ready");
 });
+
+// 🌗 Sélecteur de thème : cycle Auto → Clair → Sombre
+const THEME_ORDER = ["auto", "light", "dark"];
+const THEME_UI = {
+  auto:  { icon: "🌗", text: "Auto" },
+  light: { icon: "☀️", text: "Clair" },
+  dark:  { icon: "🌙", text: "Sombre" },
+};
+function refreshThemeButton() {
+  const pref = (window.getThemePref ? window.getThemePref() : "auto");
+  const ui = THEME_UI[pref] || THEME_UI.auto;
+  document.getElementById("themeIcon").textContent = ui.icon;
+  document.getElementById("themeText").textContent = ui.text;
+}
+function cycleTheme() {
+  const cur = (window.getThemePref ? window.getThemePref() : "auto");
+  const next = THEME_ORDER[(THEME_ORDER.indexOf(cur) + 1) % THEME_ORDER.length];
+  if (window.setThemePref) window.setThemePref(next); // applique + notifie les iframes
+  refreshThemeButton();
+}
+window.addEventListener("load", refreshThemeButton);
 
 // Fonction de déconnexion
 function logout() {

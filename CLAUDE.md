@@ -177,13 +177,17 @@ pages.
   sémantiques, ne suivent pas l'accent) : les rayons de courses
   (orange/jaune/rose/vert/gris), les cartes de la pyramide nutritionnelle, et les
   états d'erreur (rouge).
-- **Dark mode** : **actif**, en automatique (suit le réglage système via
-  `@media (prefers-color-scheme: dark)` dans `tokens.css` — seules des variables
-  y sont redéfinies, le mode clair reste intact). Les surfaces claires passent
-  par `--surface` / `--surface-2` (basculées en sombre). Note : les `<button>`
-  n'héritent pas de la couleur du `body` → ceux à fond neutre portent un
-  `color: var(--text-primary)` explicite (sinon texte noir illisible en sombre).
-  Les couleurs sémantiques (rayons, pyramide, erreurs) ne basculent pas.
+- **Dark mode** : **actif**, avec sélecteur **Auto / Clair / Sombre** (bouton
+  🌗 dans la navbar de `home.html`). Préférence dans
+  `localStorage['food_home_theme']` (`auto`|`light`|`dark`). `theme.js` (chargé
+  dans le `<head>` des 4 pages) résout la préférence — `auto` suit le système via
+  `matchMedia` — et pose `data-theme="light|dark"` sur `<html>`. Le sombre vit
+  dans `:root[data-theme="dark"]` de `tokens.css` (redéfinit seulement des
+  variables ; le clair reste intact). Le changement est propagé aux `<iframe>`
+  (`eat`/`courses`) par `postMessage({type:"THEME_CHANGED"})` + `localStorage`
+  partagé. Note : les `<button>` n'héritent pas de la couleur du `body` → ceux à
+  fond neutre portent un `color: var(--text-primary)` explicite. Les couleurs
+  sémantiques (rayons, pyramide, erreurs) ne basculent pas.
 
 ## Conventions
 
