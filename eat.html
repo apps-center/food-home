@@ -92,14 +92,14 @@
       }
 
       .btn-close {
-        background: rgba(59, 130, 246, 0.1);
+        background: rgb(from var(--accent-strong) r g b / 0.1);
         border: none;
         width: 36px;
         height: 36px;
         border-radius: var(--radius-full);
         cursor: pointer;
         font-size: 20px;
-        color: #0ea5e9;
+        color: var(--accent);
         transition: all var(--transition-fast);
         display: flex;
         align-items: center;
@@ -107,14 +107,14 @@
       }
       
       .btn-close:hover {
-        background: rgba(59, 130, 246, 0.2);
+        background: rgb(from var(--accent-strong) r g b / 0.2);
         transform: scale(1.1);
       }
       
       /* Boutons icônes pour les types */
       .type-icon-btn {
-        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-        border: 2px solid rgba(59, 130, 246, 0.2);
+        background: linear-gradient(135deg, var(--accent-bg-soft) 0%, var(--accent-bg) 100%);
+        border: 2px solid rgb(from var(--accent-strong) r g b / 0.2);
         border-radius: var(--radius-xl);
         padding: 12px 16px;
         cursor: pointer;
@@ -128,16 +128,16 @@
       }
       
       .type-icon-btn:hover {
-        background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+        background: linear-gradient(135deg, var(--accent-bg) 0%, var(--accent-bg-4) 100%);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        box-shadow: 0 4px 12px rgb(from var(--accent-strong) r g b / 0.2);
       }
       
       .type-icon-btn.active {
-        background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+        background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
         color: white;
         border-color: transparent;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 12px rgb(from var(--accent-strong) r g b / 0.3);
       }
       
       /* 🎯 Bouton retour planning (flèche) */
@@ -175,7 +175,7 @@
       }
       
       #filter-count {
-        color: #0ea5e9;
+        color: var(--accent);
         font-weight: var(--font-weight-bold);
       }
       
@@ -186,14 +186,14 @@
       }
       
       .meal-slot.clickable:hover {
-        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-        border-color: rgba(59, 130, 246, 0.3);
+        background: linear-gradient(135deg, var(--accent-bg-2) 0%, var(--accent-bg-3) 100%);
+        border-color: rgb(from var(--accent-strong) r g b / 0.3);
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        box-shadow: 0 4px 12px rgb(from var(--accent-strong) r g b / 0.15);
       }
       
       .meal-slot.clickable .meal-content {
-        color: #0ea5e9;
+        color: var(--accent);
         font-weight: var(--font-weight-semibold);
       }
       
