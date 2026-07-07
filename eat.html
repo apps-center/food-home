@@ -382,6 +382,41 @@
       const SHOPPING_KEY = 'food_home_shopping_list';
 
       // ============================================
+      // IMAGES DES RECETTES
+      // ============================================
+      // Le chemin est DÉDUIT de l'id (images/recipes/pN.webp) — recipes.json n'est
+      // pas modifié. Les images n'existent pas encore : la gestion d'erreur (plus
+      // bas) bascule sur un placeholder inline si le .webp est absent.
+      function getRecipeImage(recipe) {
+        return `images/recipes/${recipe.id}.webp`;
+      }
+
+      // Placeholder en data-URI SVG : aucune dépendance réseau ni fichier binaire,
+      // donc jamais d'icône « image cassée » même quand tous les .webp manquent.
+      const PLACEHOLDER_SVG =
+        `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'>` +
+        `<g fill='none' stroke='#94a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'>` +
+        `<circle cx='60' cy='40' r='19'/><circle cx='60' cy='40' r='11'/>` +
+        `<path d='M25 20v13M30 20v13M35 20v13'/>` +
+        `<path d='M25 33c0 5 2.5 6 5 6s5-1 5-6'/><path d='M30 39v20'/>` +
+        `<path d='M92 20c-6 4-6 16 0 20'/><path d='M92 40v19'/>` +
+        `</g></svg>`;
+      const PLACEHOLDER_IMAGE =
+        "data:image/svg+xml;utf8," + encodeURIComponent(PLACEHOLDER_SVG);
+
+      // Nombre de cartes « above the fold » chargées en priorité (eager + high).
+      const EAGER_IMAGE_COUNT = 6;
+
+      // Échappe une valeur destinée à un attribut HTML (alt, etc.).
+      function escapeAttr(s) {
+        return (s || "")
+          .replace(/&/g, "&amp;")
+          .replace(/"/g, "&quot;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      // ============================================
       // VARIABLES GLOBALES
       // ============================================
       let allRecipes = [];
@@ -548,33 +583,47 @@
             '<div class="empty">😔 Aucune recette trouvée avec ces filtres</div>';
           return;
         }
-        recipes.forEach((recipe) => {
-          const card = createRecipeCard(recipe);
+        recipes.forEach((recipe, index) => {
+          const card = createRecipeCard(recipe, index);
           resultsDiv.appendChild(card);
         });
       }
-      function createRecipeCard(recipe) {
+      function createRecipeCard(recipe, index = 0) {
         const card = document.createElement("article");
         card.className = "recipe-card";
         card.onclick = () => openRecipeModal(recipe);
         const saisons = recipe.saisons.split("|").filter((s) => s);
         const diets = recipe.diets.split("|").filter((d) => d);
         const typeIcon = getTypeIcon(recipe.type_repas);
+        // 6 premières cartes = above the fold → chargement prioritaire.
+        const eager = index < EAGER_IMAGE_COUNT;
+        const alt = escapeAttr(recipe.imageAlt || recipe.nom);
+        // La gestion d'erreur est déléguée au document (capture), pas d'onerror inline.
         card.innerHTML = `
-          <h3>${typeIcon} ${recipe.nom}</h3>
-          <div class="tags">
-            ${saisons.map((s) => `<span class="tag">${s}</span>`).join("")}
-            ${diets
-              .slice(0, 2)
-              .map((d) => `<span class="tag">${d}</span>`)
-              .join("")}
+          <div class="recipe-card__media">
+            <img class="recipe-card__image"
+                 src="${getRecipeImage(recipe)}"
+                 alt="${alt}"
+                 width="800" height="533"
+                 decoding="async"
+                 loading="${eager ? "eager" : "lazy"}"${eager ? ' fetchpriority="high"' : ""} />
+            <span class="recipe-card__time">⏱️ ${recipe.temps} min</span>
           </div>
-          <div class="recipe-meta">
-            <span>⏱️ ${recipe.temps} min</span>
-            <span>🥩 ${recipe.proteine}</span>
-            ${recipe.public === "kids" ? "<span>👶 Kids</span>" : ""}
-            ${recipe.public === "adultes" ? "<span>🍷 Adultes</span>" : ""}
-            ${recipe.moment === "we" ? "<span>🗓️ WE</span>" : ""}
+          <div class="recipe-card__content">
+            <h3>${typeIcon} ${recipe.nom}</h3>
+            <div class="tags">
+              ${saisons.map((s) => `<span class="tag">${s}</span>`).join("")}
+              ${diets
+                .slice(0, 2)
+                .map((d) => `<span class="tag">${d}</span>`)
+                .join("")}
+            </div>
+            <div class="recipe-meta">
+              <span>🥩 ${recipe.proteine}</span>
+              ${recipe.public === "kids" ? "<span>👶 Kids</span>" : ""}
+              ${recipe.public === "adultes" ? "<span>🍷 Adultes</span>" : ""}
+              ${recipe.moment === "we" ? "<span>🗓️ WE</span>" : ""}
+            </div>
           </div>
         `;
         return card;
@@ -973,6 +1022,38 @@
           if (planningModal.classList.contains("active")) closePlanningModal();
         }
       });
+      // ============================================
+      // GESTION CENTRALISÉE DES IMAGES DE RECETTES
+      // ============================================
+      // load/error ne bouillonnent pas → capture=true pour les intercepter au
+      // niveau document (aucun onerror inline dans le HTML généré).
+      document.addEventListener(
+        "load",
+        (e) => {
+          const img = e.target;
+          if (img && img.classList && img.classList.contains("recipe-card__image")) {
+            const media = img.closest(".recipe-card__media");
+            if (media) media.classList.add("is-loaded"); // coupe le shimmer
+          }
+        },
+        true
+      );
+      document.addEventListener(
+        "error",
+        (e) => {
+          const img = e.target;
+          if (!img || !img.classList || !img.classList.contains("recipe-card__image")) return;
+          if (img.dataset.fallback === "done") return; // évite toute boucle
+          img.dataset.fallback = "done";
+          img.src = PLACEHOLDER_IMAGE;
+          const media = img.closest(".recipe-card__media");
+          if (media) media.classList.add("is-loaded");
+          const card = img.closest(".recipe-card");
+          if (card) card.classList.add("recipe-card--no-image");
+        },
+        true
+      );
+
       // ============================================
       // ============================================
       // INIT
