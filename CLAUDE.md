@@ -26,7 +26,7 @@ utilise `css/`).
 | `eat.html`      | Planificateur de repas (catalogue + planning + « au hasard »).       |
 | `courses.html`  | Liste de courses par rayons.                                         |
 | `recipes.json`  | Catalogue de recettes (source de données des recettes).             |
-| `css/`          | `common.css`, `home.css` (uniquement utilisés par `home.html`).      |
+| `css/`          | `tokens.css` (variables du thème — source unique), `common.css` (base), `eat.css`, `courses.css`, `home.css`, `login.css`. |
 | `vercel.json`   | En-têtes `Content-Type` + `cleanUrls`.                               |
 | `_redirects`    | Réécritures `/eat` → `/eat.html`, etc. (fallback style Netlify).     |
 
@@ -155,7 +155,8 @@ backend qui se remet en pause.
 
 ## Thème & couleurs (re-thémage)
 
-Les couleurs sont centralisées en **variables CSS** dans `css/common.css` (`:root`).
+Toutes les variables du thème vivent dans **`css/tokens.css`** (`:root`) — source
+unique, importée par `common.css` (`@import`) et liée directement par les pages.
 Pour changer l'apparence, éditer ces variables — **pas** les valeurs dans les
 pages.
 
@@ -165,15 +166,19 @@ pages.
   translucides en découlent. Les variantes translucides utilisent la *relative
   color syntax* `rgb(from var(--accent-strong) r g b / α)`, donc elles suivent
   automatiquement le changement de teinte (Safari 16.4+ / navigateurs récents).
-- **Marque violette** : `--brand-primary` / `--brand-secondary` / `--gradient-primary`.
+- **Accent secondaire violet** (bouton « Générer planning », `.btn-accent`) :
+  `--accent-2` / `--accent-2-strong`.
+- **Marque violette** (écran PIN) : `--brand-primary` / `--brand-secondary` /
+  `--gradient-primary`.
 - **Sémantiques** : `--success`, `--warning`, `--error`, `--info`.
-- **Statut de la tokenisation** : périmètres **eat** (`eat.html` + `css/eat.css`)
-  et **courses** (`courses.html` + `css/courses.css`) entièrement branchés sur
-  ces variables d'accent. Restent en couleurs en dur : `index.html` (écran PIN,
-  CSS inline avec ses propres variables dupliquées) et le violet des boutons
-  `.btn-accent` (`#8b5cf6`/`#6366f1`). Les couleurs **sémantiques** de rayons
-  (orange/jaune/rose/vert/gris) et les cartes de la pyramide nutritionnelle
-  restent volontairement littérales — elles ne suivent pas l'accent.
+- **Statut** : tout l'accent (bleu + violet) est tokenisé sur **les 3 pages**
+  (`index.html`, `eat.html`, `courses.html`) et leurs CSS. Éditer `tokens.css`
+  re-thème toute l'app. Restent volontairement **littérales** (couleurs
+  sémantiques, ne suivent pas l'accent) : les rayons de courses
+  (orange/jaune/rose/vert/gris), les cartes de la pyramide nutritionnelle, et les
+  états d'erreur (rouge).
+- **Dark mode** : maintenant trivial — redéfinir les variables sous
+  `@media (prefers-color-scheme: dark)` dans `tokens.css`.
 
 ## Conventions
 
