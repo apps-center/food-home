@@ -251,7 +251,7 @@ h1 {
   /* Perf : n'affiche pas les cartes hors écran ; contain-intrinsic-size réserve
      leur hauteur pour éviter le saut de scroll (hauteur cible ~360px). */
   content-visibility: auto;
-  contain-intrinsic-size: auto 360px;
+  contain-intrinsic-size: auto 520px;
 }
 
 .recipe-card:hover {
@@ -262,10 +262,10 @@ h1 {
     0 6px 16px rgba(0, 0, 0, 0.08);
 }
 
-/* --- Zone média : image en ratio 3/2 (~45 % de la hauteur de la carte) --- */
+/* --- Zone média : image en ratio 4/5 portrait (style éditorial rustique) --- */
 .recipe-card__media {
   position: relative;
-  aspect-ratio: 3 / 2;
+  aspect-ratio: 4 / 5;
   overflow: hidden;
   background: var(--accent-bg-2);
   /* Shimmer d'attente tant que l'image n'est pas chargée (.is-loaded le coupe). */

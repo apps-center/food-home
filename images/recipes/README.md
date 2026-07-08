@@ -18,14 +18,14 @@ il ne faut **pas** ajouter de champ image dans `recipes.json`.
 | Paramètre      | Valeur                                             |
 |----------------|----------------------------------------------------|
 | Format         | WebP                                               |
-| Ratio          | 3:2 (paysage)                                       |
-| Dimensions     | ~800 × 533 px (cible ; les cartes affichent en 3/2)|
+| Ratio          | 4:5 (portrait)                                      |
+| Dimensions     | ~720 × 900 px (cible ; les cartes affichent en 4/5)|
 | Qualité        | 78–82 (bon compromis netteté / poids)              |
 | Poids indicatif| < 60–80 Ko par image                               |
 | Cadrage        | Plat centré, marge respirable (l'affichage rogne en `object-fit: cover`) |
 
-Les attributs `width="800"` / `height="533"` sont posés sur chaque `<img>` pour
-réserver l'espace et éviter le CLS (layout shift) — garder ce ratio 3:2.
+Les attributs `width="720"` / `height="900"` sont posés sur chaque `<img>` pour
+réserver l'espace et éviter le CLS (layout shift) — garder ce ratio 4:5.
 
 ## Absence d'image
 
@@ -45,6 +45,6 @@ seront ajoutés séparément. Pour convertir/optimiser manuellement une image en
 respectant les specs ci-dessus :
 
 ```sh
-# Exemple avec cwebp (libwebp) : redimensionne à 800px de large et qualité 80
-cwebp -q 80 -resize 800 0 source.jpg -o images/recipes/p1.webp
+# Exemple avec cwebp (libwebp) : redimensionne à 720px de large et qualité 80
+cwebp -q 80 -resize 720 0 source.jpg -o images/recipes/p1.webp
 ```
