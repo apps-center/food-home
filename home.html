@@ -67,6 +67,17 @@
         </div>
       </div>
     </div>
+    <!-- 🎯 Bouton flottant : revenir aux filtres sans tout remonter (page Repas) -->
+    <button
+      id="fabFilters"
+      class="fab-filters"
+      type="button"
+      aria-label="Aller aux filtres"
+      title="Filtres"
+    >
+      <span class="fab-icon" aria-hidden="true">🔍</span>
+      <span class="fab-label">Filtres</span>
+    </button>
     <script>
       // 🔒 Vérifier la session avant d'afficher l'app
 (function checkSession() {
@@ -87,6 +98,37 @@ const toggleText = document.getElementById("toggleText");
 const toggleIcon = document.getElementById("toggleIcon");
 const coursesFrame = document.getElementById("coursesFrame");
 const eatFrame = document.getElementById("eatFrame");
+
+// 🎯 Bouton flottant « Filtres » (page Repas)
+const fabFilters = document.getElementById("fabFilters");
+const appFaceFront = document.querySelector(".app-face.front");
+let eatScrollY = 0;       // scroll interne de l'iframe (cas desktop)
+let eatModalOpen = false; // une modale est ouverte dans l'iframe eat
+
+function updateFabFilters() {
+  const onEat = !appFlipper.classList.contains("flipped");
+  // Sur mobile/iOS c'est le conteneur parent qui scrolle ; sur desktop c'est
+  // l'iframe (via EAT_SCROLL). On prend le maximum des deux.
+  const scrolled = Math.max(eatScrollY, appFaceFront ? appFaceFront.scrollTop : 0);
+  if (onEat && !eatModalOpen && scrolled > 300) {
+    fabFilters.classList.add("visible");
+  } else {
+    fabFilters.classList.remove("visible");
+  }
+}
+if (appFaceFront) {
+  appFaceFront.addEventListener("scroll", updateFabFilters, { passive: true });
+}
+fabFilters.addEventListener("click", () => {
+  // Remonter le conteneur parent (mobile) et demander à l'iframe de remonter
+  // + d'ouvrir les filtres avancés (desktop).
+  if (appFaceFront) appFaceFront.scrollTo({ top: 0, behavior: "smooth" });
+  try {
+    eatFrame.contentWindow.postMessage({ type: "SCROLL_TO_FILTERS" }, "*");
+  } catch (e) {
+    console.error("Error sending SCROLL_TO_FILTERS to eat iframe:", e);
+  }
+});
 
 // 🎯 COMMUNICATION INTER-IFRAMES via postMessage
 // Écouter les messages des iframes enfants
@@ -114,6 +156,16 @@ window.addEventListener("message", (event) => {
         console.error("Error refreshing courses iframe:", e);
       }
       break;
+    case "EAT_SCROLL":
+      // Scroll interne de l'iframe eat (cas desktop) → maj bouton flottant
+      eatScrollY = event.data.scrollY || 0;
+      updateFabFilters();
+      break;
+    case "EAT_MODAL":
+      // Une modale s'ouvre/ferme dans eat → masquer/afficher le bouton flottant
+      eatModalOpen = !!event.data.open;
+      updateFabFilters();
+      break;
   }
 });
 
@@ -124,6 +176,8 @@ toggleBtn.addEventListener("click", () => {
   const newApp = appFlipper.classList.contains("flipped") ? "courses" : "eat";
   localStorage.setItem('active_app', newApp); // Stocke en local
   updateToggleButton(newApp);
+  eatScrollY = 0;
+  updateFabFilters(); // masque le bouton filtres hors page Repas
  
   // 🎯 Envoyer un message à courses pour afficher la Liste courses (sans recharger l'iframe)
   if (newApp === "courses") {
@@ -167,6 +221,7 @@ window.addEventListener("load", () => {
   } else {
     updateToggleButton("eat");
   }
+  updateFabFilters();
   console.log("✅ FOOD HOME loaded - postMessage communication ready");
 });
 
