@@ -1,15 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 80" role="img" aria-label="Photo de recette à venir">
-  <rect width="120" height="80" rx="10" fill="#e0f2fe"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 120" role="img" aria-label="Photo de recette à venir">
+  <rect width="96" height="120" rx="10" fill="#e0f2fe"/>
   <g fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
     <!-- Assiette -->
-    <circle cx="60" cy="40" r="19"/>
-    <circle cx="60" cy="40" r="11"/>
+    <circle cx="48" cy="58" r="21"/>
+    <circle cx="48" cy="58" r="12"/>
     <!-- Fourchette (gauche) -->
-    <path d="M25 20v13M30 20v13M35 20v13"/>
-    <path d="M25 33c0 5 2.5 6 5 6s5-1 5-6"/>
-    <path d="M30 39v20"/>
+    <path d="M13 26v15M18 26v15M23 26v15"/>
+    <path d="M13 41c0 5 2.5 6 5 6s5-1 5-6"/>
+    <path d="M18 47v46"/>
     <!-- Couteau (droite) -->
-    <path d="M92 20c-6 4-6 16 0 20"/>
-    <path d="M92 40v19"/>
+    <path d="M78 26c-6 4-6 17 0 22"/>
+    <path d="M78 48v45"/>
   </g>
 </svg>
