@@ -141,10 +141,10 @@
         transform: scale(0.96);
       }
 
-      /* Aperçu « Plat au hasard » (carte d'abord) */
-      .random-preview { max-width: 420px; }
+      /* Aperçu « Plat au hasard » (carte d'abord) — compact pour tenir sans scroll */
+      .random-preview { max-width: 400px; }
       .random-preview-hint {
-        margin: 0 0 14px;
+        margin: 2px 0 10px;
         font-size: 13px;
         color: var(--text-secondary, #94a3b8);
         text-align: center;
@@ -152,13 +152,16 @@
       #randomPreviewCard .recipe-card {
         cursor: pointer;
         margin: 0 auto;
-        max-width: 340px;
+        max-width: 330px;
       }
+      /* Photo moins haute que dans le catalogue (4/5) → l'aperçu tient à l'écran */
+      #randomPreviewCard .recipe-card__media { aspect-ratio: 16 / 10; }
+      #randomPreviewCard .recipe-card__content { padding: 12px 14px; }
       #randomPreviewCard .recipe-card:active { transform: scale(0.99); }
       .random-preview-actions {
         display: flex;
         gap: 12px;
-        margin-top: 18px;
+        margin-top: 14px;
       }
       
       .type-icon-btn:hover {
@@ -387,10 +390,13 @@
     <div class="modal" id="randomPreviewModal">
       <div class="modal-content random-preview">
         <div class="modal-header">
-          <h2>🎲 Plat au hasard</h2>
-          <button class="btn-close" id="btn-close-random-preview" title="Fermer">×</button>
+          <h2 id="random-preview-title">🎲 Plat au hasard</h2>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-close" id="preview-header-action" title="Autre plat">🎲</button>
+            <button class="btn-close" id="btn-close-random-preview" title="Fermer">×</button>
+          </div>
         </div>
-        <p class="random-preview-hint">Touchez la carte pour voir la recette, ou relancez le tirage.</p>
+        <p class="random-preview-hint" id="random-preview-hint">Touchez la carte pour voir la recette, ou relancez le tirage.</p>
         <div id="randomPreviewCard"></div>
         <div class="random-preview-actions">
           <button class="btn btn-primary" id="btn-random-see" style="flex:1;">👁️ Voir la recette</button>
@@ -893,7 +899,7 @@
             const recipe = dayPlan[meal];
             if (!recipe) return;
             slotsHtml += `
-              <div class="meal-slot clickable" onclick="openRecipeFromPlanning('${day}', '${meal}')">
+              <div class="meal-slot clickable" onclick="openMealPreview('${day}', '${meal}')">
                 <div class="meal-label">${label}</div>
                 <div class="meal-content">${recipe.nom}</div>
               </div>`;
@@ -1093,22 +1099,24 @@
       // PLAT AU HASARD
       // ============================================
       let openedFromRandom = false; // vrai quand la modale recette vient du tirage
-      let previewRecipe = null;     // recette actuellement proposée en aperçu Hasard
+      let previewMode = "hasard";   // "hasard" | "planning"
+      let previewRecipe = null;     // recette actuellement proposée en aperçu
+      let previewSlot = null;       // { day, meal } en mode planning
 
-      // Hasard : on affiche d'abord la CARTE (photo). L'utilisateur ouvre la
-      // recette en touchant la carte (ou « Voir la recette »), ou relance le
-      // tirage si le plat ne lui plaît pas.
-      function showRandomRecipe() {
-        if (allRecipes.length === 0) return;
-        // Tirage parmi les recettes filtrées (respecte type/saison/filtres rapides)
-        let pool = filterRecipes();
-        if (!pool.length) pool = allRecipes;
-        // Éviter de reproposer le plat déjà à l'écran
-        if (previewRecipe && pool.length > 1) {
-          pool = pool.filter((r) => r.id !== previewRecipe.id);
-        }
-        previewRecipe = pool[Math.floor(Math.random() * pool.length)];
-        renderRandomPreview(previewRecipe);
+      // Aperçu carte-d'abord, commun au Hasard et au Planning.
+      function openPreview(recipe) {
+        previewRecipe = recipe;
+        renderRandomPreview(recipe);
+        const isPlanning = previewMode === "planning";
+        document.getElementById("random-preview-title").textContent =
+          isPlanning ? "🍽️ Repas du planning" : "🎲 Plat au hasard";
+        document.getElementById("random-preview-hint").textContent = isPlanning
+          ? "Touchez la carte pour voir la recette, ou remplacez ce repas."
+          : "Touchez la carte pour voir la recette, ou relancez le tirage.";
+        document.getElementById("btn-random-reroll").textContent =
+          isPlanning ? "🎲 Remplacer ce repas" : "🎲 Autre plat";
+        document.getElementById("preview-header-action").title =
+          isPlanning ? "Remplacer ce repas" : "Autre plat";
         randomPreviewModal.classList.add("active");
       }
 
@@ -1121,15 +1129,99 @@
         holder.appendChild(card);
       }
 
+      // Hasard : on affiche d'abord la CARTE. L'utilisateur ouvre la recette,
+      // ou relance le tirage si le plat ne lui plaît pas.
+      function showRandomRecipe() {
+        if (allRecipes.length === 0) return;
+        previewMode = "hasard";
+        previewSlot = null;
+        // Tirage parmi les recettes filtrées (respecte type/saison/filtres rapides)
+        let pool = filterRecipes();
+        if (!pool.length) pool = allRecipes;
+        // Éviter de reproposer le plat déjà à l'écran
+        if (previewRecipe && pool.length > 1) {
+          pool = pool.filter((r) => r.id !== previewRecipe.id);
+        }
+        openPreview(pool[Math.floor(Math.random() * pool.length)]);
+      }
+
+      // Planning : clic sur un repas → aperçu carte du plat de ce créneau.
+      function openMealPreview(day, meal) {
+        const recipe = weeklyPlanning[day] && weeklyPlanning[day][meal];
+        if (!recipe) return;
+        previewMode = "planning";
+        previewSlot = { day, meal };
+        planningModal.classList.remove("active");
+        openPreview(recipe);
+      }
+
+      // Ids des recettes déjà dans le planning (pour éviter les doublons au remplacement).
+      function planningUsedIds(exceptDay, exceptMeal) {
+        const ids = new Set();
+        Object.entries(weeklyPlanning).forEach(([d, meals]) => {
+          Object.entries(meals).forEach(([m, r]) => {
+            if (r && !(d === exceptDay && m === exceptMeal)) ids.add(r.id);
+          });
+        });
+        return ids;
+      }
+
+      // Remplace UN SEUL créneau du planning en respectant son type (semaine/we),
+      // en évitant les plats déjà présents et le plat courant.
+      function replaceMeal() {
+        if (previewMode !== "planning" || !previewSlot) return;
+        const { day, meal } = previewSlot;
+        const slot = PLANNING_SLOTS.find((s) => s.day === day && s.meal === meal);
+        const kind = slot ? slot.kind : "semaine";
+        const season = currentSeason();
+        const plats = allRecipes.filter((r) => r.type_repas === "plat");
+        const seasonal = plats.filter((r) => matchesSeason(r, season));
+        const mkSemaine = (src) =>
+          src.filter(
+            (r) =>
+              (r.moment === "semaine" || r.moment === "tous") &&
+              (r.public === "kids" || r.public === "tous")
+          );
+        const mkWe = (src) => src.filter((r) => r.moment === "we" || r.moment === "tous");
+        let pool = kind === "we" ? mkWe(seasonal) : mkSemaine(seasonal);
+        if (pool.length < 2) pool = kind === "we" ? mkWe(plats) : mkSemaine(plats);
+        const used = planningUsedIds(day, meal);
+        const currentId = previewRecipe ? previewRecipe.id : null;
+        let avail = pool.filter((r) => !used.has(r.id) && r.id !== currentId);
+        if (!avail.length) avail = pool.filter((r) => r.id !== currentId);
+        if (!avail.length) avail = pool;
+        if (!avail.length) {
+          showToast("Pas d'autre plat disponible pour ce créneau");
+          return;
+        }
+        const recipe = avail[Math.floor(Math.random() * avail.length)];
+        weeklyPlanning[day][meal] = recipe;
+        renderWeeklyPlanning(); // met à jour la grille derrière l'aperçu
+        openPreview(recipe);
+      }
+
+      // Bouton de régénération (en-tête + bas) : selon le mode.
+      function previewAction() {
+        if (previewMode === "planning") replaceMeal();
+        else showRandomRecipe();
+      }
+
       function openRecipeFromPreview() {
         if (!previewRecipe) return;
         randomPreviewModal.classList.remove("active");
-        openedFromRandom = true; // affiche « Nouvelle tentative » dans la recette
-        openRecipeModal(previewRecipe);
+        if (previewMode === "planning") {
+          sessionStorage.setItem("returnToPlanning", "true");
+          openRecipeModal(previewRecipe);
+        } else {
+          openedFromRandom = true; // affiche « Nouvelle tentative » dans la recette
+          openRecipeModal(previewRecipe);
+        }
       }
 
       function closeRandomPreview() {
         randomPreviewModal.classList.remove("active");
+        // En mode planning, revenir à la grille du planning.
+        if (previewMode === "planning") planningModal.classList.add("active");
       }
       // ============================================
       // RESET FILTRES
@@ -1183,9 +1275,10 @@
         closeRecipeModal();
         showRandomRecipe();
       });
-      // Aperçu Hasard : voir la recette / relancer / fermer
+      // Aperçu (Hasard / Planning) : voir la recette / régénérer / fermer
       document.getElementById("btn-random-see").addEventListener("click", openRecipeFromPreview);
-      document.getElementById("btn-random-reroll").addEventListener("click", showRandomRecipe);
+      document.getElementById("btn-random-reroll").addEventListener("click", previewAction);
+      document.getElementById("preview-header-action").addEventListener("click", previewAction);
       document.getElementById("btn-close-random-preview").addEventListener("click", closeRandomPreview);
       randomPreviewModal.addEventListener("click", (e) => {
         if (e.target === randomPreviewModal) closeRandomPreview();
