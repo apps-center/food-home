@@ -13,6 +13,7 @@
     
     <!-- Mode plein écran (masquer la barre Safari) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     
     <!-- Couleur de la barre de statut -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -68,7 +69,11 @@
     <!-- Navigation Bar -->
     <div class="navbar">
       <div class="navbar-brand">
-        <span>🏠</span>
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 512 512" role="img" aria-label="FOOD HOME">
+            <path fill="#fff" fill-rule="evenodd" d="M256 150 L392 268 L344 268 L344 400 L168 400 L168 268 L120 268 Z M256 300 m-46 0 a46 46 0 1 0 92 0 a46 46 0 1 0 -92 0 Z"/>
+          </svg>
+        </span>
         <span>FOOD HOME</span>
       </div>
       <div class="navbar-controls">
