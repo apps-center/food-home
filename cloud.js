@@ -111,7 +111,11 @@
     try {
       if (client) await client.auth.signOut();
     } catch (_) {}
-    currentUser = null;
+    // Couper aussi le pont avec la session legacy, sinon la gate PIN considère
+    // l'utilisateur connecté 24 h après une déconnexion Google.
+    localStorage.removeItem("food_home_logged_in");
+    localStorage.removeItem("food_home_login_time");
+    setUser(null);
   }
 
   // ---- Liste de courses partagée --------------------------------------
@@ -150,28 +154,22 @@
     }
   }
 
-  // Abonnement temps réel : cb(items) à chaque changement distant.
-  function subscribeList(cb) {
-    if (!client || !currentUser) return;
+  // Ajoute des items en FUSIONNANT avec l'état cloud (union) : ne perd jamais
+  // les ajouts faits depuis un autre appareil (contrairement à un push brut qui
+  // écraserait toute la liste). Met aussi à jour le localStorage local.
+  async function addItemsMerged(localItems) {
+    if (!client || !currentUser) return localItems;
     try {
-      client
-        .channel("shopping_list_changes")
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "shopping_list",
-            filter: "id=eq." + LIST_ID,
-          },
-          (payload) => {
-            const items = payload && payload.new ? payload.new.items : null;
-            if (Array.isArray(items)) cb(items);
-          }
-        )
-        .subscribe();
+      const cloud = await pullList();
+      const set = new Set(localItems || []);
+      (cloud || []).forEach((i) => set.add(i));
+      const merged = [...set];
+      await pushList(merged);
+      localStorage.setItem(SHOPPING_KEY, JSON.stringify(merged));
+      return merged;
     } catch (e) {
-      console.warn("⚠️ subscribeList KO :", e);
+      console.warn("⚠️ addItemsMerged KO :", e);
+      return localItems;
     }
   }
 
@@ -185,7 +183,7 @@
     signOut,
     pullList,
     pushList,
-    subscribeList,
+    addItemsMerged,
     SHOPPING_KEY,
   };
 })();

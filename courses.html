@@ -2270,28 +2270,25 @@
         });
 
         renderCategories();
-
-        // ☁️ Sync cloud (si connecté Google) — sinon localStorage seul (comportement inchangé)
-        if (window.FoodHomeCloud) {
-          try {
-            await FoodHomeCloud.init();
-            if (FoodHomeCloud.isSignedIn()) {
-              const cloudItems = await FoodHomeCloud.pullList();
-              if (cloudItems) {
-                localStorage.setItem(SHOPPING_KEY, JSON.stringify(cloudItems));
-              }
-              // Temps réel : un autre appareil modifie la liste → on ré-applique.
-              FoodHomeCloud.subscribeList((items) => {
-                localStorage.setItem(SHOPPING_KEY, JSON.stringify(items));
-                applyListFromStorage();
-              });
-            }
-          } catch (e) {
-            console.warn("⚠️ Sync cloud indisponible, mode local :", e);
-          }
-        }
-
+        // Rendu immédiat depuis localStorage : jamais bloqué par le réseau.
         loadFromAPI();
+
+        // ☁️ Sync cloud (si connecté Google), EN ARRIÈRE-PLAN et non bloquant.
+        // Remplace l'ancien WebSocket temps réel (qui provoquait une tempête
+        // d'erreurs de reconnexion) par un rafraîchissement à l'ouverture + au
+        // retour sur l'app (onglet/appareil). Sinon : localStorage seul, inchangé.
+        if (window.FoodHomeCloud) {
+          // onUser se déclenche dès que la session Google est résolue (gère aussi
+          // le retour d'OAuth où la session arrive un instant après le chargement).
+          FoodHomeCloud.onUser((user) => {
+            if (user) refreshListFromCloud();
+          });
+          FoodHomeCloud.init();
+          document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) refreshListFromCloud();
+          });
+          window.addEventListener("focus", refreshListFromCloud);
+        }
 
         // 🎯 ÉCOUTER LES MESSAGES de home.html pour switcher automatiquement
         window.addEventListener("message", (event) => {
@@ -2902,9 +2899,20 @@
       // ============================================
 
       // Load from localStorage
+      // Recharge la liste depuis le cloud (si connecté) puis ré-applique.
+      // Appelé à l'ouverture et au retour sur l'app (visibilitychange / focus).
+      async function refreshListFromCloud() {
+        if (!(window.FoodHomeCloud && FoodHomeCloud.isSignedIn())) return;
+        const items = await FoodHomeCloud.pullList();
+        if (Array.isArray(items)) {
+          localStorage.setItem(SHOPPING_KEY, JSON.stringify(items));
+          applyListFromStorage();
+        }
+      }
+
       // Ré-applique intégralement la liste du localStorage (adds ET removes).
-      // Utilisé par la sync temps réel : on remet toutes les sélections à
-      // false puis loadFromAPI recoche celles présentes dans le stockage.
+      // On remet toutes les sélections à false puis loadFromAPI recoche celles
+      // présentes dans le stockage.
       function applyListFromStorage() {
         Object.keys(selections).forEach((k) =>
           Object.keys(selections[k]).forEach((i) => (selections[k][i] = false))
