@@ -15,7 +15,11 @@
       "headers": [{ "key": "Content-Type", "value": "text/css; charset=utf-8" }]
     },
     {
-      "source": "/(theme|pwa|sw).js",
+      "source": "/(theme|pwa|sw|cloud|supabase-config).js",
+      "headers": [{ "key": "Content-Type", "value": "text/javascript; charset=utf-8" }]
+    },
+    {
+      "source": "/vendor/(.*).js",
       "headers": [{ "key": "Content-Type", "value": "text/javascript; charset=utf-8" }]
     },
     {
@@ -29,5 +33,8 @@
       "source": "/manifest.webmanifest",
       "headers": [{ "key": "Content-Type", "value": "application/manifest+json; charset=utf-8" }]
     }
+  ],
+  "crons": [
+    { "path": "/api/keepalive", "schedule": "0 6 * * *" }
   ]
 }

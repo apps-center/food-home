@@ -29,6 +29,10 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#4F8CFF" />
     <script src="/pwa.js" defer></script>
+    <!-- Supabase : sync liste de courses (voir cloud.js) -->
+    <script src="/vendor/supabase.js"></script>
+    <script src="/supabase-config.js"></script>
+    <script src="/cloud.js"></script>
     <style>
       /* Toast notification */
       .toast {
@@ -807,6 +811,11 @@
           // Sauvegarder en localStorage (source unique)
           localStorage.setItem(SHOPPING_KEY, JSON.stringify(finalList));
 
+          // Sync cloud (si connecté Google) — non bloquant
+          if (window.FoodHomeCloud && FoodHomeCloud.isSignedIn()) {
+            FoodHomeCloud.pushList(finalList);
+          }
+
           // Notifier le parent pour refresh de l'iframe courses
           window.parent.postMessage({
             type: 'SHOPPING_LIST_UPDATED'
@@ -933,6 +942,11 @@
 
           // Sauvegarder en localStorage (source unique)
           localStorage.setItem(SHOPPING_KEY, JSON.stringify(finalList));
+
+          // Sync cloud (si connecté Google) — non bloquant
+          if (window.FoodHomeCloud && FoodHomeCloud.isSignedIn()) {
+            FoodHomeCloud.pushList(finalList);
+          }
 
           // Notifier le parent pour refresh de l'iframe courses
           window.parent.postMessage({
@@ -1064,6 +1078,8 @@
       // INIT
       // ============================================
       loadRecipes();
+      // Init cloud (auth) pour que la sync de la liste connaisse l'état connecté.
+      if (window.FoodHomeCloud) FoodHomeCloud.init();
       // ============================================
       // TOAST NOTIFICATION (remplace alert)
       // ============================================

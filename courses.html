@@ -32,6 +32,10 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#4F8CFF" />
     <script src="/pwa.js" defer></script>
+    <!-- Supabase : sync liste de courses (voir cloud.js) -->
+    <script src="/vendor/supabase.js"></script>
+    <script src="/supabase-config.js"></script>
+    <script src="/cloud.js"></script>
     <style>
       /* 🎨 COULEURS NUTRITIONNELLES - Styles dynamiques */
       .category-btn[data-color="blue"] {
@@ -2234,7 +2238,7 @@
       const MAX_UNDO = 10;
 
       // Init
-      function init() {
+      async function init() {
         // Initialiser stockBase avec les items essentiels
         STOCK_BASE_ITEMS.forEach((item) => {
           stockBase[item] = false;
@@ -2266,6 +2270,27 @@
         });
 
         renderCategories();
+
+        // ☁️ Sync cloud (si connecté Google) — sinon localStorage seul (comportement inchangé)
+        if (window.FoodHomeCloud) {
+          try {
+            await FoodHomeCloud.init();
+            if (FoodHomeCloud.isSignedIn()) {
+              const cloudItems = await FoodHomeCloud.pullList();
+              if (cloudItems) {
+                localStorage.setItem(SHOPPING_KEY, JSON.stringify(cloudItems));
+              }
+              // Temps réel : un autre appareil modifie la liste → on ré-applique.
+              FoodHomeCloud.subscribeList((items) => {
+                localStorage.setItem(SHOPPING_KEY, JSON.stringify(items));
+                applyListFromStorage();
+              });
+            }
+          } catch (e) {
+            console.warn("⚠️ Sync cloud indisponible, mode local :", e);
+          }
+        }
+
         loadFromAPI();
 
         // 🎯 ÉCOUTER LES MESSAGES de home.html pour switcher automatiquement
@@ -2877,6 +2902,16 @@
       // ============================================
 
       // Load from localStorage
+      // Ré-applique intégralement la liste du localStorage (adds ET removes).
+      // Utilisé par la sync temps réel : on remet toutes les sélections à
+      // false puis loadFromAPI recoche celles présentes dans le stockage.
+      function applyListFromStorage() {
+        Object.keys(selections).forEach((k) =>
+          Object.keys(selections[k]).forEach((i) => (selections[k][i] = false))
+        );
+        loadFromAPI();
+      }
+
       async function loadFromAPI() {
         try {
           // Charger la liste depuis localStorage (source unique)
@@ -2938,6 +2973,10 @@
         try {
           localStorage.setItem(SHOPPING_KEY, JSON.stringify(allItems));
           console.log("💾 Sauvegarde localStorage:", allItems.length, "items");
+          // Sync cloud (si connecté Google) — non bloquant
+          if (window.FoodHomeCloud && FoodHomeCloud.isSignedIn()) {
+            FoodHomeCloud.pushList(allItems);
+          }
         } catch (error) {
           console.error("Erreur sauvegarde:", error);
           showToast("⚠️ Sauvegarde impossible (stockage plein ?)", "error");
