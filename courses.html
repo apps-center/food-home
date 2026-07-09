@@ -105,7 +105,7 @@
 
       /* === GRANDES CATÉGORIES === */
       .main-category-btn {
-        padding: 14px 24px;
+        padding: 0;
         color: var(--text-primary);
         background: linear-gradient(135deg, var(--accent-bg-soft) 0%, var(--accent-bg) 100%);
         border: 2px solid rgb(from var(--accent-strong) r g b / 0.2);
@@ -115,16 +115,42 @@
         font-weight: var(--font-weight-bold);
         font-size: 15px;
         display: flex;
-        align-items: center;
-        gap: 8px;
+        flex-direction: column;
+        align-items: stretch;
+        overflow: hidden;
       }
-      
+
+      /* Visuel de la carte : image illustrative + emoji de secours */
+      .main-category-media {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 96px;
+        font-size: 44px;
+        line-height: 1;
+        background: rgb(from var(--accent-strong) r g b / 0.06);
+      }
+      .main-category-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      /* Quand l'image est chargée, on masque l'emoji de secours */
+      .main-category-media.has-img {
+        font-size: 0;
+      }
+      .main-category-label {
+        padding: 12px 10px;
+        text-align: center;
+      }
+
       .main-category-btn:hover {
         background: linear-gradient(135deg, var(--accent-bg) 0%, var(--accent-bg-4) 100%);
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgb(from var(--accent-strong) r g b / 0.2);
       }
-      
+
       .main-category-btn.active {
         background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
         color: white;
@@ -133,11 +159,11 @@
       }
 
       .main-categories {
-        display: flex;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
         gap: 12px;
-        margin-bottom: 24px;
-        flex-wrap: wrap;
-        justify-content: center;
+        max-width: 440px;
+        margin: 0 auto 24px;
       }
       
       .subcategories-container {
@@ -1373,25 +1399,45 @@
 
         <!-- VUE CATÉGORIES - ACTIVE PAR DÉFAUT -->
         <div id="categoriesView" class="categories-view active">
-          <!-- ✅ GRANDES CATÉGORIES - Layout 3x2 (3 lignes de 2 boutons) -->
-          <div class="main-categories" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 400px; margin: 0 auto 24px;">
-            <button class="main-category-btn" onclick="switchMainCategory('alimentaire')" style="width: 100%;">
-              🍎 Alimentaire
+          <!-- ✅ GRANDES CATÉGORIES - 4 cartes illustrées (2x2) -->
+          <!--
+            Images : déposer 4 fichiers dans img/categories/ nommés
+            alimentaire / hygiene / menage / autre (.jpg, .png ou .webp).
+            Voir img/categories/README.md. Si l'image est absente, l'emoji
+            de secours s'affiche automatiquement (onerror).
+          -->
+          <div class="main-categories">
+            <button class="main-category-btn" onclick="switchMainCategory('alimentaire')">
+              <span class="main-category-media">
+                <img src="img/categories/alimentaire.jpg" alt="" loading="lazy"
+                  onload="this.parentElement.classList.add('has-img')" onerror="this.remove()">
+                <span class="main-category-emoji">🍎</span>
+              </span>
+              <span class="main-category-label">Alimentaire</span>
             </button>
-            <button class="main-category-btn" onclick="switchMainCategory('hygiene')" style="width: 100%;">
-              🧴 Hygiène
+            <button class="main-category-btn" onclick="switchMainCategory('hygiene')">
+              <span class="main-category-media">
+                <img src="img/categories/hygiene.jpg" alt="" loading="lazy"
+                  onload="this.parentElement.classList.add('has-img')" onerror="this.remove()">
+                <span class="main-category-emoji">🧴</span>
+              </span>
+              <span class="main-category-label">Hygiène</span>
             </button>
-            <button class="main-category-btn" onclick="switchMainCategory('menage')" style="width: 100%;">
-              🧹 Produits ménagers
+            <button class="main-category-btn" onclick="switchMainCategory('menage')">
+              <span class="main-category-media">
+                <img src="img/categories/menage.jpg" alt="" loading="lazy"
+                  onload="this.parentElement.classList.add('has-img')" onerror="this.remove()">
+                <span class="main-category-emoji">🧹</span>
+              </span>
+              <span class="main-category-label">Produits ménagers</span>
             </button>
-            <button class="main-category-btn" onclick="switchMainCategory('bricolage')" style="width: 100%;">
-              🔧 Bricolage
-            </button>
-            <button class="main-category-btn" onclick="switchMainCategory('culture')" style="width: 100%;">
-              📚 Culture
-            </button>
-            <button class="main-category-btn" onclick="switchMainCategory('autre')" style="width: 100%;">
-              📦 Autre
+            <button class="main-category-btn" onclick="switchMainCategory('autre')">
+              <span class="main-category-media">
+                <img src="img/categories/autre.jpg" alt="" loading="lazy"
+                  onload="this.parentElement.classList.add('has-img')" onerror="this.remove()">
+                <span class="main-category-emoji">📦</span>
+              </span>
+              <span class="main-category-label">Autre</span>
             </button>
           </div>
 
@@ -1404,12 +1450,6 @@
           </div>
           <div id="subcategory-menage" class="subcategories-container">
             <div class="categories-grid" id="categoriesGrid-menage"></div>
-          </div>
-          <div id="subcategory-bricolage" class="subcategories-container">
-            <div class="categories-grid" id="categoriesGrid-bricolage"></div>
-          </div>
-          <div id="subcategory-culture" class="subcategories-container">
-            <div class="categories-grid" id="categoriesGrid-culture"></div>
           </div>
           <div id="subcategory-autre" class="subcategories-container">
             <div class="categories-grid" id="categoriesGrid-autre"></div>
@@ -2100,7 +2140,7 @@
           ],
         },
         salon: {
-          mainCategory: "bricolage",
+          mainCategory: "autre",
           icon: "🕯️",
           name: "Salon",
           order: 14,
@@ -2108,7 +2148,7 @@
           items: ["Bougies", "Allume-feu", "Allumettes"],
         },
         electromenager: {
-          mainCategory: "bricolage",
+          mainCategory: "autre",
           icon: "💡",
           name: "Électroménager",
           order: 15,
@@ -2124,7 +2164,7 @@
         },
         // === CULTURE ===
   culture_livres: {
-    mainCategory: "culture",
+    mainCategory: "autre",
     icon: "📚",
     name: "Livres",
     order: 16,
@@ -2132,7 +2172,7 @@
     items: ["Romans", "BD", "Magazines", "Livres de cuisine", "Guides"],
   },
   culture_multimedia: {
-    mainCategory: "culture",
+    mainCategory: "autre",
     icon: "🎬",
     name: "Multimédia",
     order: 17,
@@ -2140,7 +2180,7 @@
     items: ["DVD", "Blu-ray", "Jeux vidéo", "Abonnements streaming"],
   },
   culture_papeterie: {
-    mainCategory: "culture",
+    mainCategory: "autre",
     icon: "✏️",
     name: "Papeterie",
     order: 18,
@@ -2148,7 +2188,7 @@
     items: ["Stylos", "Cahiers", "Papier", "Enveloppes", "Crayons", "Feutres"],
   },
   autres: {
-    mainCategory: "alimentaire",
+    mainCategory: "autre",
     icon: "📦",
     name: "Autres",
     order: 99,
@@ -2260,9 +2300,7 @@
         const titles = {
           'alimentaire': '🍽️ Alimentaire',
           'hygiene': '🧴 Hygiène',
-          'menage': '🧹 Ménage',
-          'bricolage': '🔧 Bricolage',
-          'culture': '📚 Culture',
+          'menage': '🧹 Produits ménagers',
           'autre': '📦 Autre'
         };
         title.textContent = titles[mainCat] || 'Catégories';
