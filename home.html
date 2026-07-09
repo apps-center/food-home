@@ -339,6 +339,10 @@ async function logout() {
   document.addEventListener("click", (e) => {
     if (!account.contains(e.target)) menu.classList.remove("open");
   });
+  // Le contenu de l'app est dans des <iframe> : un clic « à côté » s'y produit
+  // et n'atteint pas le document parent. On ferme donc le menu dès que le focus
+  // quitte la fenêtre (clic dans une iframe, changement d'onglet, etc.).
+  window.addEventListener("blur", () => menu.classList.remove("open"));
 
   FoodHomeCloud.onUser(render);
   FoodHomeCloud.init();
