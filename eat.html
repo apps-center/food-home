@@ -140,6 +140,26 @@
       .type-icon-btn.action:active {
         transform: scale(0.96);
       }
+
+      /* Aperçu « Plat au hasard » (carte d'abord) */
+      .random-preview { max-width: 420px; }
+      .random-preview-hint {
+        margin: 0 0 14px;
+        font-size: 13px;
+        color: var(--text-secondary, #94a3b8);
+        text-align: center;
+      }
+      #randomPreviewCard .recipe-card {
+        cursor: pointer;
+        margin: 0 auto;
+        max-width: 340px;
+      }
+      #randomPreviewCard .recipe-card:active { transform: scale(0.99); }
+      .random-preview-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 18px;
+      }
       
       .type-icon-btn:hover {
         background: linear-gradient(135deg, var(--accent-bg) 0%, var(--accent-bg-4) 100%);
@@ -362,6 +382,23 @@
         </div>
       </div>
     </div>
+
+    <!-- Aperçu « Plat au hasard » : on montre la carte (photo) d'abord -->
+    <div class="modal" id="randomPreviewModal">
+      <div class="modal-content random-preview">
+        <div class="modal-header">
+          <h2>🎲 Plat au hasard</h2>
+          <button class="btn-close" id="btn-close-random-preview" title="Fermer">×</button>
+        </div>
+        <p class="random-preview-hint">Touchez la carte pour voir la recette, ou relancez le tirage.</p>
+        <div id="randomPreviewCard"></div>
+        <div class="random-preview-actions">
+          <button class="btn btn-primary" id="btn-random-see" style="flex:1;">👁️ Voir la recette</button>
+          <button class="btn btn-accent" id="btn-random-reroll" style="flex:1;">🎲 Autre plat</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal planning semaine -->
     <div class="modal" id="planningModal">
       <div class="modal-content large">
@@ -459,6 +496,7 @@
       const resultsDiv = document.getElementById("results");
       const modal = document.getElementById("recipeModal");
       const planningModal = document.getElementById("planningModal");
+      const randomPreviewModal = document.getElementById("randomPreviewModal");
       const btnCloseModal = document.getElementById("btn-close-modal");
       const btnClosePlanning = document.getElementById("btn-close-planning");
       const btnAddToShopping = document.getElementById("btn-add-shopping");
@@ -1054,19 +1092,44 @@
       // ============================================
       // PLAT AU HASARD
       // ============================================
-      let openedFromRandom = false; // vrai quand la modale est ouverte via le tirage
+      let openedFromRandom = false; // vrai quand la modale recette vient du tirage
+      let previewRecipe = null;     // recette actuellement proposée en aperçu Hasard
+
+      // Hasard : on affiche d'abord la CARTE (photo). L'utilisateur ouvre la
+      // recette en touchant la carte (ou « Voir la recette »), ou relance le
+      // tirage si le plat ne lui plaît pas.
       function showRandomRecipe() {
         if (allRecipes.length === 0) return;
         // Tirage parmi les recettes filtrées (respecte type/saison/filtres rapides)
         let pool = filterRecipes();
         if (!pool.length) pool = allRecipes;
-        // Éviter de retomber sur le plat déjà affiché
-        if (currentRecipe && pool.length > 1) {
-          pool = pool.filter((r) => r.id !== currentRecipe.id);
+        // Éviter de reproposer le plat déjà à l'écran
+        if (previewRecipe && pool.length > 1) {
+          pool = pool.filter((r) => r.id !== previewRecipe.id);
         }
-        const recipe = pool[Math.floor(Math.random() * pool.length)];
-        openedFromRandom = true;
-        openRecipeModal(recipe);
+        previewRecipe = pool[Math.floor(Math.random() * pool.length)];
+        renderRandomPreview(previewRecipe);
+        randomPreviewModal.classList.add("active");
+      }
+
+      function renderRandomPreview(recipe) {
+        const holder = document.getElementById("randomPreviewCard");
+        holder.innerHTML = "";
+        const card = createRecipeCard(recipe);
+        // Touch/clic sur la carte → ouvrir la recette complète
+        card.onclick = () => openRecipeFromPreview();
+        holder.appendChild(card);
+      }
+
+      function openRecipeFromPreview() {
+        if (!previewRecipe) return;
+        randomPreviewModal.classList.remove("active");
+        openedFromRandom = true; // affiche « Nouvelle tentative » dans la recette
+        openRecipeModal(previewRecipe);
+      }
+
+      function closeRandomPreview() {
+        randomPreviewModal.classList.remove("active");
       }
       // ============================================
       // RESET FILTRES
@@ -1114,7 +1177,19 @@
       regimeSelect.addEventListener("change", filterAndRender);
       proteineSelect.addEventListener("change", filterAndRender);
       // Planning / Hasard / Réinitialiser sont câblés en onclick dans la grille.
-      document.getElementById("btn-random-again").addEventListener("click", showRandomRecipe);
+      // « Nouvelle tentative » depuis la recette : on ferme la recette puis on
+      // repropose une carte au hasard.
+      document.getElementById("btn-random-again").addEventListener("click", () => {
+        closeRecipeModal();
+        showRandomRecipe();
+      });
+      // Aperçu Hasard : voir la recette / relancer / fermer
+      document.getElementById("btn-random-see").addEventListener("click", openRecipeFromPreview);
+      document.getElementById("btn-random-reroll").addEventListener("click", showRandomRecipe);
+      document.getElementById("btn-close-random-preview").addEventListener("click", closeRandomPreview);
+      randomPreviewModal.addEventListener("click", (e) => {
+        if (e.target === randomPreviewModal) closeRandomPreview();
+      });
       btnRegenerate.addEventListener("click", generateWeeklyPlanning);
       btnExportPlanning.addEventListener("click", exportPlanningToShoppingList);
       btnCloseModal.addEventListener("click", closeRecipeModal);
@@ -1135,6 +1210,7 @@
         if (e.key === "Escape") {
           if (modal.classList.contains("active")) closeRecipeModal();
           if (planningModal.classList.contains("active")) closePlanningModal();
+          if (randomPreviewModal.classList.contains("active")) closeRandomPreview();
         }
       });
       // ============================================
@@ -1290,6 +1366,7 @@
         const _modalEls = [
           document.getElementById('recipeModal'),
           document.getElementById('planningModal'),
+          document.getElementById('randomPreviewModal'),
         ].filter(Boolean);
         function reportModalState() {
           const anyOpen = _modalEls.some((m) => m.classList.contains('active'));
