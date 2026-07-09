@@ -15,7 +15,7 @@
   Bumper CACHE_VERSION invalide l'ancien cache au prochain déploiement.
 */
 
-const CACHE_VERSION = "food-home-v2";
+const CACHE_VERSION = "food-home-v3";
 
 // Ressources de base pré-mises en cache à l'installation (coquille + données).
 const CORE_ASSETS = [
@@ -83,7 +83,10 @@ self.addEventListener("fetch", (event) => {
         // Copie en cache uniquement les réponses valides.
         if (response && response.status === 200 && response.type === "basic") {
           const copy = response.clone();
-          caches.open(CACHE_VERSION).then((cache) => cache.put(request, copy));
+          caches
+            .open(CACHE_VERSION)
+            .then((cache) => cache.put(request, copy))
+            .catch(() => {}); // quota plein, etc. : on ignore silencieusement
         }
         return response;
       })

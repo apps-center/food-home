@@ -899,9 +899,10 @@
           // Sauvegarder en localStorage (source unique)
           localStorage.setItem(SHOPPING_KEY, JSON.stringify(finalList));
 
-          // Sync cloud (si connecté Google) — non bloquant
+          // Sync cloud (si connecté Google) — fusion avec l'état distant pour ne
+          // pas écraser les items ajoutés depuis un autre appareil. Non bloquant.
           if (window.FoodHomeCloud && FoodHomeCloud.isSignedIn()) {
-            FoodHomeCloud.pushList(finalList);
+            FoodHomeCloud.addItemsMerged(finalList);
           }
 
           // Notifier le parent pour refresh de l'iframe courses
@@ -1031,9 +1032,10 @@
           // Sauvegarder en localStorage (source unique)
           localStorage.setItem(SHOPPING_KEY, JSON.stringify(finalList));
 
-          // Sync cloud (si connecté Google) — non bloquant
+          // Sync cloud (si connecté Google) — fusion avec l'état distant pour ne
+          // pas écraser les items ajoutés depuis un autre appareil. Non bloquant.
           if (window.FoodHomeCloud && FoodHomeCloud.isSignedIn()) {
-            FoodHomeCloud.pushList(finalList);
+            FoodHomeCloud.addItemsMerged(finalList);
           }
 
           // Notifier le parent pour refresh de l'iframe courses
