@@ -28,6 +28,41 @@
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#4F8CFF" />
     <script src="/pwa.js" defer></script>
+    <!-- Supabase : auth Google + sync (voir cloud.js) -->
+    <script src="/vendor/supabase.js"></script>
+    <script src="/supabase-config.js"></script>
+    <script src="/cloud.js"></script>
+    <style>
+      /* Avatar Google + menu compte dans la navbar */
+      .account { position: relative; }
+      .account-avatar {
+        width: 38px; height: 38px; border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.5);
+        background: var(--accent, #4F8CFF); color: #fff;
+        font-weight: 700; font-size: 15px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; overflow: hidden; padding: 0;
+      }
+      .account-avatar img { width: 100%; height: 100%; object-fit: cover; }
+      .account-menu {
+        position: absolute; right: 0; top: calc(100% + 8px);
+        min-width: 220px; padding: 14px;
+        background: var(--bg-elevated, #1b2431);
+        color: var(--text-primary, #e5e7eb);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 14px; box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+        display: none; z-index: 1000;
+      }
+      .account-menu.open { display: block; }
+      .account-menu .name { font-weight: 700; font-size: 15px; }
+      .account-menu .email { font-size: 13px; opacity: 0.7; margin-top: 2px; word-break: break-all; }
+      .account-menu .signout {
+        margin-top: 12px; width: 100%; padding: 9px 12px;
+        border: none; border-radius: 10px; cursor: pointer;
+        background: var(--accent, #4F8CFF); color: #fff; font-weight: 600;
+        font-family: inherit; font-size: 14px;
+      }
+    </style>
   </head>
   <body>
     <!-- Navigation Bar -->
@@ -45,9 +80,18 @@
           <span id="toggleIcon">🔄</span>
           <span id="toggleText">Basculer</span>
         </button>
-        <a href="javascript:void(0)" class="logout-btn" onclick="logout()"
+        <a href="javascript:void(0)" class="logout-btn" id="logoutBtn" onclick="logout()"
           >🚪 Déconnexion</a
         >
+        <!-- Compte Google (affiché seulement si connecté via Google) -->
+        <div class="account" id="account" style="display:none">
+          <button class="account-avatar" id="accountAvatar" title="Mon compte"></button>
+          <div class="account-menu" id="accountMenu">
+            <div class="name" id="accountName"></div>
+            <div class="email" id="accountEmail"></div>
+            <button class="signout" onclick="logout()">Se déconnecter</button>
+          </div>
+        </div>
       </div>
     </div>
     <!-- App Container -->
@@ -251,12 +295,54 @@ function cycleTheme() {
 window.addEventListener("load", refreshThemeButton);
 
 // Fonction de déconnexion
-function logout() {
+async function logout() {
+  if (window.FoodHomeCloud) await FoodHomeCloud.signOut();
   localStorage.removeItem("food_home_logged_in");
   localStorage.removeItem("food_home_login_time");
   localStorage.removeItem("active_app");
   window.location.href = "index.html";
 }
+
+// 👤 Compte Google : avatar + menu dans la navbar
+(function initAccount() {
+  if (!window.FoodHomeCloud) return;
+
+  const account = document.getElementById("account");
+  const logoutBtn = document.getElementById("logoutBtn");
+  const avatar = document.getElementById("accountAvatar");
+  const menu = document.getElementById("accountMenu");
+  const nameEl = document.getElementById("accountName");
+  const emailEl = document.getElementById("accountEmail");
+
+  function render(user) {
+    if (user) {
+      const meta = user.user_metadata || {};
+      const fullName = meta.full_name || meta.name || user.email || "Compte";
+      const picture = meta.avatar_url || meta.picture || "";
+      nameEl.textContent = fullName;
+      emailEl.textContent = user.email || "";
+      avatar.innerHTML = picture
+        ? '<img src="' + picture + '" alt="" referrerpolicy="no-referrer">'
+        : (fullName.trim()[0] || "?").toUpperCase();
+      account.style.display = "";
+      if (logoutBtn) logoutBtn.style.display = "none";
+    } else {
+      account.style.display = "none";
+      if (logoutBtn) logoutBtn.style.display = "";
+    }
+  }
+
+  avatar.addEventListener("click", (e) => {
+    e.stopPropagation();
+    menu.classList.toggle("open");
+  });
+  document.addEventListener("click", (e) => {
+    if (!account.contains(e.target)) menu.classList.remove("open");
+  });
+
+  FoodHomeCloud.onUser(render);
+  FoodHomeCloud.init();
+})();
     </script>
   </body>
 </html>

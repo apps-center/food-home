@@ -15,7 +15,7 @@
   Bumper CACHE_VERSION invalide l'ancien cache au prochain déploiement.
 */
 
-const CACHE_VERSION = "food-home-v1";
+const CACHE_VERSION = "food-home-v2";
 
 // Ressources de base pré-mises en cache à l'installation (coquille + données).
 const CORE_ASSETS = [
@@ -27,6 +27,9 @@ const CORE_ASSETS = [
   "/recipes.json",
   "/theme.js",
   "/pwa.js",
+  "/vendor/supabase.js",
+  "/supabase-config.js",
+  "/cloud.js",
   "/manifest.webmanifest",
   "/css/tokens.css",
   "/css/common.css",
