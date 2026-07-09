@@ -2206,6 +2206,81 @@
   },
 };
 
+// ============================================================================
+// COUVERTURE INGRÉDITS recipes.json → RAYONS
+// Ingrédients présents dans les recettes mais absents des rayons ci-dessus.
+// Fusionnés dans CATEGORIES au chargement (sans doublon). Les noms de base
+// couvrent les variantes via la recherche par préfixe de findCategoryForItem
+// (ex. « Citron » couvre « Citron jaune/vert », « Jambon » couvre « Jambon cru »).
+// ============================================================================
+const EXTRA_ITEMS = {
+  fruits: {
+    Fruits: ["Citron", "Nectarines", "Mûres", "Grenade", "Pastèque", "Rhubarbe", "Figues", "Cranberries"],
+    "Légumes": [
+      "Champignons", "Shiitaké", "Échalotes", "Echalotes", "Asperges", "Avocat",
+      "Butternut", "Courge butternut", "Épinards frais", "Navets", "Panais",
+      "Pak choi", "Patates douces", "Petits pois", "Roquette", "Maïs", "Fenouil",
+      "Fève", "Piment", "Petit piment", "Chili", "Crudités", "Légumes", "Artichauts",
+    ],
+  },
+  cereales: [
+    "Farine", "Fécule de maïs", "Flocons d'avoine", "Flocons d’avoine",
+    "Graines de chia", "Coquillettes", "Macaronis", "Spaghetti", "Tagliatelles",
+    "Nouilles", "Feuilles de lasagnes", "Lentilles cuites", "Lentilles vertes",
+    "Haricots rouges", "Levure", "Chapelure", "Croûtons", "Brick", "Tortillas",
+  ],
+  laitiers: [
+    "Brie", "Camembert", "Burrata", "Mozzarella", "Stracciatella", "Ricotta",
+    "Feta", "Gouda", "Reblochon", "Gruyère râpé", "Chèvre frais",
+    "Crottin de chèvre", "Bûche de chèvre", "Crème légère liquide",
+  ],
+  proteines: {
+    Viandes: [
+      "Blanc de poulet", "Escalopes", "Filets de dinde", "Filet de bœuf",
+      "Filet mignon", "Cuisse de dinde", "Joue de bœuf", "Paleron", "Rosbif",
+      "Rôti de veau", "Paupiettes de veau", "Magret de canard", "Steaks hachés",
+      "Chair à saucisse", "Saucisses", "Boudin noir", "Andouillettes", "Knackis",
+      "Petit salé", "Os à moelle", "Jambon", "Mortadelle", "Charcuterie variée",
+    ],
+    Poissons: ["Anchois", "Bar entier", "Queue de lotte"],
+  },
+  graisses: [
+    "Huile d'arachide", "Huile de coco", "Huile de sésame", "Huile de tournesol",
+    "Huile végétale", "Huile pour friture", "Huile pimentée",
+  ],
+  sucres: ["Sucre", "Vanille", "Vergeoise brune", "Amandes", "Pignons"],
+  condiments: [
+    "Persil", "Coriandre", "Ciboulette", "Aneth", "Menthe", "Romarin", "Sauge",
+    "Origan", "Laurier", "Herbes", "Bouquet garni", "Cumin", "Curcuma", "Muscade",
+    "Ras el hanout", "Genièvre", "Zaatar", "Fleur de sel", "Sésame",
+    "Graines de sésame", "Concentré de tomate", "Harissa", "Nuoc mam",
+    "Sauce César", "Sauce hoisin", "Sauce worcestershire", "Sauces", "Pesto",
+    "Relish", "Tabasco", "Mirin", "Tahini", "Pâte d'arachide", "Câpres",
+    "Olives noires", "Fond de veau",
+  ],
+  transformes: ["Filets de colin surgelés", "Fruits rouges congelés"],
+  apero: {
+    Alcools: ["Cognac"],
+    Grignotage: ["Pistache", "Cacahuète grillée"],
+  },
+};
+
+// Fusion des ingrédients supplémentaires dans les rayons existants (sans doublon).
+Object.entries(EXTRA_ITEMS).forEach(([key, val]) => {
+  const cat = CATEGORIES[key];
+  if (!cat) return;
+  if (Array.isArray(val)) {
+    cat.items = cat.items || [];
+    val.forEach((i) => { if (!cat.items.includes(i)) cat.items.push(i); });
+  } else {
+    cat.groups = cat.groups || {};
+    Object.entries(val).forEach(([g, arr]) => {
+      cat.groups[g] = cat.groups[g] || [];
+      arr.forEach((i) => { if (!cat.groups[g].includes(i)) cat.groups[g].push(i); });
+    });
+  }
+});
+
       // État
       let selections = {};
       let currentCategory = null;
