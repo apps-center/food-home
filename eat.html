@@ -93,20 +93,51 @@
       }
       
       /* Boutons icônes pour les types */
+      /* Grille 3×3 : type / filtres rapides / actions */
+      .actions-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+
       .type-icon-btn {
         background: linear-gradient(135deg, var(--accent-bg-soft) 0%, var(--accent-bg) 100%);
         border: 2px solid rgb(from var(--accent-strong) r g b / 0.2);
         border-radius: var(--radius-xl);
-        padding: 12px 16px;
+        padding: 12px 6px;
         cursor: pointer;
-        font-size: 28px;
         transition: all var(--transition-base);
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 4px;
-        min-width: 80px;
+        justify-content: center;
+        gap: 5px;
+        min-width: 0;
         color: var(--text-primary);
+      }
+      .type-icon-btn .ico { font-size: 26px; line-height: 1; }
+      .type-icon-btn .lbl {
+        font-size: 12px;
+        font-weight: var(--font-weight-bold);
+        line-height: 1.1;
+        text-align: center;
+      }
+      /* Boutons d'action (Planning / Hasard / Réinitialiser) : teinte secondaire
+         pour les distinguer des filtres, tout en gardant le même format. */
+      .type-icon-btn.action {
+        background: linear-gradient(135deg,
+          rgb(from var(--accent-2-strong) r g b / 0.10) 0%,
+          rgb(from var(--accent-2-strong) r g b / 0.20) 100%);
+        border-color: rgb(from var(--accent-2-strong) r g b / 0.30);
+      }
+      .type-icon-btn.action:hover {
+        background: linear-gradient(135deg,
+          rgb(from var(--accent-2-strong) r g b / 0.18) 0%,
+          rgb(from var(--accent-2-strong) r g b / 0.28) 100%);
+      }
+      .type-icon-btn.action:active {
+        transform: scale(0.96);
       }
       
       .type-icon-btn:hover {
@@ -188,7 +219,6 @@
   <body>
     <div class="app">
       <div class="header">
-        <div class="logo">🍽️</div>
         <h1>FOOD HOME — Recettes</h1>
         <p class="subtitle">Découvrez vos recettes favorites</p>
       </div>
@@ -213,16 +243,38 @@
           </button>
         </div>
 
-        <!-- Ligne 2 : Icônes Type (Entrée, Plat, Dessert) -->
-        <div style="display: flex; gap: 12px; margin-bottom: 16px; justify-content: center;">
+        <!-- 🎯 Grille 3×3 : Type / Filtres rapides / Actions
+             (tous au même format que les boutons de type) -->
+        <div class="actions-grid">
+          <!-- Ligne 1 : Type de plat -->
           <button class="type-icon-btn" data-type="entree" onclick="selectType('entree')">
-            🥗<br><span style="font-size: 12px;">Entrée</span>
+            <span class="ico">🥗</span><span class="lbl">Entrée</span>
           </button>
           <button class="type-icon-btn" data-type="plat" onclick="selectType('plat')">
-            🍛<br><span style="font-size: 12px;">Plat</span>
+            <span class="ico">🍛</span><span class="lbl">Plat</span>
           </button>
           <button class="type-icon-btn" data-type="dessert" onclick="selectType('dessert')">
-            🍰<br><span style="font-size: 12px;">Dessert</span>
+            <span class="ico">🍰</span><span class="lbl">Dessert</span>
+          </button>
+          <!-- Ligne 2 : Filtres rapides -->
+          <button class="type-icon-btn" data-quick="vegetarien" onclick="toggleQuick('vegetarien')">
+            <span class="ico">🌱</span><span class="lbl">Végétarien</span>
+          </button>
+          <button class="type-icon-btn" data-quick="proteine" onclick="toggleQuick('proteine')">
+            <span class="ico">🍗</span><span class="lbl">Protéiné</span>
+          </button>
+          <button class="type-icon-btn" data-quick="facile" onclick="toggleQuick('facile')">
+            <span class="ico">👌</span><span class="lbl">Facile</span>
+          </button>
+          <!-- Ligne 3 : Actions -->
+          <button class="type-icon-btn action" onclick="generateWeeklyPlanning()">
+            <span class="ico">📅</span><span class="lbl">Planning</span>
+          </button>
+          <button class="type-icon-btn action" onclick="showRandomRecipe()">
+            <span class="ico">🎲</span><span class="lbl">Hasard</span>
+          </button>
+          <button class="type-icon-btn action" onclick="resetFilters()">
+            <span class="ico">🔄</span><span class="lbl">Réinitialiser</span>
           </button>
         </div>
 
@@ -263,23 +315,6 @@
               </select>
             </div>
           </div>
-        </div>
-        
-        <!-- Bouton planning -->
-        <div style="margin-top: 20px; display: flex; justify-content: center;">
-          <button class="btn btn-accent" id="btn-generate-week">
-            📅 Générer planning famille (5 jours)
-          </button>
-        </div>
-        
-        <!-- Boutons Plat au hasard et Réinitialiser (en dessous) -->
-        <div style="margin-top: 12px; display: flex; gap: 12px; justify-content: center;">
-          <button class="btn btn-primary" id="btn-random">
-            🎲 Plat au hasard
-          </button>
-          <button class="btn btn-secondary" id="btn-reset">
-            🔄 Réinitialiser
-          </button>
         </div>
       </section>
       <!-- Résultats -->
@@ -420,9 +455,6 @@
       const saisonSelect = document.getElementById("saison");
       const regimeSelect = document.getElementById("regime");
       const proteineSelect = document.getElementById("proteine");
-      const btnRandom = document.getElementById("btn-random");
-      const btnReset = document.getElementById("btn-reset");
-      const btnGenerateWeek = document.getElementById("btn-generate-week");
       const resultsDiv = document.getElementById("results");
       const modal = document.getElementById("recipeModal");
       const planningModal = document.getElementById("planningModal");
@@ -432,12 +464,80 @@
       const btnExportPlanning = document.getElementById("btn-export-planning");
       const btnRegenerate = document.getElementById("btn-regenerate");
       const weekGrid = document.getElementById("weekGrid");
-      
+
+      // ============================================
+      // SAISON AUTOMATIQUE (selon la date, chevauchement 3 semaines)
+      // ============================================
+      // Saisons approximatives + zone de transition de 3 semaines autour de
+      // chaque bascule : à ±21 jours d'un changement, les DEUX saisons adjacentes
+      // sont proposées (les plats « d'entre-deux » restent pertinents).
+      const SEASON_OVERLAP_DAYS = 21;
+      const SEASON_BOUNDS = [
+        { doy: 79,  before: "hiver",     after: "printemps" }, // ~20 mars
+        { doy: 172, before: "printemps", after: "ete" },       // ~21 juin
+        { doy: 266, before: "ete",       after: "automne" },   // ~23 sept.
+        { doy: 355, before: "automne",   after: "hiver" },     // ~21 déc.
+      ];
+      function dayOfYear(d) {
+        const start = new Date(d.getFullYear(), 0, 0);
+        return Math.floor((d - start) / 86400000);
+      }
+      function seasonOf(doy) {
+        if (doy < 79 || doy >= 355) return "hiver";
+        if (doy < 172) return "printemps";
+        if (doy < 266) return "ete";
+        return "automne";
+      }
+      function circDist(a, b) {
+        const d = Math.abs(a - b);
+        return Math.min(d, 365 - d);
+      }
+      function getActiveSeasons(date) {
+        const doy = dayOfYear(date);
+        const active = new Set([seasonOf(doy)]);
+        SEASON_BOUNDS.forEach((b) => {
+          if (circDist(doy, b.doy) <= SEASON_OVERLAP_DAYS) {
+            active.add(b.before);
+            active.add(b.after);
+          }
+        });
+        return [...active];
+      }
+      // Normalise une saison de recette ("Été"→"ete", "toutes"→"toute").
+      function normSeason(s) {
+        const n = normalizeText(s);
+        return n === "toutes" ? "toute" : n;
+      }
+      function recipeSeasons(recipe) {
+        return (recipe.saisons || "").split("|").map(normSeason);
+      }
+      const ACTIVE_SEASONS = getActiveSeasons(new Date());
+
+      // État : saison automatique (par défaut) + filtres rapides
+      let seasonAuto = true;
+      const quickFilters = { vegetarien: false, proteine: false, facile: false };
+
+      // Filtre rapide (Végétarien / Protéiné / Facile) : bascule indépendante.
+      function toggleQuick(key) {
+        quickFilters[key] = !quickFilters[key];
+        const btn = document.querySelector('.type-icon-btn[data-quick="' + key + '"]');
+        if (btn) btn.classList.toggle("active", quickFilters[key]);
+        filterAndRender();
+      }
+
+      // Vue par défaut : type « Plat » actif (la saison du jour s'applique via seasonAuto).
+      function applyDefaultView() {
+        typeSelect.value = "plat";
+        document.querySelectorAll(".type-icon-btn[data-type]").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.type === "plat");
+        });
+      }
+
       // ============================================
       // FONCTION SELECTION TYPE PAR ICONES
       // ============================================
       function selectType(type) {
-        const buttons = document.querySelectorAll('.type-icon-btn');
+        const buttons = document.querySelectorAll('.type-icon-btn[data-type]');
         buttons.forEach(btn => {
           if (btn.getAttribute('data-type') === type) {
             if (btn.classList.contains('active')) {
@@ -524,11 +624,14 @@
             return false;
           }
           // Filtre saison
+          const rs = recipeSeasons(recipe);
           if (saison) {
-            const saisons = recipe.saisons.split("|");
-            if (!saisons.includes(saison) && !saisons.includes("toute")) {
+            // Choix explicite dans le menu Filtres
+            if (!rs.includes(saison) && !rs.includes("toute")) return false;
+          } else if (seasonAuto) {
+            // Par défaut : saison du jour (avec chevauchement de 3 semaines)
+            if (!rs.includes("toute") && !rs.some((s) => ACTIVE_SEASONS.includes(s)))
               return false;
-            }
           }
           // Filtre régime
           if (regime) {
@@ -540,6 +643,25 @@
           // Filtre protéine
           if (proteine && recipe.proteine !== proteine) {
             return false;
+          }
+          // Filtres rapides (Végétarien / Protéiné / Facile) — indépendants, ET logique
+          if (
+            quickFilters.vegetarien ||
+            quickFilters.proteine ||
+            quickFilters.facile
+          ) {
+            const diets = (recipe.diets || "").split("|").map((d) => normalizeText(d));
+            if (
+              quickFilters.vegetarien &&
+              !(diets.includes("vegetarien") || diets.includes("vegetalien"))
+            )
+              return false;
+            if (
+              quickFilters.proteine &&
+              !(diets.includes("viande") || diets.includes("poisson"))
+            )
+              return false;
+            if (quickFilters.facile && !diets.includes("facile")) return false;
           }
           return true;
         });
@@ -932,10 +1054,12 @@
       let openedFromRandom = false; // vrai quand la modale est ouverte via le tirage
       function showRandomRecipe() {
         if (allRecipes.length === 0) return;
+        // Tirage parmi les recettes filtrées (respecte type/saison/filtres rapides)
+        let pool = filterRecipes();
+        if (!pool.length) pool = allRecipes;
         // Éviter de retomber sur le plat déjà affiché
-        let pool = allRecipes;
-        if (currentRecipe && allRecipes.length > 1) {
-          pool = allRecipes.filter((r) => r.id !== currentRecipe.id);
+        if (currentRecipe && pool.length > 1) {
+          pool = pool.filter((r) => r.id !== currentRecipe.id);
         }
         const recipe = pool[Math.floor(Math.random() * pool.length)];
         openedFromRandom = true;
@@ -946,25 +1070,30 @@
       // ============================================
       function resetFilters() {
         searchInput.value = "";
-        typeSelect.value = "";
         saisonSelect.value = "";
         regimeSelect.value = "";
         proteineSelect.value = "";
-        
-        // Désactiver tous les boutons icônes
-        document.querySelectorAll('.type-icon-btn').forEach(btn => {
-          btn.classList.remove('active');
+
+        // Réinitialiser les filtres rapides (état + visuel)
+        Object.keys(quickFilters).forEach((k) => {
+          quickFilters[k] = false;
+          const b = document.querySelector('.type-icon-btn[data-quick="' + k + '"]');
+          if (b) b.classList.remove("active");
         });
-        
+
+        // Revenir à la vue par défaut : « Plat » + saison du jour
+        seasonAuto = true;
+        applyDefaultView();
+
         // Fermer les filtres avancés
         const advancedFilters = document.getElementById('advancedFilters');
         const icon = document.getElementById('filter-toggle-icon');
         advancedFilters.style.display = 'none';
         icon.textContent = '+';
-        
+
         // Mettre à jour le compteur
         updateFilterCount();
-        
+
         filterAndRender();
       }
       // ============================================
@@ -981,10 +1110,8 @@
       saisonSelect.addEventListener("change", filterAndRender);
       regimeSelect.addEventListener("change", filterAndRender);
       proteineSelect.addEventListener("change", filterAndRender);
-      btnRandom.addEventListener("click", showRandomRecipe);
+      // Planning / Hasard / Réinitialiser sont câblés en onclick dans la grille.
       document.getElementById("btn-random-again").addEventListener("click", showRandomRecipe);
-      btnReset.addEventListener("click", resetFilters);
-      btnGenerateWeek.addEventListener("click", generateWeeklyPlanning);
       btnRegenerate.addEventListener("click", generateWeeklyPlanning);
       btnExportPlanning.addEventListener("click", exportPlanningToShoppingList);
       btnCloseModal.addEventListener("click", closeRecipeModal);
@@ -1043,6 +1170,7 @@
       // ============================================
       // INIT
       // ============================================
+      applyDefaultView(); // vue par défaut : « Plat » + saison du jour
       loadRecipes();
       // Init cloud (auth) pour que la sync de la liste connaisse l'état connecté.
       if (window.FoodHomeCloud) FoodHomeCloud.init();
@@ -1193,6 +1321,9 @@
         
         // Écouter les changements sur les filtres avancés
         saisonSelect.addEventListener('change', () => {
+          // Dès que l'utilisateur touche au menu Saison, on quitte le mode auto :
+          // la valeur du menu fait foi ("Toutes" = toutes saisons).
+          seasonAuto = false;
           updateFilterCount();
           filterAndRender();
         });
