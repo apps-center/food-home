@@ -291,7 +291,7 @@
             <span class="ico">👌</span><span class="lbl">Facile</span>
           </button>
           <!-- Ligne 3 : Actions -->
-          <button class="type-icon-btn action" onclick="generateWeeklyPlanning()">
+          <button class="type-icon-btn action" onclick="openPlanning()">
             <span class="ico">📅</span><span class="lbl">Planning</span>
           </button>
           <button class="type-icon-btn action" onclick="showRandomRecipe()">
@@ -623,6 +623,7 @@
             .sort((a, b) => (a.nom || '').localeCompare(b.nom || '', 'fr'));
 
           console.log('✅ Recettes chargées:', allRecipes.length);
+          restorePlanning(); // recharger le planning figé s'il existe
           filterAndRender();
 
         } catch (error) {
@@ -802,6 +803,49 @@
         return set.includes(season);
       }
 
+      // ============================================
+      // PERSISTANCE DU PLANNING (localStorage)
+      // Le planning est figé jusqu'à ce qu'on appuie sur « Régénérer ».
+      // ============================================
+      const PLANNING_KEY = "food_home_weekly_planning";
+      function savePlanning() {
+        try {
+          const ids = {};
+          Object.entries(weeklyPlanning).forEach(([day, meals]) => {
+            ids[day] = {};
+            Object.entries(meals).forEach(([meal, r]) => {
+              if (r) ids[day][meal] = r.id;
+            });
+          });
+          localStorage.setItem(PLANNING_KEY, JSON.stringify(ids));
+        } catch (_) {}
+      }
+      function restorePlanning() {
+        try {
+          const raw = localStorage.getItem(PLANNING_KEY);
+          if (!raw) return;
+          const ids = JSON.parse(raw);
+          const byId = new Map(allRecipes.map((r) => [r.id, r]));
+          const restored = {};
+          Object.entries(ids).forEach(([day, meals]) => {
+            Object.entries(meals).forEach(([meal, id]) => {
+              const r = byId.get(id);
+              if (r) (restored[day] = restored[day] || {})[meal] = r;
+            });
+          });
+          if (Object.keys(restored).length) weeklyPlanning = restored;
+        } catch (_) {}
+      }
+      // Bouton « Planning » : ouvre le planning figé s'il existe, sinon en génère un.
+      function openPlanning() {
+        if (weeklyPlanning && Object.keys(weeklyPlanning).length) {
+          renderWeeklyPlanning();
+          planningModal.classList.add("active");
+        } else {
+          generateWeeklyPlanning();
+        }
+      }
+
       function generateWeeklyPlanning() {
         // Réinitialiser
         weeklyPlanning = {};
@@ -880,8 +924,9 @@
           }
         });
 
-        // Afficher le planning
+        // Afficher le planning (et le figer en localStorage)
         renderWeeklyPlanning();
+        savePlanning();
         planningModal.classList.add("active");
       }
       function renderWeeklyPlanning() {
@@ -1196,6 +1241,7 @@
         }
         const recipe = avail[Math.floor(Math.random() * avail.length)];
         weeklyPlanning[day][meal] = recipe;
+        savePlanning(); // figer le changement
         renderWeeklyPlanning(); // met à jour la grille derrière l'aperçu
         openPreview(recipe);
       }
