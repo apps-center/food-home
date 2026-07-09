@@ -63,34 +63,6 @@
         to { opacity: 0; transform: translateX(400px); }
       }
 
-      /* Indicateur de scroll en bas de la modale */
-      .scroll-indicator {
-        text-align: center;
-        padding: 40px 20px 20px;
-        color: var(--text-muted);
-        font-size: 13px;
-        opacity: 0.7;
-        border-top: 1px solid rgba(0, 0, 0, 0.06);
-        margin-top: 20px;
-      }
-
-      .scroll-indicator span {
-        display: block;
-        font-size: 32px;
-        margin-bottom: 8px;
-        animation: bounce 2s ease-in-out infinite;
-      }
-
-      @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-8px); }
-      }
-
-      .scroll-indicator p {
-        margin: 0;
-        font-style: italic;
-      }
-
       /* Amélioration du scroll sur mobile */
       @media (max-width: 768px) {
         .modal-content {
@@ -351,12 +323,6 @@
         <div class="instructions-list">
           <h4>👨‍🍳 Préparation</h4>
           <p id="modal-instructions"></p>
-        </div>
-
-        <!-- Indicateur de scroll pour mobile -->
-        <div class="scroll-indicator">
-          <span>⋯</span>
-          <p>Faites défiler pour voir toute la recette</p>
         </div>
       </div>
     </div>
