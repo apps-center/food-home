@@ -58,13 +58,22 @@ body {
   font-weight: var(--font-weight-extrabold);
   letter-spacing: -0.02em;
 }
-.navbar-brand span:first-child {
-  font-size: 32px;
-  animation: bounce 2s ease-in-out infinite;
+/* Logo : petit badge maison (repris de l'icône PWA), sobre, sans animation */
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #4f8cff 0%, #3b82f6 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgb(from #3b82f6 r g b / 0.35);
 }
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+.brand-mark svg {
+  width: 62%;
+  height: 62%;
+  display: block;
 }
 .navbar-brand span:last-child {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -208,8 +217,9 @@ iframe {
   .navbar-brand {
     font-size: 22px;
   }
-  .navbar-brand span:first-child {
-    font-size: 28px;
+  .brand-mark {
+    width: 30px;
+    height: 30px;
   }
   .navbar-controls {
     width: 100%;
@@ -242,8 +252,9 @@ iframe {
     font-size: 20px;
     gap: 10px;
   }
-  .navbar-brand span:first-child {
-    font-size: 24px;
+  .brand-mark {
+    width: 28px;
+    height: 28px;
   }
   .toggle-btn,
   .logout-btn {
